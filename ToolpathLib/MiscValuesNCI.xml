@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Machine name="DMS_OPTICS">  
+  <MiscIntegers>
+    <MiscInteger index ="1" />
+    <MiscInteger index ="2" />
+    <MiscInteger index ="3" />
+    <MiscInteger index ="4" />
+    <MiscInteger index ="5" />
+    <MiscInteger index ="6" />
+    <MiscInteger index ="7" />
+    <MiscInteger index ="8" />
+    <MiscInteger index ="9" />
+    <MiscInteger index ="10" />
+  </MiscIntegers>
+  <MiscReals>
+    <MiscReal index ="1" />
+    <MiscReal index ="2" />
+    <MiscReal index ="3" />
+    <MiscReal index ="4" />
+    <MiscReal index ="5" />
+    <MiscReal index ="6" />
+    <MiscReal index ="7" />
+    <MiscReal index ="8" />
+    <MiscReal index ="9" />
+    <MiscReal index ="10" />
+  </MiscReals>
+</Machine>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Machines>
+  <Machine name=" QUINTAX">
+  <MCodes>
+  <MCode name ="JET" oncode ="M61" offcode ="M62" /> 
+  <MCode name="ABRASIVE" oncode ="M63" offcode ="M64"/> 
+  <MCode name="MCODE3" oncode ="M65" offcode ="M66"/>  
+  <MCode name="MCODE4" oncode ="M67" offcode ="M68"/> 
+  <MCode name="MCODE5" oncode ="M69" offcode ="M70"/>  
+  <MCode name="MCODE6" oncode ="M71" offcode ="M72"/>  
+  <MCode name="MCODE7" oncode ="M73" offcode ="M74"/>  
+  <MCode name="MCODE8" oncode ="M75" offcode ="M76"/>  
+ </MCodes>
+  </Machine>
+  <Machine name=" QUINTAX">
+    <MCodes>
+      <MCode name ="JET" oncode ="M61" offcode ="M62" />
+     <MCode name="ABRASIVE" oncode ="M63" offcode ="M64"/>
+     <MCode name="MCODE3" oncode ="M65" offcode ="M66"/>
+     <MCode name="MCODE4" oncode ="M67" offcode ="M68"/>
+     <MCode name="MCODE5" oncode ="M69" offcode ="M70"/>
+     <MCode name="MCODE6" oncode ="M71" offcode ="M72"/>
+     <MCode name="MCODE7" oncode ="M73" offcode ="M74"/>
+     <MCode name="MCODE8" oncode ="M75" offcode ="M76"/>    
+  </MCodes>
+  </Machine>
+</Machines>

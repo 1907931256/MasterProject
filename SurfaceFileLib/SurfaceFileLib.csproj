@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0B2A9A0B-EB08-4240-92AE-C56C3DCE2C96}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SurfaceFileLib</RootNamespace>
+    <AssemblyName>SurfaceFileLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DataLib">
+      <HintPath>..\DataLib\bin\Debug\DataLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PlyEdge.cs" />
+    <Compile Include="PlyElement.cs" />
+    <Compile Include="PlyElementType.cs" />
+    <Compile Include="PlyFace.cs" />
+    <Compile Include="PlyFile.cs" />
+    <Compile Include="PlyFormat.cs" />
+    <Compile Include="PlyHeader.cs" />
+    <Compile Include="PlyMaterial.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PlyProperty.cs" />
+    <Compile Include="PlyPropertyType.cs" />
+    <Compile Include="StlFile.cs" />
+    <Compile Include="SurfaceFileType.cs" />
+    <Compile Include="PlyVertex.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DxfFileLib\DwgConverterLib.csproj">
+      <Project>{5324ba86-469d-4e51-88cc-5a53b662d65d}</Project>
+      <Name>DwgConverterLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\File IO Library\FileIO\FileIOLib.csproj">
+      <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>
+      <Name>FileIOLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeometryLib\GeometryLib.csproj">
+      <Project>{9ad06540-598d-4c01-ab09-4e68ca4fad28}</Project>
+      <Name>GeometryLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SurfaceModel\SurfaceModel\SurfaceModelLib.csproj">
+      <Project>{7dc24e8d-cfe2-457e-8c0e-8acdac65745b}</Project>
+      <Name>SurfaceModelLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbMachParameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Operation>ROCKETCHANNEL</Operation>
+  <RunInfo>
+    <Runs>10</Runs>
+    <Iterations>1</Iterations>
+    <CurrentRun>0</CurrentRun>
+    <CurrentIteration>0</CurrentIteration>
+    <RunType>RunAsIs</RunType>
+  </RunInfo>
+  <RemovalRate>
+    <SurfaceSpeed>47</SurfaceSpeed>
+    <DepthPerPass>0.001</DepthPerPass>
+  </RemovalRate>
+  <Material>
+    <CriticalRemovalAngle>1.2217304763960306</CriticalRemovalAngle>
+    <Name>ALUMINUM</Name>
+    <Thickness>0.25</Thickness>
+    <CutMachinability>1</CutMachinability>
+    <MillMachinability>1</MillMachinability>
+    <Type>Metal</Type>
+    <ModulusElasticity>0</ModulusElasticity>
+    <YieldStrength>0</YieldStrength>
+    <PoissonsRatio>0</PoissonsRatio>
+    <Density>0</Density>
+  </Material>
+  <AbMachJet>
+    <EquationIndex>2</EquationIndex>
+    <Diameter>0.05</Diameter>
+  </AbMachJet>
+  <DepthInfo>
+    <DepthAtLocation />
+    <LocationOfDepthMeasure>
+      <Type>Vector3</Type>
+      <Col>
+        <Red>255</Red>
+        <Green>255</Green>
+        <Blue>255</Blue>
+      </Col>
+      <ID>0</ID>
+      <X>1.5</X>
+      <Y>2</Y>
+      <Z>0</Z>
+    </LocationOfDepthMeasure>
+    <SearchRadius>0.005000000000000001</SearchRadius>
+    <SearchType>FindAveDepth</SearchType>
+  </DepthInfo>
+  <MeshSize>0</MeshSize>
+</AbMachParameters>

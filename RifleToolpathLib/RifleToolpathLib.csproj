@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D7DFC401-4C69-4A2A-974F-FEA864ACBFD3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RifleToolpathLib</RootNamespace>
+    <AssemblyName>RifleToolpathLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RifleToolPathBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AWJModelLib\AWJModelLib.csproj">
+      <Project>{a8861a3f-2a73-4f27-a552-f1adb58ef5d2}</Project>
+      <Name>AWJModelLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CNC Library\CNCLib.csproj">
+      <Project>{e0b421b3-c2b0-4132-893e-c66376132be7}</Project>
+      <Name>CNCLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\File IO Library\FileIO\FileIOLib.csproj">
+      <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>
+      <Name>FileIOLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InspectionFileLib\InspectionLib.csproj">
+      <Project>{cc7eaa25-17db-4850-91f6-0b59bf335e2a}</Project>
+      <Name>InspectionLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolpathLib\ToolpathLib.csproj">
+      <Project>{f48e523e-0c85-4379-8e8a-06033c61c476}</Project>
+      <Name>ToolpathLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

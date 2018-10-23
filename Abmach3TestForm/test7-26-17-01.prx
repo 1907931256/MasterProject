@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbMachParameters xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Operation>SCRAMCHANNEL</Operation>
+  <RunInfo>
+    <Runs>3</Runs>
+    <Iterations>1</Iterations>
+    <CurrentRun>0</CurrentRun>
+    <CurrentIteration>0</CurrentIteration>
+    <RunType>RunAsIs</RunType>
+  </RunInfo>
+  <RemovalRate>
+    <NominalSurfaceSpeed>40</NominalSurfaceSpeed>
+    <DepthPerPass>0.005</DepthPerPass>
+  </RemovalRate>
+  <Material>
+    <CriticalRemovalAngle>70</CriticalRemovalAngle>
+    <Name>ALUMINUM</Name>
+    <Thickness>1</Thickness>
+    <CutMachinability>213</CutMachinability>
+    <MillMachinability>200</MillMachinability>
+    <Type>Metal</Type>
+    <ModulusElasticity>1</ModulusElasticity>
+    <YieldStrength>1</YieldStrength>
+    <PoissonsRatio>1</PoissonsRatio>
+    <Density>1</Density>
+  </Material>
+  <AbMachJet>
+    <EquationIndex>2</EquationIndex>
+    <Diameter>0.1</Diameter>
+  </AbMachJet>
+  <DepthInfo>
+    <CurrentDepthAtLocation />
+    <LocationOfDepthMeasure>
+      <Type>Vector3</Type>
+      <Col>
+        <Red>255</Red>
+        <Green>255</Green>
+        <Blue>255</Blue>
+      </Col>
+      <ID>0</ID>
+      <X>0</X>
+      <Y>0</Y>
+      <Z>0</Z>
+    </LocationOfDepthMeasure>
+    <SearchRadius>0</SearchRadius>
+    <TargetDepthAtLocation>0.1</TargetDepthAtLocation>
+    <SearchType>FindAveDepth</SearchType>
+  </DepthInfo>
+  <MeshSize>0.002</MeshSize>
+</AbMachParameters>

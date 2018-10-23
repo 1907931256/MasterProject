@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MRR>
+	<!--mrr coefficients 0,...,7-->
+	<!--constant with r-->
+	<coeffs type="1">
+		<value index="0">1</value>
+		<value index="1">0</value>
+		<value index="2">0</value>
+		<value index="3">0</value>
+		<value index="4">0</value>
+		<value index="5">0</value>
+		<value index="6">0</value>
+		<value index="7">1</value>
+	</coeffs>
+	<!--based on shape of particle density experiments peak at .4 r -->
+	<coeffs type="2">
+    <value index="0">0.621</value>
+    <value index="1">0.896</value>
+    <value index="2">-10.67</value>
+    <value index="3">67.71</value>
+    <value index="4">-161.37</value>
+    <value index="5">154.76</value>
+    <value index="6">-51.95</value>
+    <value index="7">.2</value>
+	</coeffs>
+	<!--broad peak at .5 to .6 r-->
+	<coeffs type="3">
+    <value index="0">0.744</value>
+    <value index="1">-0.28</value>
+    <value index="2">8.31</value>
+    <value index="3">-29.03</value>
+    <value index="4">47.56</value>
+    <value index="5">-38.66</value>
+    <value index="6">11.39</value>
+    <value index="7">1</value>	
+	</coeffs>
+  <!--parabolic with r-->
+  <coeffs type="4">
+    <value index="0">.65</value>
+    <value index="1">0</value>
+    <value index="2">.85</value>
+    <value index="3">0</value>
+    <value index="4">0</value>
+    <value index="5">0</value>
+    <value index="6">0</value>
+    <value index="7">.5</value>
+  </coeffs>
+</MRR>

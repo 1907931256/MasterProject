@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CC7EAA25-17DB-4850-91F6-0B59BF335E2A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>InspectionLib</RootNamespace>
+    <AssemblyName>InspectionLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.0.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AngleError.cs" />
+    <Compile Include="AxialDataBuilder.cs" />
+    <Compile Include="BarrelGrooveDepth.cs" />
+    <Compile Include="BarrelProfile.cs" />
+    <Compile Include="CalDataBuilder.cs" />
+    <Compile Include="CalDataSet.cs" />
+    <Compile Include="ColorCodeScheme.cs" />
+    <Compile Include="CylInspScript.cs" />
+    <Compile Include="DataColorCode.cs" />
+    <Compile Include="DataOptionsFile.cs" />
+    <Compile Include="DepthMeasurement.cs" />
+    <Compile Include="GrooveDepthProfile.cs" />
+    <Compile Include="DataParser.cs" />
+    <Compile Include="DataFileBuilder.cs" />
+    <Compile Include="DataOutputOptions.cs" />
+    <Compile Include="DataBuilder.cs" />
+    <Compile Include="BarrelInspProfile.cs" />
+    <Compile Include="InspDataSet.cs" />
+    <Compile Include="InspectionScriptBuilder.cs" />
+    <Compile Include="ProfileBuilder.cs" />
+    <Compile Include="ProfileMeasurement.cs" />
+    <Compile Include="InspectionScript.cs" />
+    <Compile Include="InspectionScriptFile.cs" />
+    <Compile Include="MachineRasterSpeed.cs" />
+    <Compile Include="MachineRasterSpeeds.cs" />
+    <Compile Include="MethodEnum.cs" />
+    <Compile Include="ProfileTypeEnum.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="KeyenceSIDataSet.cs" />
+    <Compile Include="RasterDataBuilder.cs" />
+    <Compile Include="RingDataBuilder.cs" />
+    <Compile Include="SpiralDataBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AWJModelLib\AWJModelLib.csproj">
+      <Project>{a8861a3f-2a73-4f27-a552-f1adb58ef5d2}</Project>
+      <Name>AWJModelLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BarrelLib\BarrelLib.csproj">
+      <Project>{351c4d4d-8066-40ba-a638-93bb22428c3e}</Project>
+      <Name>BarrelLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CNC Library\CNCLib.csproj">
+      <Project>{e0b421b3-c2b0-4132-893e-c66376132be7}</Project>
+      <Name>CNCLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataLib\DataLib.csproj">
+      <Project>{0c6fa665-a531-4163-a318-5fa4f5a65e0f}</Project>
+      <Name>DataLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DxfFileLib\DwgConverterLib.csproj">
+      <Project>{5324ba86-469d-4e51-88cc-5a53b662d65d}</Project>
+      <Name>DwgConverterLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\File IO Library\FileIO\FileIOLib.csproj">
+      <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>
+      <Name>FileIOLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeometryLib\GeometryLib.csproj">
+      <Project>{9ad06540-598d-4c01-ab09-4e68ca4fad28}</Project>
+      <Name>GeometryLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProbeController\ProbeController.csproj">
+      <Project>{0b633261-c1b5-422f-a975-aa1df2878c71}</Project>
+      <Name>ProbeController</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SurfaceFileLib\SurfaceFileLib.csproj">
+      <Project>{0b2a9a0b-eb08-4240-92ae-c56c3dce2c96}</Project>
+      <Name>SurfaceFileLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SurfaceModel\SurfaceModel\SurfaceModelLib.csproj">
+      <Project>{7dc24e8d-cfe2-457e-8c0e-8acdac65745b}</Project>
+      <Name>SurfaceModelLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolpathLib\ToolpathLib.csproj">
+      <Project>{f48e523e-0c85-4379-8e8a-06033c61c476}</Project>
+      <Name>ToolpathLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

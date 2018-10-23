@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MCodes>
+  <MCode name ="JETON" code ="M61" />
+  <MCode name="JETOFF" code ="M62"/>  
+  <MCode name="ABRON" code ="M63"/>
+  <MCode name="ABROFF" code ="M64"/>
+  <MCode name="SPINDLEON" code ="M65"/>
+  <MCode name="SPINDLEOFF" code ="M66"/>
+  <MCode name="VACUUMON" code ="M67"/>
+  <MCode name="VACUUMOFF" code ="M68"/>
+  <MCode name="COLLECTDATASTART" code ="M69"/>
+  <MCode name="COLLECTDATASTOP" code ="M70"/>  
+  <MCode name="INPOSITION" code ="M71"/>
+  <MCode name="NOTINPOSITION" code ="M72"/>
+  <MCode name="MCODE7ON" code ="M73"/>
+  <MCode name="MCODE7OFF" code ="M74"/>
+  <MCode name="MCODE8ON" code ="M75"/>
+  <MCode name="MCODE8OFF" code ="M76"/>
+</MCodes>

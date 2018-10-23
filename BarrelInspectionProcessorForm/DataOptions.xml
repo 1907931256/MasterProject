@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataOutputOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SurfaceFileScaleFactor>10.0</SurfaceFileScaleFactor>  
+  <SaveSurfaceFlat>true</SaveSurfaceFlat>
+  <SaveSurfaceRolled>false</SaveSurfaceRolled>
+  <SaveCSVCorrected>true</SaveCSVCorrected>
+  <SaveCSVUncorrected>false</SaveCSVUncorrected>
+  <SaveDebugFiles>false</SaveDebugFiles>
+  <SaveErrorData>false</SaveErrorData>
+  <SaveErrorMap>false</SaveErrorMap>
+  <ColorCodeData>true</ColorCodeData>
+  <SurfaceColorCode>MONO</SurfaceColorCode>
+  <SaveGroovesFromRing>false</SaveGroovesFromRing>
+  <SaveRingFromSpiral>false</SaveRingFromSpiral>
+  <SaveDXF>true</SaveDXF>
+  <SaveSTL>false</SaveSTL>
+  <SavePLY>true</SavePLY>
+  <NominalDiameter>0</NominalDiameter>
+  <ChangeNominalDiameter>false</ChangeNominalDiameter>
+</DataOutputOptions>

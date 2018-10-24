@@ -781,11 +781,9 @@ namespace BarrelInspectionProcessorForm
                 _inspDataSetList = new List<InspDataSet>();
                 _hilightPts = new List<PointF>();
                 Clear3DView();
+
                 await ProcessFiles();
-                if(_smoothData)
-                {
-                //    SmoothData();
-                }
+               
                 if (_autoAngleCorrect  )
                 {
                     CorrectForAveAngle();
@@ -3057,6 +3055,11 @@ namespace BarrelInspectionProcessorForm
         {
             MainModel3Dgroup = new Model3DGroup();     
             userControl11.MainViewport.Children.Clear();
+            string filename = string.Format(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\texture.png");
+            if (System.IO.File.Exists(filename))
+            {
+                System.IO.File.Delete(filename);
+            }
         }
         
         private void Load3DView(CylGridData spiralScan)

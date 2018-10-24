@@ -74,7 +74,7 @@ namespace DataLib
 
                 // Convert the BitmapPixelMaker into a WriteableBitmap.
                 WriteableBitmap wbitmap = bm_maker.MakeBitmap(96, 96);
-                string filename = string.Format(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\texture.png");
+                string filename = "texture.png";
                 
                 // Save the bitmap into a file.
                 wbitmap.Save(filename);
@@ -324,8 +324,8 @@ namespace DataLib
                 // Make the surface's material using an image brush.
                 ImageBrush texture_brush = new ImageBrush();
                
-                string filename = string.Format(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\texture.png");
-                var  uri = new Uri(filename);
+                string filename = "texture.png";
+                var  uri = new Uri(filename,UriKind.Relative);
                 texture_brush.ImageSource = new BitmapImage(uri);
                 DiffuseMaterial surface_material = new DiffuseMaterial(texture_brush);
 

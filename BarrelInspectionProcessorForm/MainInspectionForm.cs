@@ -743,7 +743,7 @@ namespace BarrelInspectionProcessorForm
                     }
                     if(_displayData.DataFormat == DataFormat.SPIRAL)
                     {                       
-                        Load3DView(_inspDataSetList[0].CorrectedSpiralData);
+                      Load3DView(_inspDataSetList[0].CorrectedSpiralData);
                     }
                     
                 }
@@ -881,6 +881,11 @@ namespace BarrelInspectionProcessorForm
             radioButtonViewRaw.Checked = false;
             radioButtonViewRaw.Enabled = true;
             textBoxProbeCount.Text = "1";
+            //data outputoptions
+            buttonBuildProfile.Enabled = true;
+            buttonCorrectMidpoint.Enabled = true;
+            buttonGetAveAngle.Enabled = true;
+            buttonSetRadius.Enabled = true;
         }
         private void SetSpiralSwitches()
         {
@@ -903,6 +908,11 @@ namespace BarrelInspectionProcessorForm
             radioButtonViewRaw.Checked = false;
             radioButtonViewRaw.Enabled = false;
             textBoxProbeCount.Text = "1";
+            //data outputoptions
+            buttonBuildProfile.Enabled = false;
+            buttonCorrectMidpoint.Enabled = false;
+            buttonGetAveAngle.Enabled = false;
+            buttonSetRadius.Enabled = false;
         }
         private void SetRasterSwitches()
         {
@@ -938,9 +948,13 @@ namespace BarrelInspectionProcessorForm
             radioButtonPtsperRev.Text = "Points per inch:";
             radioButtonPtsperRev.Checked = true;
             textBoxRingRevs.Enabled = false;
-
             //textBoxExtractX.Enabled = false;
             textBoxProbeCount.Text = "2";
+            //data outputoptions
+            buttonBuildProfile.Enabled = false;
+            buttonCorrectMidpoint.Enabled = false;
+            buttonGetAveAngle.Enabled = false;
+            buttonSetRadius.Enabled = false;
         }
         InspectionMethod _method;
         ProbeController.ProbeDirection _probeDirection;
@@ -3055,28 +3069,24 @@ namespace BarrelInspectionProcessorForm
         {
             MainModel3Dgroup = new Model3DGroup();     
             userControl11.MainViewport.Children.Clear();
-            string filename = string.Format(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\texture.png");
-            if (System.IO.File.Exists(filename))
-            {
-                System.IO.File.Delete(filename);
-            }
+           
         }
-        
+       
         private void Load3DView(CylGridData spiralScan)
         {
-            // Give the camera its initial position.
+            var mb = new Model3DBuilder();
             MainModel3Dgroup = new Model3DGroup();
             userControl11.TheCamera = new PerspectiveCamera();
             userControl11.TheCamera.FieldOfView = 90;
             userControl11.MainViewport.Camera = userControl11.TheCamera;
-            userControl11.PositionCamera();         
-            var mb = new Model3DBuilder();
+            userControl11.PositionCamera();
 
             COLORCODE colorcode = _dataOutOptions.SurfaceColorCode;
             double maxDepth = (_barrel.DimensionData.GrooveMaxDiam - _barrel.DimensionData.LandMinDiam) / 2.0;
             double nominalRadius = _barrel.DimensionData.LandNominalDiam / 2.0;
             double scaleFactor = _dataOutOptions.SurfaceFileScaleFactor;
             double radialDirection = -1;
+
             mb.BuildModel(ref MainModel3Dgroup, spiralScan,radialDirection, nominalRadius, maxDepth, scaleFactor, colorcode);
 
             ModelVisual3D model_visual = new ModelVisual3D();

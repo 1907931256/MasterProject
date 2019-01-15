@@ -11,6 +11,10 @@ namespace AbMachModel
     /// </summary>
     public class RemovalRate
     {
+        public double RemovalAt(double speed)
+        {
+            return DepthPerPass * speed / NominalSurfaceSpeed;
+        }
         public double NominalSurfaceSpeed { get; set; }
         public double DepthPerPass { get; set; }
         public RemovalRate()
@@ -22,7 +26,6 @@ namespace AbMachModel
         {
             NominalSurfaceSpeed = nominalSurfaceSpeed;
             DepthPerPass = depthPerPass;
-
         }
     }
 }

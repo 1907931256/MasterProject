@@ -1,5 +1,38 @@
-﻿namespace GeometryLib
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace GeometryLib
 {
+    public class Ray2
+    {
+        public Vector2 Origin { get; private set; }
+        public Vector2 Direction { get; private set; }
+        public double DirectionTan { get; private set; }
+        public double Length { get; private set; }
+        public Vector2 PointOnRayAt(double distance)
+        {
+            Vector2 pt = new Vector2(Origin.X + distance * Direction.X, Origin.Y + distance * Direction.Y);
+            return pt;
+        }
+        public Ray2(Vector2 origin, Vector2 direction)
+        {
+            Origin = origin;
+            direction.Normalize();
+            Direction = direction;
+            DirectionTan = Direction.Y / Direction.X;
+            Length = 1;
+        }
+        public Ray2(Vector2 origin, Vector2 direction, double length)
+        {
+            Origin = origin;
+            direction.Normalize();
+            Direction = direction;
+            DirectionTan = Direction.Y / Direction.X;
+            Length = length;
+        }
+    }
     public class Ray
     {
         public Vector3 Origin { get; set; }

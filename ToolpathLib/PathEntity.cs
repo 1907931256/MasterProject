@@ -6,6 +6,43 @@ using GeometryLib;
 
 namespace ToolpathLib
 {
+    public class ChannelPath:List<ChannelXSection>
+    {        
+        public ChannelPath()
+        {
+
+        }
+    }
+    public class ChannelXSection : List<ChannelPathEntity>
+    {
+        public double AlongLoc { get; set; }        
+        public void SortByPassExcOrder()
+        {
+            var order = new List<int>();
+            foreach(ChannelPathEntity cpe in this)
+            {
+                order.Add(cpe.PassExecOrder);
+            }
+            var orderArr = order.ToArray();
+            var cspArr = this.ToArray();
+            Array.Sort(orderArr, cspArr);
+            Clear();
+            AddRange(cspArr);
+        }        
+        public ChannelXSection()
+        {
+
+        }
+    }
+    public class ChannelPathEntity
+    {
+        public CNCLib.MachinePosition MachinePosition { get; set; }
+        public Vector2 JetVector { get; set; }
+        public double CrossLoc { get; set; }       
+        public double Feedrate { get; set; }
+        public int PassExecOrder { get; set; }
+
+    }
     public  class PathEntity
     {
         public BlockType Type {get; set;}        

@@ -43,6 +43,17 @@
     <value index="4">0</value>
     <value index="5">0</value>
     <value index="6">0</value>
-    <value index="7">.5</value>
+    <value index="7">.58</value>
+  </coeffs>
+    <!--peak at r=.70-->
+    <coeffs type="5">
+      <value index="0">.5504</value>
+      <value index="1">-.5587</value>
+      <value index="2">11.319</value>
+      <value index="3">-64.677</value>
+      <value index="4">165.09</value>
+      <value index="5">-183.13</value>
+      <value index="6">71.405</value>
+      <value index="7">1</value>
   </coeffs>
 </MRR>

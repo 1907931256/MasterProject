@@ -194,14 +194,14 @@ namespace GeometryLib
         /// <param name="ray2"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static IntersectionRecord RayRayXYIntersect(Line ray1, Line ray2 )
+        public static IntersectionRecord2 RayRayXYIntersect(Line2 ray1, Line2 ray2 )
         {
             try
             {
-                IntersectionRecord result = new IntersectionRecord();
-                Vector3 ptOut = new Vector3();
+                IntersectionRecord2 result = new IntersectionRecord2();
+                Vector2 ptOut = new Vector2();
 
-                if (Math.Abs(ray1.SlopeXY) == Math.Abs(ray2.SlopeXY))
+                if (ray1.SlopeXY == ray2.SlopeXY)
                 {
 
                     double yt = (ray1.Point1.X - ray2.Point1.X) * (ray2.Point2.Y - ray2.Point1.Y);
@@ -213,7 +213,7 @@ namespace GeometryLib
                     }
                     else
                     {
-                        result = new IntersectionRecord(new Vector3(ray2.Point1.X, ray2.Point1.Y, ray2.Point1.Z), true);
+                        result = new IntersectionRecord2(new Vector2(ray2.Point1.X, ray2.Point1.Y), true);
 
                     }
                 }
@@ -227,7 +227,7 @@ namespace GeometryLib
                     double line2Det = ray2.Point1.X * ray2.Point2.Y - ray2.Point2.X * ray2.Point1.Y;
                     xOut = (line1Det * (ray2.Point1.X - ray2.Point2.X) - line2Det * (ray1.Point1.X - ray1.Point2.X)) / denom;
                     yOut = (line1Det * (ray2.Point1.Y - ray2.Point2.Y) - line2Det * (ray1.Point1.Y - ray1.Point2.Y)) / denom;
-                    result = new IntersectionRecord(new Vector3(xOut, yOut, ray2.Point1.Z), true);
+                    result = new IntersectionRecord2(new Vector2(xOut, yOut), true);
                 }
                 return result;
             }
@@ -238,7 +238,50 @@ namespace GeometryLib
             }
            
         }
+        public static IntersectionRecord RayRayXYIntersect(Line ray1, Line ray2)
+        {
+            try
+            {
+                IntersectionRecord result = new IntersectionRecord();
+                Vector3 ptOut = new Vector3();
 
+                if (ray1.SlopeXY == ray2.SlopeXY)
+                {
+
+                    double yt = (ray1.Point1.X - ray2.Point1.X) * (ray2.Point2.Y - ray2.Point1.Y);
+                    double yt2 = (ray2.Point2.X - ray2.Point1.X) * (ray2.Point1.Y - ray1.Point1.Y);
+
+                    if ((yt2 - yt) > float.Epsilon)
+                    {
+                        result.Intersects = false;
+                    }
+                    else
+                    {
+                        result = new IntersectionRecord(new Vector3(ray2.Point1.X, ray2.Point1.Y,0), true);
+
+                    }
+                }
+                else
+                {
+
+                    double denom = (ray1.Point1.X - ray1.Point2.X) * (ray2.Point1.Y - ray2.Point2.Y) - (ray2.Point1.X - ray2.Point2.X) * (ray1.Point1.Y - ray1.Point2.Y);
+                    double xOut = 0;
+                    double yOut = 0;
+                    double line1Det = ray1.Point1.X * ray1.Point2.Y - ray1.Point2.X * ray1.Point1.Y;
+                    double line2Det = ray2.Point1.X * ray2.Point2.Y - ray2.Point2.X * ray2.Point1.Y;
+                    xOut = (line1Det * (ray2.Point1.X - ray2.Point2.X) - line2Det * (ray1.Point1.X - ray1.Point2.X)) / denom;
+                    yOut = (line1Det * (ray2.Point1.Y - ray2.Point2.Y) - line2Det * (ray1.Point1.Y - ray1.Point2.Y)) / denom;
+                    result = new IntersectionRecord(new Vector3(xOut, yOut,0), true);
+                }
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
         /// <summary>
         /// return true if 2d coplanar line segments intersect and stores intersection in result
         /// </summary>
@@ -246,11 +289,11 @@ namespace GeometryLib
         /// <param name="line2In"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static IntersectionRecord LineLineXYIntersect(Line line1In, Line line2In)
+        public static IntersectionRecord2 LineLineXYIntersect(Line2 line1In, Line2 line2In)
         {
             try
             {
-                IntersectionRecord result = new IntersectionRecord();
+                IntersectionRecord2 result = new IntersectionRecord2();
                 double x2min = Math.Min(line2In.Point1.X, line2In.Point2.X);
                 double y2min = Math.Min(line2In.Point1.Y, line2In.Point2.Y);
                 double x2max = Math.Max(line2In.Point1.X, line2In.Point2.X);
@@ -285,6 +328,32 @@ namespace GeometryLib
         /// <param name="line2In"></param>
         /// <param name="result"></param>
         /// <returns></returns>
+        public static IntersectionRecord2 RayLineXYIntersect(Line2 rayIn, Line2 line2In)
+        {
+            try
+            {
+                double x2min = Math.Min(line2In.Point1.X, line2In.Point2.X);
+                double y2min = Math.Min(line2In.Point1.Y, line2In.Point2.Y);
+                double x2max = Math.Max(line2In.Point1.X, line2In.Point2.X);
+                double y2max = Math.Max(line2In.Point1.Y, line2In.Point2.Y);
+                IntersectionRecord2 result = RayRayXYIntersect(rayIn, line2In);
+                if (result.Intersects)
+                {
+                    if ((result.X > x2max) || (result.X < x2min) || (result.Y > y2max) || (result.Y < y2min))
+                    {
+                        result.Intersects = false;
+                    }
+
+                }
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
         public static IntersectionRecord RayLineXYIntersect(Line rayIn, Line line2In)
         {
             try
@@ -309,7 +378,7 @@ namespace GeometryLib
 
                 throw;
             }
-            
+
         }
         public static IntersectionRecord RayTriangleIntersect(Ray ray,Triangle plane)
         {

@@ -5,6 +5,19 @@ using System.Text;
 using FileIOLib;
 namespace AbMachModel
 {
+    public class MRRFunction
+    {
+        double[] cfs;
+        public Func<double, double> GetFunc()
+        {
+            return x => cfs[0] + cfs[1] * x + cfs[2] * Math.Pow(x, 2) + cfs[3] * Math.Pow(x, 3) + cfs[4] * Math.Pow(x, 4) + cfs[5] * Math.Pow(x, 5) + cfs[6] * Math.Pow(x, 6);
+        }
+        public MRRFunction(int equationIndex)
+        {
+            MrrEquDictionary equations = MrrEquFile.Open();
+            cfs = equations.GetEquation(equationIndex);
+        }
+    }
     /// <summary>
     /// used by abmachjet class
     /// </summary>
@@ -106,6 +119,7 @@ namespace AbMachModel
                 mrrRowSums[i] = sum;
             }
         }
+       
         internal MRREquation(int equationIndex, double meshSize, double jetRadius,string fileName)
         {           
             MrrEquDictionary equations = MrrEquFile.Open(fileName);

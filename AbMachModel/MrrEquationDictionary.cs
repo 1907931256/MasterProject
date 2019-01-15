@@ -33,6 +33,7 @@ namespace AbMachModel
                 return indexList;
             }
         }
+       
         public double[] GetEquation(int index)
         {
             double[] equOut = new double[8];

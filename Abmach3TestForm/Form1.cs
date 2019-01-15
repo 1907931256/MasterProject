@@ -42,20 +42,32 @@ namespace Abmach3TestForm
 
         }
 
-        private   void buttonInit_Click(object sender, EventArgs e)
+       
+        Task runModelAsync(CancellationToken ct, Progress<int> progress)
         {
             try
             {
-                label1.Text = "Running";                
-                initModel();
-                buttonRun.Enabled = true;
+                if (model2dMode)
+                {
+                    model2D = new AbmachSimModel2D(surface2D, path, parms);                    
+                    var t = Task.Run(() => model2D.Run(ct, progress));
+                    return t;
+                }
+                else
+                {
+                    model3D = new AbmachSimModel3D(surface3D, targetSurface3D, path, parms);
+                    save3DSurface("initialSurface.dxf", "initialPointlist.xyz");
+                    var t = Task.Run(() => model3D.Run(ct, progress));
+                    return t;
+                }
+
+
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show(ex.Message);
+                throw;
             }
         }
-        
         private async void  buttonRun_Click(object sender, EventArgs e)
         {
             try
@@ -125,238 +137,346 @@ namespace Abmach3TestForm
         {
             label1.Text = "Saving";
             Refresh();
-            saveSurface("finalSurface.dxf","finalPointlist.xyz");
+            Save2DSurface("finalSurface.dxf");
+            //save3DSurface("finalSurface.dxf","finalPointlist.xyz");
             label1.Text = "Finished Saving";
             Refresh();
         }
        
 
-        Task runModelAsync(CancellationToken ct, Progress<int> progress)
-        {
-            try
-            {
-                if(model2dMode)
-                {
-                    model2D = new AbmachSimModel2D(surface2D,  path, parms);
-                    saveSurface("initialSurface.dxf", "initialPointlist.xyz");
-                    var t = Task.Run(() => model2D.Run(ct, progress));
-                    return t;
-                }
-                else
-                {
-                    model3D = new AbmachSimModel3D(surface3D, targetSurface3D, path, parms);
-                    saveSurface("initialSurface.dxf", "initialPointlist.xyz");
-                    var t = Task.Run(() => model3D.Run(ct, progress));
-                    return t;
-                }              
-                
-               
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+       
         Task initModelAsync(CancellationToken ct, Progress<int> progress)
         {
             var t = Task.Run(() => initModelAsync(progress));
             return t;
         }
-        void initModel()
-        {
-            buildParms();
-            buildToolpath();
-            buildSurface();
-        }
-        void initModelAsync(IProgress<int> progress)
-        {
-            buildParms();
-            progress.Report( 33);
-            buildToolpath();
-            progress.Report(66);
-            buildSurface();
-            progress.Report(100);
-        }        
-        void buildToolpath()
-        {
-            //buildPathFromEquation();
-            buildPathFromFile();
-        }
-        void buildPathFromEquation()
-        {
-            path = new ModelPath();
-            for (int i = 0; i <= 100; i++)
-            {
-                double di = i;
-                var pos = new CNCLib.MachinePosition(MachineGeometry.XYZBC);
-                pos.X = .1 + (di / 200);
-                pos.Y = .5;
-                pos.Z = 1;
-                pos.Bdeg = 0;
-                pos.Cdeg = 0;
-                Vector3 jet = new Vector3(0, 0, 1);
-                ModelPathEntity mpEnt = new ModelPathEntity();
-                mpEnt.Position = pos;
-                mpEnt.JetVector = jet;
-                mpEnt.JetOn = true;
-                mpEnt.Feedrate.Value = 10;
-                mpEnt.TargetDepth = .05;
-                path.Add(mpEnt);
-            }
-            for (int i = 0; i <= 200; i++)
-            {
-                double di = i;
-                var pos = new CNCLib.MachinePosition(MachineGeometry.XYZBC);
-                pos.X = .5 ;
-                pos.Y = .1+ (di / 200);
-                pos.Z = 1;
-                pos.Bdeg = 0;
-                pos.Cdeg = 0;
-                Vector3 jet = new Vector3(0, 0, 1);
-                ModelPathEntity mpEnt = new ModelPathEntity();
-                mpEnt.Position = pos;
-                mpEnt.JetVector = jet;
-                mpEnt.JetOn = true;
-                mpEnt.Feedrate.Value = 8;
-                mpEnt.TargetDepth = .05;
-                path.Add(mpEnt);
-            }
-        }
-        void buildPathFromFile()
-        {
-            string inputFile;
-            inputFile= "STRAIGHT-TEST-8-3-15.nc";
-            //inputFile = "STRAIGHT-4.NC";
-            //string inputFile = "SURF-TEST-1.nc";
-            ToolPath toolpath = CNCFileParser.ToPath(inputFile);
-            ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
-            path = mpb.Build(toolpath, meshSize);
-            int pathCount = path.Count;
-            label2.Text = "path count:" + pathCount.ToString();
-            label4.Text= path.BoundingBox.Min.X.ToString();
-            label5.Text=path.BoundingBox.Min.Y.ToString();
-            label6.Text=path.BoundingBox.Min.Z.ToString();
-            label7.Text=path.BoundingBox.Max.X.ToString();
-            label8.Text=path.BoundingBox.Max.Y.ToString();
-            label9.Text=path.BoundingBox.Max.Z.ToString();
-            Refresh();
-        }
-
-        void buildSurface()
-        {
-            label1.Text = "Building Surface";
-            Refresh();
-            
-            //buildSurfaceFromFile();
-            //buildSurfaceFromEquation();
-            buildSurfaceFromToolpath(path, jetDiameter, meshSize);
-            label1.Text = "Finished Building Surface";
-            Refresh();
-        }
-        void buildSurfaceFromEquation()
-        {
-            List<Line> lines = new List<Line>();
-            for (int i = 0; i <= 10; i++)
-            {
-                double di = i;
-                //Line l = new Line(di/10.0, 0, .2*Math.Sin(Math.PI * di /5), (di + 1)/10, 0, .2*Math.Sin(Math.PI * (di + 1) / 5));
-                Line l = new Line(di / 10.0, 0, 1.0, (di + 1) / 10.0, 0, 1.0);
-                lines.Add(l);
-
-            }
-            Line acrossV = new Line(0, 0, 0, 0, 1, 0);
-          //  surface3D = OctreeBuilder<AbmachPoint>.Build(lines, acrossV, meshSize);
-        }
-        void buildSurfaceFromFile()
-        {
-            string startFileName = "SURF-TEST-1.STL";
-           // string targetFileName = "";
-           // StlFile startStlFile = StlFileParser.Open(startFileName);
-            //StlFile targetStlFile = StlFileParser.Open(targetFileName);
-            
-           // surface3D = OctreeBuilder<AbmachPoint>.Build(startStlFile, meshSize);
-            //Octree<AbmachPoint> targetSurface = OctreeBuilder<AbmachPoint>.Build(targetStlFile, meshSize);
-
-        }
-        void buildSurfaceFromToolpath(ModelPath path,double toolDiameter,double meshSize)
-        {
-            double xMin = path.JetOnBoundingBox.Min.X - toolDiameter;
-            double yMin = path.JetOnBoundingBox.Min.Y - toolDiameter;
-            double xMax = path.JetOnBoundingBox.Max.X + toolDiameter;
-            double yMax = path.JetOnBoundingBox.Max.Y + toolDiameter;
-            double zMin = path.JetOnBoundingBox.Min.Z - toolDiameter;
-            double zMax = path.JetOnBoundingBox.Max.Z + toolDiameter;
-            List<Vector3> pathAsVectors = new List<Vector3>();
-            foreach (ModelPathEntity mpe in path)
-            {
-                pathAsVectors.Add(mpe.PositionAsVector);
-            }
-            BoundingBox boundingBox = new BoundingBox(xMin,yMin, path.JetOnBoundingBox.Min.Z, xMax,yMax, path.JetOnBoundingBox.Max.Z);
-            if(model2dMode)
-            {
-                surface2D = new Abmach2DSurface(boundingBox, meshSize, toolDiameter);
-                //surface2D = Surface2DBuilder<AbmachPoint>.Build(boundingBox, meshSize);
-                //targetSurface2D = Surface2DBuilder<AbmachPoint>.Build(boundingBox,  meshSize);
-                
-
-            }
-            else
-            {
-               // surface3D = OctreeBuilder<AbmachPoint>.Build(pathAsVectors, meshSize);
-
-            }
-            
-        }
-
-        double jetDiameter ;
-        void buildParms()
-        {
-            buildParmsFromValues();
-            //buildParmsFromFile("params.xml");
-        }
+        double jetDiameter;
         void buildParmsFromFile(string fileName)
         {
-           parms = AbMachParametersFile.Open(fileName);
+            parms = AbMachParametersFile.Open(fileName);
         }
         void buildParmsFromValues()
         {
             try
             {
-                meshSize = .002;
-                jetDiameter = .050;
-                double nominalSurfaceSpeed = 47.0;
-                double depthPerPass = .002; 
+                meshSize = .003;
+                jetDiameter = .110;
+                double nominalSurfaceSpeed = 50.0;
+                double depthPerPass = .005;
                 int runs = 10;
                 int iterations = 1;
-                int equationIndex = 2;
+                int equationIndex = 4;
                 double searchRadius = jetDiameter * .1;
 
                 var jet = new AbMachJet(meshSize, jetDiameter, equationIndex);
                 var runInfo = new RunInfo(runs, iterations, ModelRunType.RunAsIs);
                 var removalRate = new RemovalRate(nominalSurfaceSpeed, depthPerPass);
-                var depthInfo = new DepthInfo(new Vector3(1.005, 2.5, 0), DepthSearchType.FindAveDepth,searchRadius);
+                var depthInfo = new DepthInfo(new Vector3(.456,.8254, 0), DepthSearchType.FindAveDepth, searchRadius);
                 var op = AbMachOperation.ROCKETCHANNEL;
                 var mat = new Material(
                     MaterialType.Metal,
-                    "Aluminum", 
-                    thickness:.25,
+                    "Aluminum",
+                    thickness: .25,
                     millMachinabilityIndex: 1,
                     cutMachinabilityIndex: 1,
-                    criticalAngleRadians:Math.PI* 70.0/180 );
+                    criticalAngleRadians: Math.PI * 70.0 / 180);
                 parms = AbMachParamBuilder.Build(op, runInfo, removalRate, mat, jet, depthInfo, meshSize);
-                AbMachParametersFile.Save(parms, "params.xml");                
+                AbMachParametersFile.Save(parms, "params.xml");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-        
-        void saveSurface(string dxfFilename, string txtFileName)
+        void buildParms()
+        {
+            buildParmsFromValues();
+            //buildParmsFromFile("params.xml");
+        }
+        void buildPathFromFile(string inputFile)
+        {
+            try
+            {
+                //inputFile = "STRAIGHT-4.NC";
+                //string inputFile = "SURF-TEST-1.nc";
+                ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+                ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
+                path = mpb.Build(toolpath, meshSize);
+                int pathCount = path.Count;
+                label2.Text = "path count:" + pathCount.ToString();
+                label4.Text = path.BoundingBox.Min.X.ToString();
+                label5.Text = path.BoundingBox.Min.Y.ToString();
+                label6.Text = path.BoundingBox.Min.Z.ToString();
+                label7.Text = path.BoundingBox.Max.X.ToString();
+                label8.Text = path.BoundingBox.Max.Y.ToString();
+                label9.Text = path.BoundingBox.Max.Z.ToString();
+                Refresh();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+           
+        }
+        void buildToolpath(string file)
+        {
+            try
+            {
+                //buildPathFromEquation();
+                buildPathFromFile(file);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        void buildSurfaceFromEquation()
+        {
+            try
+            {
+                List<Line> lines = new List<Line>();
+                for (int i = 0; i <= 10; i++)
+                {
+                    double di = i;
+                    //Line l = new Line(di/10.0, 0, .2*Math.Sin(Math.PI * di /5), (di + 1)/10, 0, .2*Math.Sin(Math.PI * (di + 1) / 5));
+                    Line l = new Line(di / 10.0, 0, 1.0, (di + 1) / 10.0, 0, 1.0);
+                    lines.Add(l);
+
+                }
+                Line acrossV = new Line(0, 0, 0, 0, 1, 0);
+                //  surface3D = OctreeBuilder<AbmachPoint>.Build(lines, acrossV, meshSize);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        void buildSurfaceFromFile()
+        {
+            try
+            {
+                string startFileName = "SURF-TEST-1.STL";
+                // string targetFileName = "";
+                // StlFile startStlFile = StlFileParser.Open(startFileName);
+                //StlFile targetStlFile = StlFileParser.Open(targetFileName);
+
+                // surface3D = OctreeBuilder<AbmachPoint>.Build(startStlFile, meshSize);
+                //Octree<AbmachPoint> targetSurface = OctreeBuilder<AbmachPoint>.Build(targetStlFile, meshSize);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+
+        }
+        void buildSurfaceFromToolpath(ModelPath path, double toolDiameter, double meshSize)
+        {
+            try
+            {
+                double xMin = path.JetOnBoundingBox.Min.X - toolDiameter;
+                double yMin = path.JetOnBoundingBox.Min.Y - toolDiameter;
+                double xMax = path.JetOnBoundingBox.Max.X + toolDiameter;
+                double yMax = path.JetOnBoundingBox.Max.Y + toolDiameter;
+                double zMin = path.JetOnBoundingBox.Min.Z - toolDiameter;
+                double zMax = path.JetOnBoundingBox.Max.Z + toolDiameter;
+                List<Vector3> pathAsVectors = new List<Vector3>();
+                foreach (ModelPathEntity mpe in path)
+                {
+                    pathAsVectors.Add(mpe.PositionAsVector);
+                }
+                BoundingBox boundingBox = new BoundingBox(xMin, yMin, path.JetOnBoundingBox.Min.Z, xMax, yMax, path.JetOnBoundingBox.Max.Z);
+                if (model2dMode)
+                {
+                    surface2D = new Abmach2DSurface(boundingBox, meshSize, toolDiameter);
+                    //surface2D = Surface2DBuilder<AbmachPoint>.Build(boundingBox, meshSize);
+                    //targetSurface2D = Surface2DBuilder<AbmachPoint>.Build(boundingBox,  meshSize);
+
+
+                }
+                else
+                {
+                    // surface3D = OctreeBuilder<AbmachPoint>.Build(pathAsVectors, meshSize);
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+
+        }
+        void buildSurface()
+        {
+            try
+            {
+                label1.Text = "Building Surface";
+                Refresh();
+
+                //buildSurfaceFromFile();
+                //buildSurfaceFromEquation();
+                buildSurfaceFromToolpath(path, jetDiameter, meshSize);
+                label1.Text = "Finished Building Surface";
+                Refresh();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        void initModel(string inputFile)
+        {
+            try
+            {
+                // inputFile = "STRAIGHT-TEST-8-3-15.nc";
+                buildParms();
+                buildToolpath(inputFile);
+                buildSurface();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+          
+        }
+        void initModelAsync(IProgress<int> progress)
+        {
+            try
+            {
+                string inputFile = "STRAIGHT-TEST-8-3-15.nc";
+                buildParms();
+                progress.Report(33);
+                buildToolpath(inputFile);
+                progress.Report(66);
+                buildSurface();
+                progress.Report(100);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        private void buttonInit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var ofd = new OpenFileDialog();
+                string fileName = "IslandTest-1.nc";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    fileName = ofd.FileName;
+                }
+                label1.Text = "Running";
+                initModel(fileName);
+                buttonRun.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+        }
+        void buildPathFromEquation()
+        {
+            try
+            {
+                path = new ModelPath();
+                for (int i = 0; i <= 100; i++)
+                {
+                    double di = i;
+                    var pos = new CNCLib.MachinePosition(MachineGeometry.XYZBC);
+                    pos.X = .1 + (di / 200);
+                    pos.Y = .5;
+                    pos.Z = 1;
+                    pos.Bdeg = 0;
+                    pos.Cdeg = 0;
+                    Vector3 jet = new Vector3(0, 0, 1);
+                    ModelPathEntity mpEnt = new ModelPathEntity();
+                    mpEnt.Position = pos;
+                    mpEnt.JetVector = jet;
+                    mpEnt.JetOn = true;
+                    mpEnt.Feedrate.Value = 10;
+                    mpEnt.TargetDepth = .05;
+                    path.Add(mpEnt);
+                }
+                for (int i = 0; i <= 200; i++)
+                {
+                    double di = i;
+                    var pos = new CNCLib.MachinePosition(MachineGeometry.XYZBC);
+                    pos.X = .5 ;
+                    pos.Y = .1+ (di / 200);
+                    pos.Z = 1;
+                    pos.Bdeg = 0;
+                    pos.Cdeg = 0;
+                    Vector3 jet = new Vector3(0, 0, 1);
+                    ModelPathEntity mpEnt = new ModelPathEntity();
+                    mpEnt.Position = pos;
+                    mpEnt.JetVector = jet;
+                    mpEnt.JetOn = true;
+                    mpEnt.Feedrate.Value = 8;
+                    mpEnt.TargetDepth = .05;
+                    path.Add(mpEnt);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+       
+
+        void Save2DSurface(string filename)
+        {
+            try
+            {
+                List<DwgEntity> entityList = new List<DwgEntity>();
+                var surface = model2D.GetSurface();
+                for (int i = 0; i < surface.Values.GetUpperBound(0)-1; i++)
+                {
+                    for (int j = 0; j < surface.Values.GetUpperBound(1)-1; j++)
+                    {
+                        double x1 = meshSize * i;
+                        double y1 = meshSize * j;
+                        double z1 = surface.Values[i, j].Depth;
+                        double x2 = meshSize * i+1;
+                        double y2 = meshSize * j;
+                        double z2 = surface.Values[i+1, j].Depth;
+                        DXFLine line  = new DXFLine(x1,y1,z1,x2,y2,z2);
+                        entityList.Add(line);
+                       
+                    }
+                }
+                DxfFileBuilder.Save(entityList, filename);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+
+        void save3DSurface(string dxfFilename, string txtFileName)
         {
             try
             {
                 ISurface<AbmachPoint> surfOut = model3D.GetSurface();
+               
                 List<AbmachPoint> ptlist = surfOut.GetAllPoints();                            
                 List<DwgEntity> entityList = new List<DwgEntity>();                
                 var pointList = new List<string>();

@@ -6,22 +6,16 @@ using GeometryLib;
 
 namespace ToolpathLib
 {
-    public class ChannelPath:List<ChannelXSection>
-    {        
-        public ChannelPath()
-        {
-
-        }
-    }
-    public class ChannelXSection : List<ChannelPathEntity>
+   
+    public class XSecPathList : List<XSectionPathEntity>
     {
         public double AlongLoc { get; set; }        
-        public void SortByPassExcOrder()
+        void SortByPassExcOrder()
         {
             var order = new List<int>();
-            foreach(ChannelPathEntity cpe in this)
+            foreach(XSectionPathEntity xpe in this)
             {
-                order.Add(cpe.PassExecOrder);
+                order.Add(xpe.PassExecOrder);
             }
             var orderArr = order.ToArray();
             var cspArr = this.ToArray();
@@ -29,19 +23,38 @@ namespace ToolpathLib
             Clear();
             AddRange(cspArr);
         }        
-        public ChannelXSection()
+        public XSecPathList(string csvFilename,int headerRowCount)
         {
-
+            var stringArr = FileIOLib.CSVFileParser.ParseFile(csvFilename);
+            //pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction(+,-)
+            if (headerRowCount < 0)
+                headerRowCount = 0;
+            for(int i =headerRowCount;i<stringArr.GetLength(0);i++)
+            {
+                int pathExOrder = 1;
+                double feed = 1.0;
+                double xlocation = 0;
+                double ylocation = 0;
+                int direction = 1;
+                int.TryParse(stringArr[i,0], out pathExOrder);
+                double.TryParse(stringArr[i, 1], out xlocation);
+                double.TryParse(stringArr[i, 2], out ylocation);
+                double.TryParse(stringArr[i, 3], out feed);
+                int.TryParse(stringArr[i, 4], out direction);
+                var xpe = new XSectionPathEntity() { PassExecOrder = pathExOrder, CrossLoc = xlocation, Feedrate = feed, Direction = direction };
+                this.Add(xpe);
+            }
+            SortByPassExcOrder();
         }
     }
-    public class ChannelPathEntity
+    public class XSectionPathEntity
     {
         public CNCLib.MachinePosition MachinePosition { get; set; }
         public Vector2 JetVector { get; set; }
         public double CrossLoc { get; set; }       
         public double Feedrate { get; set; }
         public int PassExecOrder { get; set; }
-
+        public int Direction { get; set; }
     }
     public  class PathEntity
     {

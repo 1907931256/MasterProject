@@ -14,6 +14,112 @@ using DwgConverterLib;
 using System.Drawing;
 namespace AbMachModel
 {
+    public class XSectionProfile
+    {
+        double[] profile;
+        double _xwidth;
+        public double MeshSize { get; private set; }       
+        public Vector2 Origin { get; private set; }
+        public int XLength { get; private set; }
+
+        private int GetIndex(double xLocation)
+        {
+            int xi =(int)Math.Round((xLocation - Origin.X) / MeshSize);
+            int i = Math.Min(Math.Max(xi, 0), XLength - 1);
+            return i;
+        }
+        public Vector2 GetNormal(double xLocation)
+        {
+
+            int i1 = GetIndex(xLocation);
+            int i0 = GetIndex(xLocation - MeshSize);
+            int i2 = GetIndex(xLocation + MeshSize);
+            double m01 = (profile[i1] - profile[i0]) / MeshSize;
+            double m12 = (profile[i2] - profile[i1]) / MeshSize;
+            double m = (m01 + m12) / 2.0;
+            double angle = Math.Atan(m);
+            double x = Math.Cos(angle);
+            double y = Math.Sin(angle);
+            return new Vector2(x, y);
+        }
+        public void SaveBitmap(string filename)
+        {
+            try
+            {
+                Bitmap bitmap;
+                int yLength = (int)Math.Ceiling(profile.Max() / MeshSize);
+                int xLength = profile.Length;
+                bitmap = new Bitmap(xLength, yLength);
+                Size s = new Size(bitmap.Width, bitmap.Height);
+
+                // Create graphics 
+                for (int i = 0; i < xLength; i++)
+                {
+                    int j = (int)Math.Round(profile[i] / MeshSize);
+                    Color c = Color.FromArgb(10, 10, 10);
+                    bitmap.SetPixel(i, j, c);                   
+                }
+
+                Graphics memoryGraphics = Graphics.FromImage(bitmap);
+                bitmap.Save(filename);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public void SaveCSV(string filename)
+        {
+            try
+            {
+                var pointList = new List<string>();
+                for(int i=0;i<profile.Length;i++)
+                {
+                    double x = i * MeshSize + Origin.X;
+                    string pointStr = x.ToString() + "," + profile[i].ToString();
+                    pointList.Add(pointStr);
+                }
+                FileIO.Save(pointList, filename);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public void SetValue (double value, double location)
+        {
+            profile[GetIndex(location)] = value;
+        }
+        public double GetValue(double location)
+        {
+            return profile[GetIndex(location)];
+        }
+        public XSectionProfile(Vector2 origin, double width, double meshSize)
+        {
+            Origin = origin;
+            MeshSize = meshSize;
+            XLength = (int)Math.Ceiling(width / meshSize);
+            profile = new double[XLength];
+
+        }
+        public XSectionProfile(XSectionProfile startingProfile)
+        {
+            Origin = startingProfile.Origin;
+            XLength = startingProfile.XLength;
+            
+            MeshSize = startingProfile.MeshSize;
+            profile = new double[XLength];
+            for (int i=0;i<profile.Length;i++)
+            {
+                double xLocation = (i * MeshSize) + Origin.X;
+                profile[i] = startingProfile.GetValue(xLocation);
+            }
+        }
+    }
     public class GridIntersect
     {
         public int X { get; set; }
@@ -22,9 +128,10 @@ namespace AbMachModel
         public Ray2 IntersectRay { get; set; }
         public double Mrr { get; set; }
     }
-    public class GridXSection
+    public class XSectionGrid
     {
         public int Index { get; set; }
+        public Vector2 Origin { get; private set; }
         public double AlongLocation { get; private set; }
         byte[,] grid;
         double _meshSize;
@@ -34,24 +141,25 @@ namespace AbMachModel
         int xLength;
         int yLength;
 
-        Point GetIndices(double xModel, double yModel)
+        private Point GetIndices(double xModel, double yModel)
         {
            
-            int i =Math.Max(0,Math.Min(xLength, (int)Math.Round(xModel / _meshSize)));
-            int j =Math.Max(0,Math.Min(yLength, (int)Math.Round(yModel / _meshSize)));
+            int i =Math.Max(0,Math.Min(xLength, (int)Math.Round((xModel-Origin.X) / _meshSize)));
+            int j =Math.Max(0,Math.Min(yLength, (int)Math.Round((yModel-Origin.Y) / _meshSize)));
             return new Point(i, j);
         }
-        void SetValue(int xi, int yj,byte value)
+        private void SetValue(int xi, int yj,byte value)
         {
             int i = Math.Min(Math.Max(xi,0), grid.GetUpperBound(0) - 1);
             int j = Math.Min(Math.Max(yj, 0), grid.GetUpperBound(1) - 1);
             grid[i, j] = value;
 
         }
-        Vector2 GetNormal(Point loc)
+        private Vector2 GetNormal(Point loc)
         {
             int searchR = 8;
             var BoundaryPts = new List<Point>();
+            
 
             int startX = Math.Max(1, loc.X - searchR);
             int startY = Math.Max(1, loc.Y - searchR);
@@ -122,6 +230,46 @@ namespace AbMachModel
             var normal = GetNormal(loc);
             return new GridIntersect { X = loc.X, Y = loc.Y, IntersectRay = ray,Normal = normal };
         }
+        public void SmoothValues()
+        {
+            var intersectArr = new int[xLength];
+            var smoothArr = new int[xLength];
+            for (int xi = 0; xi<xLength;xi++)
+            {
+                int yi  = 0;
+                byte cellValue = _critFillValue;
+                while(yi <yLength && grid[xi, yi] <= _critFillValue)
+                {                    
+                    yi++;
+                }
+                intersectArr[xi] = yi;
+            }
+            smoothArr[0] = intersectArr[0];
+            smoothArr[xLength-1] = intersectArr[xLength-1];
+            for (int xi=1;xi<xLength-1;xi++)
+            {
+                if((intersectArr[xi]>intersectArr[xi-1] && intersectArr[xi]>intersectArr[xi+1])||
+                    (intersectArr[xi] > intersectArr[xi - 1] && intersectArr[xi] > intersectArr[xi + 1]))
+                {
+                    smoothArr[xi] = intersectArr[xi - 1] + intersectArr[xi + 1];
+                }
+                else
+                {
+                    smoothArr[xi] = intersectArr[xi];
+                }
+            }
+            for(int xi=0;xi<xLength;xi++)
+            {
+                for(int yi=0;yi<=smoothArr[xi];yi++)
+                {
+                    grid[xi, yi] = 0;
+                }
+                for(int yi= smoothArr[xi];yi<yLength;yi++)
+                {
+                    grid[xi, yi] = 255;
+                }
+            }
+        }
         public void SetValuesAt(GridIntersect loc, double width,double height, byte value)
         {           
             int indexW = (int)Math.Round(width / _meshSize);
@@ -176,7 +324,7 @@ namespace AbMachModel
                 var circleCenter = new GridIntersect { X = loc.X, Y = yi };
                 SetRadialValuesAt(circleCenter, radius, value);
             }
-        }
+        }       
         private byte GetValueAt(Point location)
         {
             return grid[location.X, location.Y];
@@ -233,7 +381,7 @@ namespace AbMachModel
                 throw;
             }
         }
-        public GridXSection(double width,double depth, double meshSize,byte startValue, double alongLocation)
+        public XSectionGrid(double width,double depth, double meshSize,byte startValue, double alongLocation)
         {
             xLength = (int)Math.Round(width / meshSize);
             yLength = (int)Math.Round(depth / meshSize);
@@ -250,18 +398,39 @@ namespace AbMachModel
             }
             _meshSize = meshSize;
             AlongLocation = alongLocation;
+            _critFillValue = 0;
+            Origin = new Vector2(0, 0);
         }
-       
+        public XSectionGrid(Vector2 origin, double width, double depth, double meshSize, byte startValue, double alongLocation)
+        {
+            xLength = (int)Math.Round(width / meshSize);
+            yLength = (int)Math.Round(depth / meshSize);
+            halfWidth = width / 2.0;
+            xWidth = width;
+            yHeight = depth;
+            grid = new byte[xLength, yLength];
+            for (int i = 0; i < xLength; i++)
+            {
+                for (int j = 0; j < yLength; j++)
+                {
+                    grid[i, j] = startValue;
+                }
+            }
+            _meshSize = meshSize;
+            AlongLocation = alongLocation;
+            _critFillValue = 0;
+            Origin = origin;
+        }
     }
     public class ChannelModel
     {
         XSecJet _xSecJet;
-        ChannelPath _path;
+        XSecPathList _path;
         RunInfo _runInfo;
         AbMachParameters _abMachParams;
         
 
-        public ChannelModel(XSecJet xSecJet,ChannelPath path,RunInfo runInfo,AbMachParameters abMachParameters)
+        public ChannelModel(XSecJet xSecJet, XSecPathList path,RunInfo runInfo,AbMachParameters abMachParameters)
         {
             _xSecJet = xSecJet;
             _path = path;
@@ -273,13 +442,9 @@ namespace AbMachModel
         {
             try
             {
-                foreach(ChannelXSection cspath in _path)
+                foreach(XSectionPathEntity cspath in _path)
                 {
                    
-                    for(int i=0;i<cspath.Count;i++)
-                    {
-                       
-                    }
                 }
             }
             catch

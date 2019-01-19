@@ -102,6 +102,7 @@
             this.saveDXFProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.save3DSurfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.save3DSTLSurfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dViewImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAxialProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -170,7 +171,8 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.dViewImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -769,6 +771,13 @@
             this.save3DSTLSurfaceToolStripMenuItem.Text = "Save 3D STL Surface";
             this.save3DSTLSurfaceToolStripMenuItem.Click += new System.EventHandler(this.save3DSTLSurfaceToolStripMenuItem_Click);
             // 
+            // dViewImageToolStripMenuItem
+            // 
+            this.dViewImageToolStripMenuItem.Name = "dViewImageToolStripMenuItem";
+            this.dViewImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.dViewImageToolStripMenuItem.Text = "Save 3D View Image";
+            this.dViewImageToolStripMenuItem.Click += new System.EventHandler(this.dViewImageToolStripMenuItem_Click);
+            // 
             // saveAxialProfileToolStripMenuItem
             // 
             this.saveAxialProfileToolStripMenuItem.Name = "saveAxialProfileToolStripMenuItem";
@@ -996,7 +1005,9 @@
             this.toolStripButtonLength,
             this.toolStripButtonSetKnownRadius,
             this.toolStripButtonSelectGrooves,
-            this.toolStripButtonGrooveMidpoint});
+            this.toolStripButtonGrooveMidpoint,
+            this.toolStripButtonRotate,
+            this.toolStripButtonMirror});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1120, 33);
@@ -1486,12 +1497,23 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
-            // dViewImageToolStripMenuItem
+            // toolStripButtonRotate
             // 
-            this.dViewImageToolStripMenuItem.Name = "dViewImageToolStripMenuItem";
-            this.dViewImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.dViewImageToolStripMenuItem.Text = "Save 3D View Image";
-            this.dViewImageToolStripMenuItem.Click += new System.EventHandler(this.dViewImageToolStripMenuItem_Click);
+            this.toolStripButtonRotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonRotate.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRotate.Image")));
+            this.toolStripButtonRotate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonRotate.Name = "toolStripButtonRotate";
+            this.toolStripButtonRotate.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonRotate.Text = "Rotate";
+            // 
+            // toolStripButtonMirror
+            // 
+            this.toolStripButtonMirror.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonMirror.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonMirror.Image")));
+            this.toolStripButtonMirror.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonMirror.Name = "toolStripButtonMirror";
+            this.toolStripButtonMirror.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonMirror.Text = "Mirror";
             // 
             // MainInspectionForm
             // 
@@ -1669,6 +1691,8 @@
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private UserControl1 userControl11;
         private System.Windows.Forms.ToolStripMenuItem dViewImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButtonRotate;
+        private System.Windows.Forms.ToolStripButton toolStripButtonMirror;
     }
 }
 

@@ -7,9 +7,6 @@ using GeometryLib;
 
 namespace DataLib
 {
-    
-  
-    
     public class CylData : List<PointCyl>
     {
         public double NominalMinDiam { get; set; }

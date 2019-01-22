@@ -18,36 +18,65 @@ namespace AbMachModel
     {
         double[] profile;
         double _xwidth;
-        public double MeshSize { get; private set; }       
+        public double MeshSize { get; private set; }
         public Vector2 Origin { get; private set; }
         public int XLength { get; private set; }
 
         private int GetIndex(double xLocation)
         {
-            int xi =(int)Math.Round((xLocation - Origin.X) / MeshSize);
-            int i = Math.Min(Math.Max(xi, 0), XLength - 1);
+            int xi = (int)Math.Round((xLocation - Origin.X) / MeshSize);            
+            return GetIndex(xi);
+        }
+        private int GetIndex(int index)
+        {
+            int i = Math.Min(Math.Max(index, 0), XLength - 1);
             return i;
         }
-        public Vector2 GetNormal(double xLocation)
+        public double GetNormalAngle(double xLocation)
         {
+            int windowHalfW = 5;
+            int i0 = GetIndex(xLocation);
+            double m1 = 0;
+            double y0 = profile[i0];
+            int count = 0;
+            for(int i=i0-windowHalfW;i<i0;i++)
+            {
+                count++;
+                m1 += (y0 - profile[GetIndex(i)])/(MeshSize*(i0-i));
+            }
+            m1 /= count;
+            count = 0;
+            double m2 = 0;
+            for(int i=i0+1;i<i0+windowHalfW;i++)
+            {
+                count++;
+                m2 += (profile[GetIndex(i)] - y0) / (MeshSize * (i - i0));
+            }
+            m2 /= count;
 
-            int i1 = GetIndex(xLocation);
-            int i0 = GetIndex(xLocation - MeshSize);
-            int i2 = GetIndex(xLocation + MeshSize);
-            double m01 = (profile[i1] - profile[i0]) / MeshSize;
-            double m12 = (profile[i2] - profile[i1]) / MeshSize;
-            double m = (m01 + m12) / 2.0;
-            double angle = Math.Atan(m);
-            double x = Math.Cos(angle);
-            double y = Math.Sin(angle);
-            return new Vector2(x, y);
+            double m = (m1 + m2 ) / 2.0;
+            double angle = Math.Atan(m) ;
+            return angle;
+        }
+        double GetMaxValue()
+        {
+            double max = double.MinValue;
+            for (int i = 0; i < profile.Length; i++)
+            {
+                var absVal = Math.Abs(profile[i]);
+                if (absVal > max)
+                {
+                    max = absVal;
+                }
+            }
+            return max;
         }
         public void SaveBitmap(string filename)
         {
             try
             {
                 Bitmap bitmap;
-                int yLength = (int)Math.Ceiling(profile.Max() / MeshSize);
+                int yLength = (int)Math.Ceiling(GetMaxValue() / MeshSize);
                 int xLength = profile.Length;
                 bitmap = new Bitmap(xLength, yLength);
                 Size s = new Size(bitmap.Width, bitmap.Height);
@@ -55,9 +84,13 @@ namespace AbMachModel
                 // Create graphics 
                 for (int i = 0; i < xLength; i++)
                 {
-                    int j = (int)Math.Round(profile[i] / MeshSize);
+                    int j = (int)Math.Floor(profile[i] / MeshSize);
+                    if (j >= yLength)
+                    {
+                        j = yLength - 1;
+                    }
                     Color c = Color.FromArgb(10, 10, 10);
-                    bitmap.SetPixel(i, j, c);                   
+                    bitmap.SetPixel(i, j, c);
                 }
 
                 Graphics memoryGraphics = Graphics.FromImage(bitmap);
@@ -70,6 +103,48 @@ namespace AbMachModel
                 throw;
             }
         }
+        public List<Vector2> ParseFile(string scanFilename, double minYValue, double maxYValue)
+        {
+            var stringArr = FileIOLib.CSVFileParser.ParseFile(scanFilename);
+            var vectorList = new List<Vector2>();
+            for (int i = 0; i < stringArr.GetLength(0); i++)
+            {
+                double x = 0;
+                double y = maxYValue * 2;
+                if (double.TryParse(stringArr[i, 0], out x) && double.TryParse(stringArr[i, 1], out y))
+                {
+                    if (y >= minYValue && y <= maxYValue)
+                    {
+                        var v = new Vector2(x, y);
+                        vectorList.Add(v);
+                    }
+                }
+
+            }
+            return vectorList;
+        }
+        //public List<Vector2> TranslateScan(List<Vector2> scan, Vector2 translation)
+        //{
+
+        //}
+        //public List<Vector2> MirrorScan(List<Vector2> scan, Vector2 mirrorLine)
+        //{
+
+        //}
+
+        //public List<double> GetErrorProfile(List<Vector2> scan, List<Vector2> scan2)
+        //{
+        //    double error = 0;
+        //    var vectorList = ParseFile(targetCsvProfile,minY,maxY);
+            
+           
+        //    for(int j= 0;j<XLength;j++)
+        //    {
+        //        double xprof = Origin.X + (j * MeshSize);
+
+        //    }
+        //    return error;
+        //}
         public void SaveCSV(string filename)
         {
             try
@@ -78,7 +153,7 @@ namespace AbMachModel
                 for(int i=0;i<profile.Length;i++)
                 {
                     double x = i * MeshSize + Origin.X;
-                    string pointStr = x.ToString() + "," + profile[i].ToString();
+                    string pointStr = x.ToString() + "," + (-1.0*profile[i]).ToString();
                     pointList.Add(pointStr);
                 }
                 FileIO.Save(pointList, filename);
@@ -87,6 +162,55 @@ namespace AbMachModel
             {
 
                 throw;
+            }
+
+        }
+        public void Smooth(double rollingAveWidth)
+        {
+            int aveWindow = (int)Math.Round(rollingAveWidth / MeshSize);
+            double[] smoothProfile = new double[XLength];
+            smoothProfile[0] = profile[0];
+            smoothProfile[XLength - 1] = profile[XLength - 1];
+
+            for (int i = 0; i < profile.Length - aveWindow-1; i+=aveWindow)
+            {
+                double sum = 0;
+                for(int j= i;j<i+ aveWindow;j++)
+                {
+                    sum += profile[j];
+                }
+                sum /= aveWindow;
+                for (int j = i; j < i + aveWindow; j++)
+                {
+                    smoothProfile[j] =sum;
+                }
+            }
+            for (int i = 1; i < profile.Length - 1; i++)
+            {
+                profile[i] = smoothProfile[i];
+            }
+
+        }
+        public void Smooth()
+        {
+            double[] smoothProfile = new double[XLength];
+            smoothProfile[0] = profile[0];
+            smoothProfile[XLength-1] = profile[XLength-1];
+
+            for (int i=1;i<profile.Length-1;i++)
+            {
+                if(((profile[i]>profile[i-1])&&(profile[i]>profile[i+1]))|| ((profile[i] > profile[i - 1]) && (profile[i] > profile[i + 1])))
+                {
+                    smoothProfile[i] = (profile[i - 1] + profile[i + 1]) / 2.0;
+                }
+                else
+                {
+                    smoothProfile[i] = profile[i];
+                }
+            }
+            for (int i = 1; i < profile.Length - 1; i++)
+            {
+                profile[i] = smoothProfile[i];
             }
 
         }

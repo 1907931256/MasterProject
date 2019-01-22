@@ -13,122 +13,151 @@ namespace GridTest
     {
         static void Main(string[] args)
         {
-            double width = .4;
-            double depth = .25;
-            double meshSize = .0001;
-            byte startValue = 255;
-            double alongLocation = 0.0;
-            Console.WriteLine("building grid");
-            var gridOrigin = new Vector2(-.2, 0);
-            var grid = new XSectionGrid(gridOrigin,width, depth, meshSize, startValue, alongLocation);
-            var profile = new XSectionProfile(gridOrigin, width, meshSize);
-
-            var jetRayList = new List<Ray2>();
-            double jetCenterX = width/2.0;
-            double jetR = .022;
-            int eqIndex = 1;
-            double nominalFeedrate = 40;
-            var jet = new XSecJet(eqIndex, jetR * 2, meshSize);
-            string pathCsvFilename = "path155mm_test.csv";
-            //build path from path entities 
-
-            //path is list of path entities 
-            //jet ray list is list of jet rays 
-            var pathList = new XSecPathList(pathCsvFilename, 1);
-            int pathCount = pathList.Count;
-            double baseMrr = .005;
-            int jetW = (int)(Math.Ceiling(jetR * 2 / meshSize));
-            Ray2[,] jetArr = new Ray2[pathCount, jetW];
-            //build jet rays from path list
-            for (int pathIndex = 0; pathIndex < pathCount; pathIndex++)
+            try
             {
+
+                ModelRunType modelRunType = ModelRunType.NewMRR;
+                var gridOrigin = new Vector2(-.1, 0);
+                double width = .2;
+                double depth = .25;
+                double meshSize = .0001;
+                byte startValue = 255;
+                double alongLocation = 0.0;
+                double jetCenterX = width / 2.0;
+                double jetR = .041;
+                int eqIndex = 9;
+                double nominalFeedrate = 40;
+                double baseMrr = .00709;
+                double averagingWindow = .0005;
+                double critAngle = Math.PI * 75.0 / 180.0;
+                double angExpEffect = .5;
+                double inspectionLoc = 0;
+                double targetDepth = .055;
+                int runCount = 16;
+                Console.WriteLine("building grid");
+                
+                var grid = new XSectionGrid(gridOrigin,width, depth, meshSize, startValue, alongLocation);
+                var profile = new XSectionProfile(gridOrigin, width, meshSize);
+                var tempProfile = new XSectionProfile(gridOrigin, width, meshSize);
+                var jetRayList = new List<Ray2>();
+
+
+
+                var jet = new XSecJet(eqIndex, jetR * 2, meshSize);
+                string pathCsvFilename = "singlepath-profile-toolpath.csv";
+                //build path from path entities 
+
+                //path is list of path entities 
+                //jet ray list is list of jet rays 
+                var pathList = new XSecPathList(pathCsvFilename, 1);
+                int pathCount = pathList.Count;
                
-                double endX = pathList[pathIndex].CrossLoc + jetR;                
-                for(int jetLocIndex =0;jetLocIndex<jetW;jetLocIndex++)
-                {
-                    double x = (pathList[pathIndex].CrossLoc - jetR) + (meshSize * jetLocIndex);
-                    var origin = new Vector2(x, 0);
-                    double angleDeg = 90;
-                    double angRad = Math.PI * (angleDeg / 180.0);
-                    var direction = new Vector2(Math.Cos(angRad), Math.Sin(angRad));
-                    double mrr = baseMrr * jet.GetMrr(x - pathList[pathIndex].CrossLoc)* nominalFeedrate/ pathList[pathIndex].Feedrate;
-                    //if(mrr>0)
-                    //{
-                        var jetRay = new Ray2(origin, direction, mrr);
-                        //jetRayList.Add(jetRay);
-                        
-                   // }
-                    
-                    
+                int jetW = (int)(Math.Ceiling(jetR * 2 / meshSize));
+                Ray2[,] jetArr = new Ray2[pathCount, jetW];
+                //build jet rays from path list
+                for (int pathIndex = 0; pathIndex < pathCount; pathIndex++)
+                {               
+                    double endX = pathList[pathIndex].CrossLoc + jetR;                
+                    for(int jetLocIndex =0;jetLocIndex<jetW;jetLocIndex++)
+                    {
+                        double x = (pathList[pathIndex].CrossLoc - jetR) + (meshSize * jetLocIndex);
+                        var origin = new Vector2(x, 0);
+                        double angleDeg = 90;
+                        double angRad = Math.PI * (angleDeg / 180.0);
+                        var direction = new Vector2(Math.Cos(angRad), Math.Sin(angRad));
+                        double mrr =  jet.GetMrr(x - pathList[pathIndex].CrossLoc)* nominalFeedrate/ pathList[pathIndex].Feedrate;                        
+                        var jetRay = new Ray2(origin, direction, mrr);                       
+                        jetArr[pathIndex, jetLocIndex] = jetRay; 
+                    }
                 }
-            }
             
 
-            var intersectList = new List<GridIntersect>();
-            int runCount =5;
-            Console.WriteLine("running model");
-           
-            var angleEffectList = new List<string>();
-            var normalsList = new List<string>();
-            double particleDiam = .002;
-
-            for (int i = 0; i < runCount; i++)
-            {
-                Console.WriteLine("run " + i.ToString());
-                intersectList = new List<GridIntersect>();
-                for(int locIndex=0; locIndex < jetArr.GetLength(0); locIndex++)
-                {
-                    for(int jet)
-                }
-                //foreach (Ray2 ray in jetRayList)
-                //{
-                //    if(ray.Length>0)
-                //    {
-                //        intersectList.Add(grid.GetXYIntersectOf(ray));
-                //    }
-                    
-                //}
-
-                double critAngle = Math.PI * 70.0 / 180.0;
+                var intersectList = new List<GridIntersect>();
                 
 
-                foreach (GridIntersect intersect in intersectList)
-                {
-                    double angleEffect = 1;//AngleEffect(intersect.IntersectRay, intersect.Normal, critAngle);
-                    if(i == runCount-1)
+                Console.WriteLine("running model");
+           
+                var angleEffectList = new List<string>();
+                var normalsList = new List<string>();
+
+                double[] inspectionDepthArr = new double[runCount];
+                
+                for (int i = 0; i < runCount; i++)
+                {                   
+                    intersectList = new List<GridIntersect>();
+                    for(int pathIndex = 0; pathIndex < jetArr.GetLength(0); pathIndex++)
                     {
-                        angleEffectList.Add(intersect.IntersectRay.Origin.X + "," + angleEffect.ToString());                       
-                        normalsList.Add(intersect.IntersectRay.Origin.X + "," + intersect.Normal.X.ToString() + "," + intersect.Normal.Y.ToString());
+                        for(int jetLocIndex = 0; jetLocIndex < jetArr.GetLength(1); jetLocIndex++)
+                        {
+                            var jetRay = jetArr[pathIndex, jetLocIndex];                        
+                            var profileNormal = profile.GetNormalAngle(jetRay.Origin.X);
+                            var angleEffect = AngleEffect(jetRay, profileNormal, critAngle,angExpEffect);
+                            double mrr = baseMrr * jetRay.Length * angleEffect;
+                            double currentDepth = profile.GetValue(jetRay.Origin.X);                                                        
+                            double newDepth = currentDepth + mrr;
+                            tempProfile.SetValue(newDepth, jetRay.Origin.X);
+                        }
+                        tempProfile.Smooth(averagingWindow);
+                        profile = new XSectionProfile(tempProfile);                        
                     }
-                    double mrr = baseMrr * intersect.IntersectRay.Length * angleEffect;
-                    if (mrr > 0)
+                    double inspectionDepth = profile.GetValue(inspectionLoc);
+                    Console.WriteLine("Run: " + i.ToString() + " Depth: " + inspectionDepth.ToString());
+                    double targetDepthAtRun = targetDepth * (i + 1)/runCount;
+                    Console.WriteLine("targetDepthAtRun: " + targetDepthAtRun.ToString());
+                    double mrrAdjustFactor =  targetDepthAtRun/inspectionDepth ;
+                    Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());                   
+                    if(modelRunType ==ModelRunType.NewMRR)
                     {
-                       grid.SetRadialValuesAt(intersect, particleDiam, mrr, 0);
-                       // grid.SetValuesAt(intersect,particleDiam, mrr, 0);
+                        baseMrr *= mrrAdjustFactor;
+                        Console.WriteLine("new Mrr: " + baseMrr.ToString());
                     }
+                    Console.WriteLine("");
+
+                    if (i == runCount - 1)
+                    {
+                        for(int profIndex=0;profIndex<profile.XLength;profIndex++)
+                        {
+                            double x = profIndex * profile.MeshSize + profile.Origin.X;
+                            var n = profile.GetNormalAngle(x);
+                            normalsList.Add(n.ToString());
+
+                        }
+                        
+                    }               
                 }
-                grid.SmoothValues();
+                
+                FileIOLib.FileIO.Save(normalsList, "normalList.csv");
+                Console.WriteLine("saving grid");
+                profile.SaveBitmap("testgrid.bmp");
+                string csvFilename = "testprofile-" + System.DateTime.Now.ToFileTimeUtc().ToString()+".csv";
+                profile.SaveCSV(csvFilename);
+                Console.WriteLine("program complete");
+                Console.ReadKey();
+               
             }
+            catch (Exception ex)
+            {
 
-            FileIOLib.FileIO.Save(angleEffectList, "angleEffect.csv");
-            FileIOLib.FileIO.Save(normalsList, "normalList.csv");
-
-            Console.WriteLine("saving grid");
-            grid.SaveBitmap("testgrid.bmp");
+                Console.WriteLine(ex.Message + ":" + ex.StackTrace);
+                Console.ReadKey();
+            }
         }
         static double piOver2 = Math.PI / 2.0;
-        static double piOver4 = Math.PI / 4.0;
-        static double AngleEffect(Ray2 jet, Vector2 normal,double critAngle)
+        
+        static double AngleEffect(Ray2 jet, double normalAngle,double critAngle,double expF)
         {
-            double angle = Math.Abs(normal.AngleTo(jet.Direction));
-            angle %= piOver4;
-            if( angle>piOver4)
-            {
-                angle -= piOver2;
-            }
-            double angleCenter =Math.Abs(angle) - critAngle;
+            
+            double a =Math.Abs(Math.Abs(normalAngle) - critAngle);
+            double angleEffect = 1;
 
-            double angleEffect = Math.Exp(-1 * Math.Pow(angleCenter, 2.0));
+            //double angleEffect = Math.Abs(Math.Pow(Math.Cos(angleCenter),2));
+            //angleEffect = Math.Exp(-1.0 * expF* Math.Pow(a, 2.0));
+            angleEffect = .32 - .0729 * a + 1.826 * Math.Pow(a, 2.0)-4.9745 * Math.Pow(a, 3.0) + 5.8245 * Math.Pow(a, 4.0) -2.2085 * Math.Pow(a, 5.0);
+            if (angleEffect < 0)
+            {
+                angleEffect = 0;
+            }
+               
             return angleEffect;
         }
     }

@@ -56,4 +56,15 @@
       <value index="6">71.405</value>
       <value index="7">1</value>
   </coeffs>
+  <!--'45 deg rifling nozzle channel-->
+  <coeffs type="9">
+    <value index="0">.9785</value>
+    <value index="1">1.4477</value>
+    <value index="2">-19.107</value>
+    <value index="3">90.564</value>
+    <value index="4">-194.27</value>
+    <value index="5">180.38</value>
+    <value index="6">-59.987</value>
+    <value index="7">1.481</value>
+  </coeffs>
 </MRR>

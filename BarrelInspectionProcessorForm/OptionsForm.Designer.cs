@@ -53,6 +53,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.buttonBrowseBrchRaster = new System.Windows.Forms.Button();
+            this.tabPageDataOptions = new System.Windows.Forms.TabPage();
             this.tabControlOutputOptions.SuspendLayout();
             this.tabPageSaveOpts.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -142,6 +143,7 @@
             // 
             this.tabControlOutputOptions.Controls.Add(this.tabPageSaveOpts);
             this.tabControlOutputOptions.Controls.Add(this.tabPageFileLocs);
+            this.tabControlOutputOptions.Controls.Add(this.tabPageDataOptions);
             this.tabControlOutputOptions.Location = new System.Drawing.Point(9, 10);
             this.tabControlOutputOptions.Margin = new System.Windows.Forms.Padding(2);
             this.tabControlOutputOptions.Name = "tabControlOutputOptions";
@@ -340,6 +342,15 @@
             this.buttonBrowseBrchRaster.UseVisualStyleBackColor = true;
             this.buttonBrowseBrchRaster.Click += new System.EventHandler(this.buttonBrowseRaster_Click);
             // 
+            // tabPageDataOptions
+            // 
+            this.tabPageDataOptions.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDataOptions.Name = "tabPageDataOptions";
+            this.tabPageDataOptions.Size = new System.Drawing.Size(425, 283);
+            this.tabPageDataOptions.TabIndex = 2;
+            this.tabPageDataOptions.Text = "Data Options";
+            this.tabPageDataOptions.UseVisualStyleBackColor = true;
+            // 
             // OptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -391,5 +402,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton radioButtonFlat;
         private System.Windows.Forms.RadioButton radioButtonRolled;
+        private System.Windows.Forms.TabPage tabPageDataOptions;
     }
 }

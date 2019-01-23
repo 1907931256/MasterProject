@@ -135,6 +135,8 @@
             this.toolStripButtonSetKnownRadius = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonSelectGrooves = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonGrooveMidpoint = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
             this.tabControlParams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.labelCalStatus = new System.Windows.Forms.Label();
@@ -171,8 +173,9 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonCenterline = new System.Windows.Forms.ToolStripButton();
+            this.comboBoxProbeType = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -278,7 +281,8 @@
             "Axial",
             "Groove",
             "Land",
-            "Calibration"});
+            "Calibration",
+            "Line Scan"});
             this.comboBoxMethod.Location = new System.Drawing.Point(145, 37);
             this.comboBoxMethod.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMethod.Name = "comboBoxMethod";
@@ -1007,7 +1011,8 @@
             this.toolStripButtonSelectGrooves,
             this.toolStripButtonGrooveMidpoint,
             this.toolStripButtonRotate,
-            this.toolStripButtonMirror});
+            this.toolStripButtonMirror,
+            this.toolStripButtonCenterline});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1120, 33);
@@ -1081,8 +1086,28 @@
             this.toolStripButtonGrooveMidpoint.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonGrooveMidpoint.Name = "toolStripButtonGrooveMidpoint";
             this.toolStripButtonGrooveMidpoint.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonGrooveMidpoint.Text = "Select Groove Midpoint";
+            this.toolStripButtonGrooveMidpoint.Text = "Select Groove Vertical Midpoint";
             this.toolStripButtonGrooveMidpoint.Click += new System.EventHandler(this.toolStripButtonGrooveMidpoint_Click);
+            // 
+            // toolStripButtonRotate
+            // 
+            this.toolStripButtonRotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonRotate.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRotate.Image")));
+            this.toolStripButtonRotate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonRotate.Name = "toolStripButtonRotate";
+            this.toolStripButtonRotate.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonRotate.Text = "Rotate";
+            this.toolStripButtonRotate.Click += new System.EventHandler(this.toolStripButtonRotate_Click);
+            // 
+            // toolStripButtonMirror
+            // 
+            this.toolStripButtonMirror.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonMirror.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonMirror.Image")));
+            this.toolStripButtonMirror.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonMirror.Name = "toolStripButtonMirror";
+            this.toolStripButtonMirror.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonMirror.Text = "Mirror";
+            this.toolStripButtonMirror.Click += new System.EventHandler(this.toolStripButtonMirror_Click);
             // 
             // tabControlParams
             // 
@@ -1265,6 +1290,8 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label11);
+            this.tabPage2.Controls.Add(this.comboBoxProbeType);
             this.tabPage2.Controls.Add(this.textBoxGrooveList);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.textBoxEndPosA);
@@ -1300,7 +1327,7 @@
             // 
             // textBoxGrooveList
             // 
-            this.textBoxGrooveList.Location = new System.Drawing.Point(133, 288);
+            this.textBoxGrooveList.Location = new System.Drawing.Point(132, 275);
             this.textBoxGrooveList.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxGrooveList.Name = "textBoxGrooveList";
             this.textBoxGrooveList.Size = new System.Drawing.Size(82, 20);
@@ -1309,7 +1336,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 290);
+            this.label6.Location = new System.Drawing.Point(16, 278);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(111, 13);
@@ -1497,23 +1524,36 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
-            // toolStripButtonRotate
+            // toolStripButtonCenterline
             // 
-            this.toolStripButtonRotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonRotate.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRotate.Image")));
-            this.toolStripButtonRotate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonRotate.Name = "toolStripButtonRotate";
-            this.toolStripButtonRotate.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonRotate.Text = "Rotate";
+            this.toolStripButtonCenterline.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonCenterline.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCenterline.Image")));
+            this.toolStripButtonCenterline.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonCenterline.Name = "toolStripButtonCenterline";
+            this.toolStripButtonCenterline.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonCenterline.Text = "Select Horizontal Centerline";
             // 
-            // toolStripButtonMirror
+            // comboBoxProbeType
             // 
-            this.toolStripButtonMirror.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonMirror.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonMirror.Image")));
-            this.toolStripButtonMirror.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonMirror.Name = "toolStripButtonMirror";
-            this.toolStripButtonMirror.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonMirror.Text = "Mirror";
+            this.comboBoxProbeType.FormattingEnabled = true;
+            this.comboBoxProbeType.Items.AddRange(new object[] {
+            "S.I.",
+            "Line Scan",
+            "Triangulation"});
+            this.comboBoxProbeType.Location = new System.Drawing.Point(99, 300);
+            this.comboBoxProbeType.Name = "comboBoxProbeType";
+            this.comboBoxProbeType.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxProbeType.TabIndex = 10;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(32, 303);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(62, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Probe Type";
             // 
             // MainInspectionForm
             // 
@@ -1693,6 +1733,9 @@
         private System.Windows.Forms.ToolStripMenuItem dViewImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButtonRotate;
         private System.Windows.Forms.ToolStripButton toolStripButtonMirror;
+        private System.Windows.Forms.ToolStripButton toolStripButtonCenterline;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox comboBoxProbeType;
     }
 }
 

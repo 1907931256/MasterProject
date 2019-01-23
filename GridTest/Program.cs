@@ -12,6 +12,7 @@ namespace GridTest
     class Program
     {
         static void Main(string[] args)
+
         {
             try
             {
@@ -20,20 +21,22 @@ namespace GridTest
                 var gridOrigin = new Vector2(-.1, 0);
                 double width = .2;
                 double depth = .25;
-                double meshSize = .0001;
+                double meshSize = .0005;
                 byte startValue = 255;
                 double alongLocation = 0.0;
                 double jetCenterX = width / 2.0;
                 double jetR = .041;
-                int eqIndex = 9;
+                int eqIndex = 1;
                 double nominalFeedrate = 40;
                 double baseMrr = .00709;
                 double averagingWindow = .0005;
                 double critAngle = Math.PI * 75.0 / 180.0;
                 double angExpEffect = .5;
                 double inspectionLoc = 0;
-                double targetDepth = .055;
-                int runCount = 16;
+                double targetDepth = .05;
+                int runCount = 10;
+                int iterCount = 1;
+
                 Console.WriteLine("building grid");
                 
                 var grid = new XSectionGrid(gridOrigin,width, depth, meshSize, startValue, alongLocation);
@@ -45,15 +48,15 @@ namespace GridTest
 
                 var jet = new XSecJet(eqIndex, jetR * 2, meshSize);
                 string pathCsvFilename = "singlepath-profile-toolpath.csv";
-                //build path from path entities 
 
+                //build path from path entities 
                 //path is list of path entities 
                 //jet ray list is list of jet rays 
                 var pathList = new XSecPathList(pathCsvFilename, 1);
-                int pathCount = pathList.Count;
-               
+                int pathCount = pathList.Count;               
                 int jetW = (int)(Math.Ceiling(jetR * 2 / meshSize));
                 Ray2[,] jetArr = new Ray2[pathCount, jetW];
+
                 //build jet rays from path list
                 for (int pathIndex = 0; pathIndex < pathCount; pathIndex++)
                 {               
@@ -70,66 +73,69 @@ namespace GridTest
                         jetArr[pathIndex, jetLocIndex] = jetRay; 
                     }
                 }
-            
 
                 var intersectList = new List<GridIntersect>();
-                
-
-                Console.WriteLine("running model");
-           
+                Console.WriteLine("running model");           
                 var angleEffectList = new List<string>();
                 var normalsList = new List<string>();
-
                 double[] inspectionDepthArr = new double[runCount];
-                
-                for (int i = 0; i < runCount; i++)
-                {                   
-                    intersectList = new List<GridIntersect>();
-                    for(int pathIndex = 0; pathIndex < jetArr.GetLength(0); pathIndex++)
+                for (int iter = 0; iter < iterCount; iter++)
+                {
+                    for (int i = 0; i < runCount; i++)
                     {
-                        for(int jetLocIndex = 0; jetLocIndex < jetArr.GetLength(1); jetLocIndex++)
+                        intersectList = new List<GridIntersect>();
+                        for (int pathIndex = 0; pathIndex < jetArr.GetLength(0); pathIndex++)
                         {
-                            var jetRay = jetArr[pathIndex, jetLocIndex];                        
-                            var profileNormal = profile.GetNormalAngle(jetRay.Origin.X);
-                            var angleEffect = AngleEffect(jetRay, profileNormal, critAngle,angExpEffect);
-                            double mrr = baseMrr * jetRay.Length * angleEffect;
-                            double currentDepth = profile.GetValue(jetRay.Origin.X);                                                        
-                            double newDepth = currentDepth + mrr;
-                            tempProfile.SetValue(newDepth, jetRay.Origin.X);
+                            for (int jetLocIndex = 0; jetLocIndex < jetArr.GetLength(1); jetLocIndex++)
+                            {
+                                var jetRay = jetArr[pathIndex, jetLocIndex];
+                                var profileNormal = profile.GetNormalAngle(jetRay.Origin.X);
+                                var angleEffect = AngleEffect(jetRay, profileNormal, critAngle, angExpEffect);
+                                if (i == runCount - 1)
+                                {
+                                    angleEffectList.Add(jetRay.Origin.X.ToString() + "," + jetLocIndex.ToString() + "," + angleEffect.ToString());
+                                }
+                                double mrr = baseMrr * jetRay.Length * angleEffect;
+                                double currentDepth = profile.GetValue(jetRay.Origin.X);
+                                double newDepth = currentDepth + mrr;
+                                tempProfile.SetValue(newDepth, jetRay.Origin.X);
+                            }
+                            tempProfile.Smooth(averagingWindow);
+                            profile = new XSectionProfile(tempProfile);
                         }
-                        tempProfile.Smooth(averagingWindow);
-                        profile = new XSectionProfile(tempProfile);                        
-                    }
-                    double inspectionDepth = profile.GetValue(inspectionLoc);
-                    Console.WriteLine("Run: " + i.ToString() + " Depth: " + inspectionDepth.ToString());
-                    double targetDepthAtRun = targetDepth * (i + 1)/runCount;
-                    Console.WriteLine("targetDepthAtRun: " + targetDepthAtRun.ToString());
-                    double mrrAdjustFactor =  targetDepthAtRun/inspectionDepth ;
-                    Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());                   
-                    if(modelRunType ==ModelRunType.NewMRR)
-                    {
-                        baseMrr *= mrrAdjustFactor;
-                        Console.WriteLine("new Mrr: " + baseMrr.ToString());
-                    }
-                    Console.WriteLine("");
-
-                    if (i == runCount - 1)
-                    {
-                        for(int profIndex=0;profIndex<profile.XLength;profIndex++)
+                        double inspectionDepth = profile.GetValue(inspectionLoc);
+                        Console.WriteLine("Run: " + i.ToString() + " Depth: " + inspectionDepth.ToString());
+                        double targetDepthAtRun = targetDepth * (i + 1) / runCount;
+                        Console.WriteLine("targetDepthAtRun: " + targetDepthAtRun.ToString());
+                        double mrrAdjustFactor = targetDepthAtRun / inspectionDepth;
+                        Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());
+                        if (modelRunType == ModelRunType.NewMRR)
                         {
-                            double x = profIndex * profile.MeshSize + profile.Origin.X;
-                            var n = profile.GetNormalAngle(x);
-                            normalsList.Add(n.ToString());
-
+                            baseMrr *= mrrAdjustFactor;
+                            Console.WriteLine("new Mrr: " + baseMrr.ToString());
                         }
-                        
-                    }               
+                        Console.WriteLine("");
+
+                        if (i == runCount - 1)
+                        {
+                            for (int profIndex = 0; profIndex < profile.XLength; profIndex++)
+                            {
+                                double x = profIndex * profile.MeshSize + profile.Origin.X;
+                                var n = profile.GetNormalAngle(x);
+                                normalsList.Add(x.ToString()+","+n.ToString());
+
+                            }
+                        }
+
+                    }
                 }
-                
-                FileIOLib.FileIO.Save(normalsList, "normalList.csv");
-                Console.WriteLine("saving grid");
-                profile.SaveBitmap("testgrid.bmp");
-                string csvFilename = "testprofile-" + System.DateTime.Now.ToFileTimeUtc().ToString()+".csv";
+
+                Console.WriteLine("saving model");
+                string timeCode = System.DateTime.Now.ToFileTimeUtc().ToString();
+                FileIOLib.FileIO.Save(normalsList, "normalList"+timeCode +".csv");
+                FileIOLib.FileIO.Save(angleEffectList, "angleEffectList"+timeCode +".csv");
+                profile.SaveBitmap("testgrid"+timeCode +".bmp");
+                string csvFilename = "testprofile-" + timeCode+".csv";
                 profile.SaveCSV(csvFilename);
                 Console.WriteLine("program complete");
                 Console.ReadKey();
@@ -152,7 +158,8 @@ namespace GridTest
 
             //double angleEffect = Math.Abs(Math.Pow(Math.Cos(angleCenter),2));
             //angleEffect = Math.Exp(-1.0 * expF* Math.Pow(a, 2.0));
-            angleEffect = .32 - .0729 * a + 1.826 * Math.Pow(a, 2.0)-4.9745 * Math.Pow(a, 3.0) + 5.8245 * Math.Pow(a, 4.0) -2.2085 * Math.Pow(a, 5.0);
+            angleEffect = .32 - .0729 * a + 1.826 * Math.Pow(a, 2.0)-4.9745 * Math.Pow(a, 3.0) + 
+                5.8245 * Math.Pow(a, 4.0) -2.2085 * Math.Pow(a, 5.0);
             if (angleEffect < 0)
             {
                 angleEffect = 0;

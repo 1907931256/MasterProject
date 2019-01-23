@@ -3114,5 +3114,15 @@ namespace BarrelInspectionProcessorForm
         {
             Save3DScreenView();
         }
+
+        private void toolStripButtonRotate_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripButtonMirror_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

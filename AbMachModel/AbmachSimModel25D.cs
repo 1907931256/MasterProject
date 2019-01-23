@@ -132,7 +132,7 @@ namespace AbMachModel
 
         //}
 
-        //public List<double> GetErrorProfile(List<Vector2> scan, List<Vector2> scan2)
+        //public List<double> GetDifferenceProfile(List<Vector2> scan1, List<Vector2> scan2)
         //{
         //    double error = 0;
         //    var vectorList = ParseFile(targetCsvProfile,minY,maxY);
@@ -229,6 +229,29 @@ namespace AbMachModel
             XLength = (int)Math.Ceiling(width / meshSize);
             profile = new double[XLength];
 
+        }
+        public XSectionProfile(string XsectionCsvFile)
+        {
+            string[,] pointArr = CSVFileParser.ParseFile(XsectionCsvFile);
+            double x = 0;
+            double y = 0;
+            double.TryParse(pointArr[0, 0], out x);
+            double.TryParse(pointArr[0, 1], out y);
+            Origin = new Vector2(x, y);
+            var pointList = new List<double>();
+            double x1 = 0;
+            double.TryParse(pointArr[1, 0], out x1);
+            MeshSize = Math.Abs(x1 - x);
+
+            for (int i=0;i<pointArr.GetLength(0);i++)
+            {               
+                if(double.TryParse(pointArr[i, 1], out y))
+                {
+                    pointList.Add(y);
+                }                
+            }
+            profile = pointList.ToArray();
+            XLength = profile.Length;
         }
         public XSectionProfile(XSectionProfile startingProfile)
         {

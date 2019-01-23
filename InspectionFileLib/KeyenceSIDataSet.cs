@@ -10,16 +10,13 @@ namespace InspectionLib
 {
     public class RawDistanceProbePt
     {
-        public  double Distance { get { return _dist; } }        
-        
-        private  double _dist;        
-        
-
+        public  double Distance { get ;private  set; }     
         public RawDistanceProbePt(double value)
         {           
-            _dist = value;
+            Distance=value;
         }
     }
+
     public class RawDataSet
     {
         public string Filename { get { return _fileName; } }
@@ -36,6 +33,27 @@ namespace InspectionLib
                 return _probeCount;
             }
         }
+
+        
+        public MeasurementUnit Units
+        {
+            get
+            {
+                return _measurementUnit;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// holds raw sensor data 
+    /// </summary>
+    public class KeyenceSISensorDataSet:RawDataSet
+    {
+        
+        int _headerRowCount;
+        
+        int _rowCount;
+        int _colCount;
 
         public double[] GetSingleProbeData()
         {
@@ -58,27 +76,6 @@ namespace InspectionLib
             return _data;
             
         }
-        public MeasurementUnit Units
-        {
-            get
-            {
-                return _measurementUnit;
-            }
-        }
-    }
-    
-    /// <summary>
-    /// holds raw sensor data 
-    /// </summary>
-    public class KeyenceSISensorDataSet:RawDataSet
-    {
-        
-        int _headerRowCount;
-        
-        int _rowCount;
-        int _colCount;
-
-        
        
         void ScaleData(double scalingFactor)
         {

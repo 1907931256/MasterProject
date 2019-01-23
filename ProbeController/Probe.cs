@@ -9,6 +9,7 @@ namespace ProbeController
     /// <summary>
     /// contains probe properties
     /// </summary>
+    
     public class Probe
     {
         

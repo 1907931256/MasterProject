@@ -6,128 +6,69 @@ using System.Threading;
 using ToolpathLib;
 using CNCLib;
 using ProbeController;
+using DataLib;
 namespace InspectionLib
 {
-    public class RawDistanceProbePt
+   
+    public abstract class RawDataFile<T>:List<T>
     {
-        public  double Distance { get ;private  set; }     
-        public RawDistanceProbePt(double value)
-        {           
-            Distance=value;
+        public string Filename { get; protected set; }
+        public MeasurementUnit InputUnits { get; protected set; }
+        public MeasurementUnit OutputUnits { get; protected set; }
+        public int ProbeCount { get; protected set; }
+        public RawDataFormat DataFormat { get; protected set; }
+        public ScanFormat ScanFormat { get; protected set; }
+        protected int _headerRowCount;
+        protected int _rowCount;
+        protected int _colCount;
+        protected int _firstDataRow;
+        virtual protected void ScaleData()
+        {
+
         }
     }
-
-    public class RawDataSet
+    public class KeyenceLineScanDataSet : RawDataFile<GeometryLib.Vector2>
     {
-        public string Filename { get { return _fileName; } }
-      
-        protected string _fileName;
-        protected MeasurementUnit _measurementUnit;
-        protected int _probeCount;
-        protected double[,] _data;
-
-        public int ProbeCount
+        public GeometryLib.Vector2[] GetData()
         {
-            get
+            return this.ToArray();
+        }
+        void ProcessFile()
+        {
+            var words = FileIOLib.CSVFileParser.ParseFile(Filename);   
+            _rowCount = words.GetLength(0);
+            if (_rowCount == 0 || _colCount == 0 || _headerRowCount >= _rowCount)
             {
-                return _probeCount;
+                throw new Exception("File does not contain data.");
             }
+            this.AddRange(ExtractData(words));
         }
-
-        
-        public MeasurementUnit Units
-        {
-            get
-            {
-                return _measurementUnit;
-            }
-        }
-    }
-    
-    /// <summary>
-    /// holds raw sensor data 
-    /// </summary>
-    public class KeyenceSISensorDataSet:RawDataSet
-    {
-        
-        int _headerRowCount;
-        
-        int _rowCount;
-        int _colCount;
-
-        public double[] GetSingleProbeData()
-        {
-            if (_probeCount > _data.GetLength(1))
-                _probeCount = _data.GetLength(1);
-            if (_probeCount <= 0)
-                _probeCount = 1;
-
-            var result = new double[_data.GetLength(0)];
-            for(int i =0;i<result.Length;i++)
-            {
-                result[i] = _data[i, _probeCount - 1];
-            }
-            return result;  
-        }
-       
-        public double[,] GetAllProbeData()
-        {
-
-            return _data;
-            
-        }
-       
-        void ScaleData(double scalingFactor)
+        List<GeometryLib.Vector2> ExtractData(string[,] words)
         {
             try
             {
-                for (int i = 0; i < _data.GetLength(0); i++)
-                {                    
-                    for (int j=0;j<_data.GetLength(1);j++)
-                    {
-                        _data[i, j]*=scalingFactor;
-                    }
-                }
-            }
-            catch (Exception)
-            {
 
-                throw;
-            }
-        }
-        void ExtractData(string[,] words)
-        {
-            try
-            {
-                          
-                int firstDataRow = 4;
+                var data = new List<GeometryLib.Vector2>();
                 var colList = new List<int>();
-                if (words.GetLength(0)< firstDataRow)
+                if (words.GetLength(0) < _firstDataRow)
                 {
                     throw new Exception("Data rows not found");
                 }
                 int columnCount = words.GetUpperBound(1);
-                if(_probeCount==1 || columnCount>=2)
+                if(columnCount==2)
                 {
-                    colList.Add(2);
-                }
-                if(_probeCount==2 && _colCount>=3)
-                {
-                    colList.Add(2);
-                    colList.Add(3);
-                }
-                for (int i = _headerRowCount; i < _rowCount; i++)
-                {
-                    int j = 0;
-
-                    foreach(int col in colList)
-                    {                        
-                        double result = 0;
-                        double.TryParse(words[i, col], out result);
-                        _data[i - _headerRowCount, j++] = result;                       
+                    for (int i = _headerRowCount; i < _rowCount; i++)
+                    {
+                        double x = 0;
+                        double y = 0;
+                        if (double.TryParse(words[i, 0], out x) && double.TryParse(words[i, 1], out y))
+                        {
+                            data.Add(new GeometryLib.Vector2(x, y));
+                        }
                     }
                 }
-                
+                ScaleData();
+                return data ;
             }
             catch (Exception)
             {
@@ -135,31 +76,131 @@ namespace InspectionLib
             }
 
         }
-        void GetMeasurementUnit(string[,] words)
+        
+        public KeyenceLineScanDataSet(ScanFormat format,MeasurementUnit measurementUnit, MeasurementUnit outputUnit, int probeCount, string CsvFileName)
+        {
+            DataFormat = RawDataFormat.XY;
+            _firstDataRow = 0;
+            ScanFormat = format;
+            _headerRowCount = 0;
+            Filename = CsvFileName;
+            OutputUnits = outputUnit;
+            InputUnits = measurementUnit;
+            ProcessFile();
+        }
+    }
+    /// <summary>
+    /// holds raw sensor data 
+    /// </summary>
+    public class KeyenceSiDataSet: RawDataFile<double>
+    {
+       
+       
+        public double[] GetData()
+        {
+            return this.ToArray();
+        }
+        void ScaleData(double scalingFactor)
+        {
+            try
+            {
+                for (int i = 0; i < this.Count; i++)
+                {
+                    this[i]*=scalingFactor;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        List<double> ExtractDualProbeData(string[,]words)
+        {
+            try
+            {
+                
+                var colList = new List<int>();
+                var pointList = new List<double>();
+                if (words.GetLength(0) < _firstDataRow)
+                {
+                    throw new Exception("Data rows not found");
+                }
+                int columnCount = words.GetUpperBound(1);
+                for (int i = _headerRowCount; i < _rowCount; i++)
+                {
+                    double result1 = 0;
+                    double result2 = 0;
+                    if (double.TryParse(words[i, 2], out result1) && double.TryParse(words[i, 3], out result2))
+                    {
+                        pointList.Add(result1 + result2);
+                    }
+                }
+                return pointList;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        List<double> ExtractSingleProbeData(string[,] words)
+        {
+            try
+            {
+
+                
+                var colList = new List<int>();
+                var pointList = new List<double>();
+                if (words.GetLength(0) < _firstDataRow)
+                {
+                    throw new Exception("Data rows not found");
+                }
+                int columnCount = words.GetUpperBound(1);
+                for (int i = _headerRowCount; i < _rowCount; i++)
+                {
+                    int j = 0;
+
+                    foreach (int col in colList)
+                    {
+                        double result = 0;
+                        if (double.TryParse(words[i, col], out result))
+                        {
+                            pointList.Add(result);
+                        }
+                    }
+                }
+                return pointList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+        MeasurementUnit GetMeasurementUnit(string[,] words)
         {
             try
             {                               
-                var unitList = MeasurementUnitDictionary.MeasurementUnitNames();              
-
-                foreach (string unit in unitList)
+                var unitList = MeasurementUnitDictionary.MeasurementUnitNames();
+                var inputUnit = new MeasurementUnit("micron");
+                foreach (string unitStr in unitList)
                 {
                     for (int i = 0; i < 6 ; i++)
                     {
-                        for (int j = 0; j < _colCount; j++)
+                        for (int j = 0; j < words.GetLength(1); j++)
                         {
                             string upperw = words[i, j].ToUpper();
-                            if (upperw.Contains(unit))
+                            if (upperw.Contains(unitStr))
                             {                               
-                                _measurementUnit = new MeasurementUnit(unit);
+                                inputUnit=  new MeasurementUnit(unitStr);
                                 break;
-                            }
-                            
-                        }
-                       
-                    }
-                   
+                            }                            
+                        }                       
+                    }                   
                 }
-
+                return inputUnit;
             }
             catch (Exception)
             {
@@ -172,28 +213,34 @@ namespace InspectionLib
         {
             try
             {
-                var words = FileIOLib.CSVFileParser.ParseFile(_fileName);
-                _colCount = _probeCount;
+                var words = FileIOLib.CSVFileParser.ParseFile(Filename);             
 
 
                 _rowCount = words.GetLength(0);
+                _colCount = words.GetLength(1);
                 if (_rowCount == 0 || _colCount == 0 || _headerRowCount >= _rowCount)
                 {
                     throw new Exception("File does not contain data.");
                 }
-                _data = new double[_rowCount - _headerRowCount, _probeCount];
+               
 
-                GetMeasurementUnit(words);
+                InputUnits = GetMeasurementUnit(words);
 
-                if (_measurementUnit == null)
+                if (InputUnits == null)
                 {
-                    _measurementUnit = new MeasurementUnit("micron");
+                    InputUnits = new MeasurementUnit("micron");
                 }
-                ExtractData(words);
-                var outputUnit = new MeasurementUnit("inch");
-
-                double scalingFactor = _measurementUnit.ConversionFactor / outputUnit.ConversionFactor;
+                if(ProbeCount ==1)
+                {
+                    this.AddRange(ExtractSingleProbeData(words));
+                }
+                if(ProbeCount == 2)
+                {
+                    this.AddRange(ExtractDualProbeData(words));
+                }
+                double scalingFactor = InputUnits.ConversionFactor / OutputUnits.ConversionFactor;
                 ScaleData(scalingFactor);
+                
             }
             catch (Exception)
             {
@@ -202,14 +249,18 @@ namespace InspectionLib
             }
 
         }
-        
-        public KeyenceSISensorDataSet(int probeCount, string CsvFileName, int headerRowCount)
+       
+        public KeyenceSiDataSet(ScanFormat format,MeasurementUnit outputUnits, int probeCount, string CsvFileName)
         {
             try
-            {                
-                _probeCount = probeCount;
-                _fileName = CsvFileName;
-                _headerRowCount = headerRowCount;
+            {
+                ScanFormat = format;
+                DataFormat = RawDataFormat.RADIAL;              
+                ProbeCount = probeCount;
+                Filename = CsvFileName;
+                _headerRowCount = 0;
+                _firstDataRow = 4;
+                OutputUnits = outputUnits;               
                 ProcessFile();
             }
             catch (Exception)

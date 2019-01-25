@@ -105,7 +105,6 @@
     <Compile Include="InspectionScriptFile.cs" />
     <Compile Include="MachineRasterSpeed.cs" />
     <Compile Include="MachineRasterSpeeds.cs" />
-    <Compile Include="MethodEnum.cs" />
     <Compile Include="ProfileTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KeyenceSIDataSet.cs" />

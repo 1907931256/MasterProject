@@ -21,9 +21,9 @@ namespace InspectionLib
         public PointCyl[] RawLandPoints { get; set; }
         public PointCyl[] CorrectedLandPoints { get; set; }
         public Barrel Barrel { get; set; }
-        public DataFormat DataFormat { get; set; }
+        public ScanFormat DataFormat { get; set; }
         public string Filename { get; set; }
-        public InspectionMethod InspectionMethod { get; set; }
+       
 
         public double GetRVariation(PointCyl[] points)
         {
@@ -49,8 +49,7 @@ namespace InspectionLib
             UncorrectedCylData = new CylData();
             CorrectedSpiralData = new CylGridData();
             UncorrectedSpiralData = new CylGridData();
-            DataFormat = DataFormat.RING;
-            InspectionMethod = InspectionMethod.RING;
+            DataFormat = ScanFormat.RING;            
             Barrel = new Barrel();
             RawLandPoints = new PointCyl[Barrel.DimensionData.GrooveCount];
             CorrectedLandPoints = new PointCyl[Barrel.DimensionData.GrooveCount];

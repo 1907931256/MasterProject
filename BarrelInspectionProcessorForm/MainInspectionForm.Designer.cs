@@ -78,8 +78,8 @@
             this.labelDyMeasured = new System.Windows.Forms.Label();
             this.labelRadiusMeasured = new System.Windows.Forms.Label();
             this.labelZPosition = new System.Windows.Forms.Label();
-            this.labelAngle = new System.Windows.Forms.Label();
-            this.labelRadius = new System.Windows.Forms.Label();
+            this.labelXPosition = new System.Windows.Forms.Label();
+            this.labelYPosition = new System.Windows.Forms.Label();
             this.buttonSetRadius = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.textBoxCurrentRadius = new System.Windows.Forms.TextBox();
@@ -137,6 +137,7 @@
             this.toolStripButtonGrooveMidpoint = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonCenterline = new System.Windows.Forms.ToolStripButton();
             this.tabControlParams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.labelCalStatus = new System.Windows.Forms.Label();
@@ -153,6 +154,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.comboBoxManStep = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label11 = new System.Windows.Forms.Label();
+            this.comboBoxProbeType = new System.Windows.Forms.ComboBox();
             this.textBoxGrooveList = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -173,9 +176,6 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.toolStripButtonCenterline = new System.Windows.Forms.ToolStripButton();
-            this.comboBoxProbeType = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -469,8 +469,8 @@
             this.panel2.Controls.Add(this.labelDyMeasured);
             this.panel2.Controls.Add(this.labelRadiusMeasured);
             this.panel2.Controls.Add(this.labelZPosition);
-            this.panel2.Controls.Add(this.labelAngle);
-            this.panel2.Controls.Add(this.labelRadius);
+            this.panel2.Controls.Add(this.labelXPosition);
+            this.panel2.Controls.Add(this.labelYPosition);
             this.panel2.Location = new System.Drawing.Point(7, 181);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
@@ -537,25 +537,25 @@
             this.labelZPosition.TabIndex = 0;
             this.labelZPosition.Text = "Axial: 0.000000 inches";
             // 
-            // labelAngle
+            // labelXPosition
             // 
-            this.labelAngle.AutoSize = true;
-            this.labelAngle.Location = new System.Drawing.Point(7, 35);
-            this.labelAngle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelAngle.Name = "labelAngle";
-            this.labelAngle.Size = new System.Drawing.Size(111, 13);
-            this.labelAngle.TabIndex = 0;
-            this.labelAngle.Text = "Angle: 0.000000 degs";
+            this.labelXPosition.AutoSize = true;
+            this.labelXPosition.Location = new System.Drawing.Point(7, 35);
+            this.labelXPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelXPosition.Name = "labelXPosition";
+            this.labelXPosition.Size = new System.Drawing.Size(111, 13);
+            this.labelXPosition.TabIndex = 0;
+            this.labelXPosition.Text = "Angle: 0.000000 degs";
             // 
-            // labelRadius
+            // labelYPosition
             // 
-            this.labelRadius.AutoSize = true;
-            this.labelRadius.Location = new System.Drawing.Point(7, 10);
-            this.labelRadius.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelRadius.Name = "labelRadius";
-            this.labelRadius.Size = new System.Drawing.Size(100, 13);
-            this.labelRadius.TabIndex = 0;
-            this.labelRadius.Text = "R: 0.000000 inches";
+            this.labelYPosition.AutoSize = true;
+            this.labelYPosition.Location = new System.Drawing.Point(7, 10);
+            this.labelYPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelYPosition.Name = "labelYPosition";
+            this.labelYPosition.Size = new System.Drawing.Size(100, 13);
+            this.labelYPosition.TabIndex = 0;
+            this.labelYPosition.Text = "R: 0.000000 inches";
             // 
             // buttonSetRadius
             // 
@@ -814,7 +814,7 @@
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.OptionsToolStripMenuItem_Click);
             // 
@@ -1109,6 +1109,15 @@
             this.toolStripButtonMirror.Text = "Mirror";
             this.toolStripButtonMirror.Click += new System.EventHandler(this.toolStripButtonMirror_Click);
             // 
+            // toolStripButtonCenterline
+            // 
+            this.toolStripButtonCenterline.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonCenterline.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCenterline.Image")));
+            this.toolStripButtonCenterline.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonCenterline.Name = "toolStripButtonCenterline";
+            this.toolStripButtonCenterline.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonCenterline.Text = "Select Horizontal Centerline";
+            // 
             // tabControlParams
             // 
             this.tabControlParams.Controls.Add(this.tabPage1);
@@ -1325,6 +1334,29 @@
             this.tabPage2.Text = "Inspection Params";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(32, 303);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(62, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Probe Type";
+            // 
+            // comboBoxProbeType
+            // 
+            this.comboBoxProbeType.FormattingEnabled = true;
+            this.comboBoxProbeType.Items.AddRange(new object[] {
+            "S.I.",
+            "Line Scan",
+            "Triangulation"});
+            this.comboBoxProbeType.Location = new System.Drawing.Point(99, 300);
+            this.comboBoxProbeType.Name = "comboBoxProbeType";
+            this.comboBoxProbeType.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxProbeType.TabIndex = 10;
+            this.comboBoxProbeType.SelectedIndexChanged += new System.EventHandler(this.comboBoxProbeType_SelectedIndexChanged);
+            // 
             // textBoxGrooveList
             // 
             this.textBoxGrooveList.Location = new System.Drawing.Point(132, 275);
@@ -1524,37 +1556,6 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
-            // toolStripButtonCenterline
-            // 
-            this.toolStripButtonCenterline.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonCenterline.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCenterline.Image")));
-            this.toolStripButtonCenterline.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonCenterline.Name = "toolStripButtonCenterline";
-            this.toolStripButtonCenterline.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonCenterline.Text = "Select Horizontal Centerline";
-            // 
-            // comboBoxProbeType
-            // 
-            this.comboBoxProbeType.FormattingEnabled = true;
-            this.comboBoxProbeType.Items.AddRange(new object[] {
-            "S.I.",
-            "Line Scan",
-            "Triangulation"});
-            this.comboBoxProbeType.Location = new System.Drawing.Point(99, 300);
-            this.comboBoxProbeType.Name = "comboBoxProbeType";
-            this.comboBoxProbeType.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxProbeType.TabIndex = 10;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(32, 303);
-            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(62, 13);
-            this.label11.TabIndex = 11;
-            this.label11.Text = "Probe Type";
-            // 
             // MainInspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1632,8 +1633,8 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label labelRadiusMeasured;
         private System.Windows.Forms.Label labelZPosition;
-        private System.Windows.Forms.Label labelAngle;
-        private System.Windows.Forms.Label labelRadius;
+        private System.Windows.Forms.Label labelXPosition;
+        private System.Windows.Forms.Label labelYPosition;
         private System.Windows.Forms.Label labelDxMeasured;
         private System.Windows.Forms.Label labelDyMeasured;
         private System.Windows.Forms.Panel panel1;

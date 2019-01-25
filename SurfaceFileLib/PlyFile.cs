@@ -206,10 +206,8 @@ namespace SurfaceFileLib
         bool _containsFaces;
         bool _containsEdges;
         bool _containsMaterials;
-        bool _containsNormals;
-        bool _containsEdgeColor;
-        bool _containsVertexColor;
-        bool _containsFaceColor;
+        bool _containsNormals;       
+        bool _containsVertexColor;       
 
 
         private bool ContentIsValid()
@@ -451,13 +449,6 @@ namespace SurfaceFileLib
                 sw.WriteLine("element edge " + Edges.Count.ToString("D"));
                 sw.WriteLine("property int vertex1");
                 sw.WriteLine("property int vertex2");
-
-                if (_containsEdgeColor)
-                {
-                    sw.WriteLine("property uint red");
-                    sw.WriteLine("property uint green");
-                    sw.WriteLine("property uint blue");
-                }                 
 
             }
             if (_containsMaterials)

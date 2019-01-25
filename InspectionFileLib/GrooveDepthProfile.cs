@@ -21,8 +21,7 @@ namespace InspectionLib
         public double AxialLocation { get { return _axialLocation; } set { _axialLocation = value; } }
         public int RasterCount { get { return _rasterCount; } }
 
-        int _rasterCount;
-        bool _averageDepths;
+        int _rasterCount;        
         int _grooveNumber;
         int _currentPassCt;
         int _targetPassCt;
@@ -71,8 +70,7 @@ namespace InspectionLib
         }
         public GrooveDepthProfile(int grooveNumber, int currentPasses, int targetPasses, Barrel barrel)
         {
-            _grooveNumber = grooveNumber;
-            _averageDepths = false;
+            _grooveNumber = grooveNumber;           
             _barrel = barrel;
         }
         public GrooveDepthProfile()

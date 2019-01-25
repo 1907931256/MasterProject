@@ -148,7 +148,7 @@ namespace GridTest
                 Console.ReadKey();
             }
         }
-        static double piOver2 = Math.PI / 2.0;
+       
         
         static double AngleEffect(Ray2 jet, double normalAngle,double critAngle,double expF)
         {

@@ -13,17 +13,7 @@ namespace InspectionLib
     // barrel specific data utilities
 
 
-    public enum DataFormat
-    {
-        UNKNOWN,
-        RING,
-        GRID,
-        SPIRAL,
-        AXIAL,
-        LAND,
-        GROOVE,
-        CAL
-    }
+   
     /// <summary>
     /// builds inspection data from raw data and script
     /// </summary>
@@ -40,7 +30,7 @@ namespace InspectionLib
         long _id;
         protected BoundingBox _boundingBox;
 
-        protected virtual CylData GetDualProbeData(CylInspScript script, double[,] data)
+        protected virtual CylData GetDualProbeData(CylInspScript script, double[] data)
         {
            return new CylData();
         }
@@ -48,7 +38,7 @@ namespace InspectionLib
         {
             return new CylData();
         }
-        protected CylData GetUncorrectedData(CylInspScript script, RawDataSet rawInputData)
+        protected CylData GetUncorrectedData(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try
             {
@@ -57,11 +47,11 @@ namespace InspectionLib
 
                 if (script.ProbeSetup.UseDualProbeAve)
                 {
-                    probeData = GetDualProbeData(script, rawInputData.GetAllProbeData());
+                    probeData = GetDualProbeData(script, rawInputData.GetData());
                 }
                 else
                 {
-                    probeData = GetSingleProbeData(script, rawInputData.GetSingleProbeData());
+                    probeData = GetSingleProbeData(script, rawInputData.GetData());
                 }
 
                 return probeData;

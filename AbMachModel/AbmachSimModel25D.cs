@@ -17,7 +17,7 @@ namespace AbMachModel
     public class XSectionProfile
     {
         double[] profile;
-        double _xwidth;
+        
         public double MeshSize { get; private set; }
         public Vector2 Origin { get; private set; }
         public int XLength { get; private set; }

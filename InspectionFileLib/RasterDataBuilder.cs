@@ -70,13 +70,13 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        void BuildFromRaster(CylInspScript script, RawDataSet rawInputData)
+        void BuildFromRaster(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try
             {
                 Debug.WriteLine("building data from raster inspection");
                 var dataSet = new InspDataSet();
-                var data = rawInputData.GetSingleProbeData();
+                var data = rawInputData.GetData();
                 dataSet.UncorrectedCylData = BuildRasterPoints(script, data);
 
             }

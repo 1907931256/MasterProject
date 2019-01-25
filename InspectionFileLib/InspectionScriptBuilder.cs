@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CNCLib;
+using DataLib;
 namespace InspectionLib
 {
     public class InspectionScriptBuilder
@@ -96,7 +97,7 @@ namespace InspectionLib
             return fileCodeList.ToArray();
         }
 
-        static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev, InspectionMethod method)
+        static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev, ScanFormat method)
         {
             CylInspScript script;
             var fileCodes = ParseFilename(filename);
@@ -112,19 +113,19 @@ namespace InspectionLib
 
             switch (method)
             {
-                case InspectionMethod.RING:
+                case ScanFormat.RING:
                     end.X = start.X;
                     script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
                     break;
-                case InspectionMethod.AXIAL:
-                case InspectionMethod.SPIRAL:
+                case ScanFormat.AXIAL:
+                case ScanFormat.SPIRAL:
                     end.X = getVal(fileCodes[3].ToUpper(), _linAxisName);
                     start.Adeg = getVal(fileCodes[4].ToUpper(), _rotAxisName);
                     end.Adeg = getVal(fileCodes[5].ToUpper(), _rotAxisName);
                     script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
                     break;
-                case InspectionMethod.GROOVE:
-                case InspectionMethod.LAND:
+                case ScanFormat.GROOVE:
+                case ScanFormat.LAND:
                     var groovelabels = new string[] { _grooveName, _landName };
                     var groove1 = (int)getVal(fileCodes[4].ToUpper(), groovelabels);
                     var groove2 = (int)getVal(fileCodes[5].ToUpper(), groovelabels);
@@ -142,28 +143,28 @@ namespace InspectionLib
             var fileCodes = ParseFilename(filename);
             int len = fileCodes.Length;
             var method = GetMethod(fileCodes[len - 1]);
-            if(method == InspectionMethod.UNKNOWN)
+            if(method == ScanFormat.UNKNOWN)
             {
-                method = InspectionMethod.RING;
+                method = ScanFormat.RING;
             }
             return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
         }
-        static public CylInspScript BuildScript(InspectionMethod method, MachinePosition start, MachinePosition end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
+        static public CylInspScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method, MachinePosition start, MachinePosition end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
         {
             CylInspScript script;
             switch (method)
             {
-                case InspectionMethod.RING:
+                case ScanFormat.RING:
                     end.X = start.X;
                     script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
                     break;
-                case InspectionMethod.AXIAL:
-                case InspectionMethod.SPIRAL:
+                case ScanFormat.AXIAL:
+                case ScanFormat.SPIRAL:
 
                     script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
                     break;
-                case InspectionMethod.GROOVE:
-                case InspectionMethod.LAND:
+                case ScanFormat.GROOVE:
+                case ScanFormat.LAND:
                     script = new CylInspScript(method, start, end, axisIncrement, grooves);
                     break;
                 default:
@@ -172,12 +173,12 @@ namespace InspectionLib
             }
             return script;
         }
-        static InspectionMethod GetMethod(string label)
+        static ScanFormat GetMethod(string label)
         {
             label = label.Trim();
             label = label.ToUpper();
             var dict = BuildMethodDictionary();
-            var methType = InspectionMethod.UNKNOWN;
+            var methType = ScanFormat.UNKNOWN;
             dict.TryGetValue(label, out methType);
             return methType;
         }
@@ -200,16 +201,16 @@ namespace InspectionLib
             dict.Add("7.62MM", BarrelLib.BarrelType.M240_762mm);
             return dict;
         }
-        static Dictionary<string, InspectionMethod> BuildMethodDictionary()
+        static Dictionary<string, ScanFormat> BuildMethodDictionary()
         {
-            var dict = new Dictionary<string, InspectionMethod>();
-            dict.Add("RG", InspectionMethod.RING);
-            dict.Add("AX", InspectionMethod.AXIAL);
-            dict.Add("SP", InspectionMethod.SPIRAL);
-            dict.Add("LD", InspectionMethod.LAND);
-            dict.Add("GV", InspectionMethod.GROOVE);
-            dict.Add("RS", InspectionMethod.RASTER);
-            dict.Add("CAL", InspectionMethod.CAL);
+            var dict = new Dictionary<string, ScanFormat>();
+            dict.Add("RG", ScanFormat.RING);
+            dict.Add("AX", ScanFormat.AXIAL);
+            dict.Add("SP", ScanFormat.SPIRAL);
+            dict.Add("LD", ScanFormat.LAND);
+            dict.Add("GV", ScanFormat.GROOVE);
+            dict.Add("RS", ScanFormat.RASTER);
+            dict.Add("CAL", ScanFormat.CAL);
             return dict;
         }
         static InspectionScriptBuilder()

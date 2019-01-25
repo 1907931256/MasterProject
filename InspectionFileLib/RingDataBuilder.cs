@@ -16,7 +16,7 @@ namespace InspectionLib
         public PointCyl[] LandPoints { get; private set; }
 
         
-        public PointCyl GetMinRadiusDualProbe(CylInspScript script, double[,] data,int windowHalfWidth)
+        public PointCyl GetMinRadiusDualProbe(CylInspScript script, double[] data,int windowHalfWidth)
         {
             double minDiam = double.MaxValue;
 
@@ -25,7 +25,7 @@ namespace InspectionLib
                 double sum = 0;
                 for(int j=i-windowHalfWidth;j<i+windowHalfWidth;j++)
                 {
-                    sum += (data[j, 0] + data[j, 1]);
+                    sum += (data[j]);
                 }
                 sum /= (windowHalfWidth * 2);
                 if(sum<minDiam)
@@ -37,7 +37,7 @@ namespace InspectionLib
             return new PointCyl(minDiam / 2, 0, script.StartZ);
         }
       
-        override protected CylData GetDualProbeData(CylInspScript script, double[,] data)
+        override protected CylData GetDualProbeData(CylInspScript script, double[] data)
         {
             try
             {
@@ -53,8 +53,8 @@ namespace InspectionLib
                     var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
                     int probe2Index = (i + indexShift) % script.PointsPerRevolution;
 
-                    var diam = data[i, 0] + data[i, 1];
-                    var sum = data[i, 0] + data[probe2Index, 1];
+                    var diam = data[i];
+                    var sum = data[i];
                     if (sum < minDiam)
                     {
                         minDiam = sum;
@@ -100,7 +100,7 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildFromRing(CylInspScript script, RawDataSet rawInputData)
+        InspDataSet BuildFromRing(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
         /// <param name="landPointArr"></param>
-        InspDataSet BuildFromRing(CylInspScript script, RawDataSet rawInputData, PointCyl[] landPointArr)
+        InspDataSet BuildFromRing(CylInspScript script, KeyenceSiDataSet rawInputData, PointCyl[] landPointArr)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, RawDataSet rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, DataOutputOptions options)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace InspectionLib
                 
                 
                 var dataSet = BuildFromRing(script, rawDataSet);
-                dataSet.DataFormat = DataFormat.RING;
+                dataSet.DataFormat = ScanFormat.RING;
                 dataSet.Filename = rawDataSet.Filename;
                 return dataSet;
             }
@@ -174,7 +174,7 @@ namespace InspectionLib
         /// <param name="rawDataSet"></param>
         /// <param name="landPointArr"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, RawDataSet rawDataSet, PointCyl[] landPointArr, DataOutputOptions options)
+        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, PointCyl[] landPointArr, DataOutputOptions options)
         {
             try
             {
@@ -182,7 +182,7 @@ namespace InspectionLib
                 
                 
                 var dataSet = BuildFromRing(script, rawDataSet, landPointArr);
-                dataSet.DataFormat = DataFormat.RING;
+                dataSet.DataFormat = ScanFormat.RING;
                 dataSet.Filename = rawDataSet.Filename;
                 return dataSet;
             }

@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProbeController
 {
+    public enum ProbeType
+    {
+        SI_DISTANCE,
+        LINE_SCAN
+    }
     public enum ProbeDirection
     {
         ID = 1,

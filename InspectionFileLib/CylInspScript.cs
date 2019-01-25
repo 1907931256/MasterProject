@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CNCLib;
 using GeometryLib;
-
+using ProbeController;
 namespace InspectionLib
 {
     public class CylInspScript : InspectionScript
@@ -17,12 +17,12 @@ namespace InspectionLib
         public double AngleIncrement { get; set; }
         public double AxialIncrement { get; set; }
         public int ZDir { get { return _zDir; } }
-        public int[] Grooves;
-        public double Revolutions { get { return _revolutions; } }
+        public int[] Grooves;       
         public int PointsPerRevolution { get { return _pointsPerRev; } }
         public int ThetaDir { get { return _thDir; } }
         public double[] ExtractLocations { get { return _extractX; } set { _extractX = value; } }
-        public ProbeController.ProbeSetup ProbeSetup { get; set; }
+        public ProbeSetup ProbeSetup { get; set; }
+       
         public CalDataSet CalDataSet { get; set; }
         protected MachinePosition _startPos;
         protected MachinePosition _endPos;
@@ -31,21 +31,21 @@ namespace InspectionLib
         
         protected int _zDir;
         
-        double _revolutions;
+        
         int _pointsPerRev;
         int _thDir;
         double[] _extractX;
-        public CylInspScript(InspectionMethod method, MachinePosition start, MachinePosition end, double pitchInch, int pointsPerRevolution,CalDataSet calDataSet)
+        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double pitchInch, int pointsPerRevolution,CalDataSet calDataSet)
         {
-            init(method, start, end);
+            init(scanformat, start, end);
             CalDataSet = calDataSet;
             _pointsPerRev = pointsPerRevolution;
             CalcIncrement(pitchInch, pointsPerRevolution);
         }
         //spiral ring constructor
-        public CylInspScript(InspectionMethod method, MachinePosition start, MachinePosition end, double pitchInch, int pointsPerRevolution) 
+        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double pitchInch, int pointsPerRevolution) 
         {
-            init(method, start, end);
+            init(scanformat, start, end);
             _pointsPerRev = pointsPerRevolution;
             CalcIncrement(pitchInch,  pointsPerRevolution);
         }
@@ -64,9 +64,9 @@ namespace InspectionLib
         
 
        //groove land constructor
-        public CylInspScript(InspectionMethod method, MachinePosition start, MachinePosition end, double axialInc, int[] grooves) 
+        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double axialInc, int[] grooves) 
         {
-            init(method, start, end);
+            init(scanformat, start, end);
             AxialIncrement = axialInc;
             _zDir = Math.Sign(EndZ - StartZ);
             if (_zDir == 0)
@@ -74,22 +74,22 @@ namespace InspectionLib
             Grooves = grooves;
         }
         //axial constructor
-        public CylInspScript(InspectionMethod method, MachinePosition start, MachinePosition end, double axialInc) 
+        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double axialInc) 
         {
-            init(method, start, end);
+            init(scanformat, start, end);
 
             AxialIncrement = axialInc;
             _zDir = Math.Sign(EndZ - StartZ);
             if (_zDir == 0)
                 _zDir = 1;
         }
-        public CylInspScript(InspectionMethod method, MachinePosition start, MachinePosition end)
+        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end)
         {
-            init(method, start, end);
+            init(scanformat, start, end);
         }
-        void init(InspectionMethod method, MachinePosition start, MachinePosition end)
+        void init(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end)
         {
-            _method = method;
+            ScanFormat = scanformat;
             _startPos = start;
             _endPos = end;
             _start = new PointCyl(1, Geometry.ToRadians(_startPos.Adeg), _startPos.X);

@@ -22,7 +22,7 @@ namespace InspectionLib
         int _currentPassCt;
         int _grooveCount;
         double _nominalLandDiam;
-        GrooveDepthProfile _averageDepths;
+        
 
         public List<string> AsStringList()
         {

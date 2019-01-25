@@ -58,7 +58,9 @@
     <Compile Include="ColorCoder.cs" />
     <Compile Include="CylData.cs" />
     <Compile Include="CylGridData.cs" />
+    <Compile Include="DataFormat.cs" />
     <Compile Include="DataUtilities.cs" />
+    <Compile Include="DisplayData.cs" />
     <Compile Include="FreqAnalysis.cs" />
     <Compile Include="Model3DBuilder.cs" />
     <Compile Include="ProfileData.cs" />

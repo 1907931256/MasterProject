@@ -3,6 +3,7 @@ using DataLib;
 using FileIOLib;
 using GeometryLib;
 using InspectionLib;
+using ProbeController;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -113,12 +114,12 @@ namespace BarrelInspectionProcessorForm
 
         class DisplayDataSet:List<CylData>
         {
-            public DataFormat DataFormat { get; set; }
+            public ScanFormat DataFormat { get; set; }
             public List<PointCyl> HiLightPoints { get; set; }
             public DisplayDataSet()
             {
                 HiLightPoints = new List<PointCyl>();
-                DataFormat = DataFormat.UNKNOWN;
+                DataFormat = ScanFormat.UNKNOWN;
             }
         }
 
@@ -138,7 +139,7 @@ namespace BarrelInspectionProcessorForm
             _selectedSidewallPoints = new List<PointCyl>();           
             _hilightPts = new List<PointF>();
             _displayData = new DisplayDataSet();
-            _displayData.DataFormat = DataFormat.UNKNOWN;
+            _displayData.DataFormat = ScanFormat.UNKNOWN;
             _dataSelection = DataSelection.NONE;
             DisplayData();
             Clear3DView();
@@ -193,8 +194,8 @@ namespace BarrelInspectionProcessorForm
                             }
 
                         }
-                        inspDataSet.DataFormat = DataFormat.RING;
-                        _inspScript = new CylInspScript(InspectionMethod.RING, new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER),
+                        inspDataSet.DataFormat = ScanFormat.RING;
+                        _inspScript = new CylInspScript(ScanFormat.RING, new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER),
                             new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER));
                         _displayData.Add(inspDataSet.CorrectedCylData);
                         _inspDataSetList.Add(inspDataSet);
@@ -240,10 +241,9 @@ namespace BarrelInspectionProcessorForm
             }
         }
 
+        KeyenceSiDataSet _rawSiDataSet;
+        KeyenceLineScanDataSet _rawLineScanDataSet;
 
-        
-        
-        KeyenceSISensorDataSet _rawDataSet;
         private void BuildMinDProfile()
         {
             try
@@ -254,7 +254,7 @@ namespace BarrelInspectionProcessorForm
                 foreach(string filename in _inputFileNames)
                 {
                     BuildScriptFromInputs(filename);
-                    _rawDataSet = new KeyenceSISensorDataSet(_inspScript.ProbeSetup.ProbeCount, filename, 0);
+                    _rawSiDataSet = new KeyenceSiDataSet(_inspScript.ScanFormat,_inspScript.OutputUnit, _inspScript.ProbeSetup.ProbeCount, filename);
                     var pb = new ProfileBuilder(_barrel);
                     var pt = pb.BuildMinDProfile(_inspScript, filename,minFeatureSize);
                     _barrelInspProfile.MinLandProfile.Add(pt);
@@ -361,12 +361,13 @@ namespace BarrelInspectionProcessorForm
             barrel.LifetimeData.RoundsFired = roundsFired;
             return barrel;
         }
+       
         private void BuildScriptFromInputs(string dataFilename)
         {
             try
             {
                 var barrel = BuildBarrelFromInputs();
-
+                ProbeType probeType = Probe.GetProbeType(comboBoxProbeType.SelectedItem.ToString());
                 double probeSpacing =0 ;
                 double startA = 0;
                 double startX = 0;
@@ -389,7 +390,7 @@ namespace BarrelInspectionProcessorForm
                 {
                     InputVerification.TryGetValue(textBoxRingRevs, "x>0", 0, double.MaxValue, out ringRevs);
                 }
-                if (_method == InspectionMethod.AXIAL)
+                if (_method == ScanFormat.AXIAL)
                 {       
 
                     if (radioButtonAngleInc.Checked)
@@ -485,7 +486,8 @@ namespace BarrelInspectionProcessorForm
                         axialInc = Math.Abs((endX - startX) / (ptsPerRev * ringRevs));
                     }
                    
-                    _inspScript = InspectionScriptBuilder.BuildScript(_method, startPos, endPos, axialInc, ringRevs, pitch, ptsPerRev, grooves);
+                    _inspScript = InspectionScriptBuilder.BuildScript(probeType,_method, startPos, endPos, axialInc,
+                        ringRevs, pitch, ptsPerRev, grooves);
                 }
                 
                 _inspScript.ProbeSetup.UseDualProbeAve = _useDualProbeAve;
@@ -505,7 +507,7 @@ namespace BarrelInspectionProcessorForm
                     case DiamCalType.RINGCAL:
                         if (_calFilename != "")
                         {
-                            calDataSet = BuildCalibration(_calFilename, probeCount, ringCalDiameterInch, _inspScript.ProbeSetup.ProbeDirection);
+                            calDataSet = BuildCalibration(_calFilename,_inspScript.OutputUnit, probeCount, ringCalDiameterInch, _inspScript.ProbeSetup.ProbeDirection);
                             _barrel.DimensionData.ActualLandDiam = calDataSet.NominalRadius * 2;
                         }
                         break;
@@ -562,41 +564,40 @@ namespace BarrelInspectionProcessorForm
                     
                     BuildScriptFromInputs(dataFilename);
                 
-                    _rawDataSet =  new KeyenceSISensorDataSet(_inspScript.ProbeSetup.ProbeCount, dataFilename, 0);
+                    _rawSiDataSet =  new KeyenceSiDataSet(_inspScript.ScanFormat,_inspScript.OutputUnit, _inspScript.ProbeSetup.ProbeCount, dataFilename);
                     
 
                     switch (_method)
                     {
-                        case InspectionMethod.AXIAL:
+                        case ScanFormat.AXIAL:
                             //_inspScript = new CylInspScript(_method, _startPos, _endPos, _axialInc);
                             var axialbuilder = new AxialDataBuilder(_barrel);
-                            return Task.Run(() => axialbuilder.BuildAxialAsync(ct, progress, _inspScript, _rawDataSet, _dataOutOptions));
+                            return Task.Run(() => axialbuilder.BuildAxialAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
 
-                        case InspectionMethod.RING:
+                        case ScanFormat.RING:
                             //_inspScript = new CylInspScript(_method, _startPos,_endPos, _ringRevs, _ptsPerRev);
                             var ringBuilder = new RingDataBuilder(_barrel);
                             if (_useLandPts)
                             {
-                                return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript, _rawDataSet, _selectedLandPoints.ToArray(), _dataOutOptions));
+                                return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript, _rawSiDataSet, _selectedLandPoints.ToArray(), _dataOutOptions));
                             }
                             else
                             {
-                                return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript, _rawDataSet, _dataOutOptions));
+                                return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
                             }
 
 
-                        case InspectionMethod.SPIRAL:
+                        case ScanFormat.SPIRAL:
                            // _inspScript = new CylInspScript(_method, _startPos, _endPos, _pitch, _ptsPerRev)
                             //{
                            //     ExtractLocations = _extractX
                            // };
                             var spiralBuilder = new SpiralDataBuilder(_barrel);
-                            return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript, _rawDataSet, _dataOutOptions));
+                            return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
 
                         default:
                             return null;
-                }
-                
+                    }               
 
             }
             catch (Exception)
@@ -716,7 +717,7 @@ namespace BarrelInspectionProcessorForm
                 radioButtonViewProcessed.Checked = true;
                 radioButtonViewUnrolled.Checked = true;
                 _lines.Add("***Processing***");
-                _lines.Add(_inspScript.Method.ToString());
+                _lines.Add(_inspScript.ScanFormat.ToString());
                 _lines.Add("ProbeSpacing: "+ _inspScript.CalDataSet.ProbeSpacingInch.ToString());
 
                 if(_inspDataSetList!= null && _inspDataSetList.Count>=1)               
@@ -725,7 +726,7 @@ namespace BarrelInspectionProcessorForm
                     foreach(InspDataSet dataset in _inspDataSetList)
                     {
                         _lines.Add("Processing: " + dataset.Filename);
-                        if(dataset.DataFormat== DataFormat.RING)
+                        if(dataset.DataFormat== ScanFormat.RING)
                         {
                             _lines.Add("Nominal Minimum Diameter: " + dataset.CorrectedCylData.NominalMinDiam.ToString());
                             _lines.Add("---Correcting Eccentricity---");
@@ -736,12 +737,12 @@ namespace BarrelInspectionProcessorForm
                     
                     
                     _displayData.DataFormat = _inspDataSetList[0].DataFormat;
-                    if(!_autoAngleCorrect && _displayData.DataFormat == DataFormat.RING)
+                    if(!_autoAngleCorrect && _displayData.DataFormat == ScanFormat.RING)
                     {
                         _displayData = SetDisplayData(_inspDataSetList);
                         DisplayData();
                     }
-                    if(_displayData.DataFormat == DataFormat.SPIRAL)
+                    if(_displayData.DataFormat == ScanFormat.SPIRAL)
                     {                       
                       Load3DView(_inspDataSetList[0].CorrectedSpiralData);
                     }
@@ -814,7 +815,7 @@ namespace BarrelInspectionProcessorForm
                 _displayData.Add(_barrelInspProfile.MinLandProfile);
                 _displayData.Add(_barrelInspProfile.AveLandProfile);
                 _displayData.Add(_barrelInspProfile.AveGrooveProfile);
-                _displayData.DataFormat = DataFormat.AXIAL;
+                _displayData.DataFormat = ScanFormat.AXIAL;
                 DisplayData();
 
                 string fileName = BuildAxialfileName(_inputFileNames[0]);
@@ -850,7 +851,7 @@ namespace BarrelInspectionProcessorForm
                         set.CorrectedCylData = correctedCylData;
                         _displayData.Add(set.CorrectedCylData);                        
                     }
-                    _displayData.DataFormat = DataFormat.RING;
+                    _displayData.DataFormat = ScanFormat.RING;
                     DisplayData();
                 }
                
@@ -863,7 +864,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetRingSwitches()
         {
-            _method = InspectionMethod.RING;
+            _method = ScanFormat.RING;
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = false;
@@ -889,7 +890,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetSpiralSwitches()
         {
-            _method = InspectionMethod.SPIRAL;
+            _method = ScanFormat.SPIRAL;
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = true;
@@ -916,7 +917,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetRasterSwitches()
         {
-            _method = InspectionMethod.RASTER;
+            _method = ScanFormat.RASTER;
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = true;
@@ -935,7 +936,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetAxialSwitches()
         {
-            _method = InspectionMethod.AXIAL;
+            _method = ScanFormat.AXIAL;
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = false;
@@ -956,7 +957,7 @@ namespace BarrelInspectionProcessorForm
             buttonGetAveAngle.Enabled = false;
             buttonSetRadius.Enabled = false;
         }
-        InspectionMethod _method;
+        ScanFormat _method;
         ProbeController.ProbeDirection _probeDirection;
         private void ComboBoxProbeDirection_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -969,6 +970,24 @@ namespace BarrelInspectionProcessorForm
                         break;
                     case 1: //rod od
                         _probeDirection = ProbeController.ProbeDirection.OD;
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        private void comboBoxProbeType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                switch(comboBoxProbeType.SelectedIndex)
+                {
+                    case 0:
+                        break;
+                    case 1:
                         break;
                 }
             }
@@ -1080,7 +1099,7 @@ namespace BarrelInspectionProcessorForm
         List<PointF> _screenPts;
         Graphics _graphics;
 
-        ScreenTransform GetTransform(BoundingBox bbox, bool viewRolled, DataFormat displayMethod)
+        ScreenTransform GetTransform(BoundingBox bbox, bool viewRolled, ScanFormat displayMethod)
         {
             try
             {
@@ -1088,11 +1107,11 @@ namespace BarrelInspectionProcessorForm
                 BoundingBox bb;
                 switch (displayMethod )
                 {
-                    case DataFormat.AXIAL:
+                    case ScanFormat.AXIAL:
                     bb = new BoundingBox(bbox.Min.Z, bbox.Min.X, 0, bbox.Max.Z, bbox.Max.X, 0);
                     currentTransform = new ScreenTransform(bb, pictureBox1.DisplayRectangle, .9, true);
                         break;
-                    case DataFormat.RING:
+                    case ScanFormat.RING:
                         if (viewRolled)
                         {
                             bb = new BoundingBox(bbox.Max.X * -1, bbox.Max.X * -1, 0, bbox.Max.X, bbox.Max.X, 0);
@@ -1181,7 +1200,7 @@ namespace BarrelInspectionProcessorForm
             }
            
         }
-        void DrawGrid(BoundingBox bb, ScreenTransform currentTransform,DataFormat method)
+        void DrawGrid(BoundingBox bb, ScreenTransform currentTransform,ScanFormat method)
         {
             try
             {
@@ -1194,7 +1213,7 @@ namespace BarrelInspectionProcessorForm
 
                 switch (method)
                 {
-                    case DataFormat.AXIAL:
+                    case ScanFormat.AXIAL:
                         sizeX = bb.Size.Z;
                         sizeY = bb.Size.X;
                         minX = bb.Min.Z;
@@ -1202,8 +1221,8 @@ namespace BarrelInspectionProcessorForm
                         maxX = bb.Max.Z;
                         maxY = bb.Max.X;
                         break;
-                    case DataFormat.RING:
-                    case DataFormat.SPIRAL:                    
+                    case ScanFormat.RING:
+                    case ScanFormat.SPIRAL:                    
                     default:
                         sizeX = bb.Size.Y;
                         sizeY = bb.Size.X;
@@ -1218,7 +1237,7 @@ namespace BarrelInspectionProcessorForm
                 sizeY = GetGridRange(sizeY);
                 int xGridCount;
                 int yGridCount = 10;
-                if (_method == InspectionMethod.AXIAL)
+                if (_method == ScanFormat.AXIAL)
                 {
                     xGridCount = 10;
                 }
@@ -1241,7 +1260,7 @@ namespace BarrelInspectionProcessorForm
                     var sizeXlabel = _graphics.MeasureString(xLabelstr, font);
                     float xLabelxOffset = (float)(sizeXlabel.Width / 2.0);
                     float xLabelyOffset = (float)(sizeXlabel.Height * 0.1);
-                    if (_method == InspectionMethod.AXIAL)
+                    if (_method == ScanFormat.AXIAL)
                     {
                         xLabelstr = xLabel.ToString("f3");
                     }
@@ -1313,7 +1332,7 @@ namespace BarrelInspectionProcessorForm
             try
             {
                 textBoxDataOut.Lines = _lines.ToArray();
-                if(_displayData.DataFormat != DataFormat.SPIRAL)
+                if(_displayData.DataFormat != ScanFormat.SPIRAL)
                 {
                     if (_displayData != null && _displayData.Count != 0)
                     {
@@ -1337,7 +1356,7 @@ namespace BarrelInspectionProcessorForm
                                 PointF yAxis1 = new PointF(0, 0);
                                 PointF yAxis2 = new PointF(0, 0);
 
-                                if (_displayData.DataFormat == DataFormat.AXIAL)
+                                if (_displayData.DataFormat == ScanFormat.AXIAL)
                                 {
                                     foreach (var pt in data)
                                     {
@@ -1445,7 +1464,7 @@ namespace BarrelInspectionProcessorForm
         //                    PointF yAxis1 = new PointF(0, 0);
         //                    PointF yAxis2 = new PointF(0, 0);
 
-        //                    if (_method == InspectionMethod.AXIAL)
+        //                    if (_method == ScanFormat.AXIAL)
         //                    {
         //                        foreach (var pt in data)
         //                        {
@@ -1577,11 +1596,11 @@ namespace BarrelInspectionProcessorForm
                     _mouseLocation = e.Location;
                     _mouseLocPart = currentTransform.GetModelCoords(e.Location);
                     _mousePartXY = GetXYCoords(_mouseLocPart);
-                    if (_method == InspectionMethod.AXIAL)
+                    if (_method == ScanFormat.AXIAL)
                     {
                         labelZPosition.Text = "Axial: " + _mouseLocPart.X.ToString("F6") + _lengthLabel;
-                        labelRadius.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + _lengthLabel;
-                        labelAngle.Text = "Angle: " + (180*(_inspScript.StartThetaRad)/Math.PI).ToString("f6") + _angleLabel;
+                        labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + _lengthLabel;
+                        labelXPosition.Text = "Angle: " + (180*(_inspScript.StartThetaRad)/Math.PI).ToString("f6") + _angleLabel;
                     }
                     else
                     {
@@ -1589,15 +1608,15 @@ namespace BarrelInspectionProcessorForm
                         {
                             double r = Math.Sqrt(Math.Pow(_mouseLocPart.X, 2.0) + Math.Pow(_mouseLocPart.Y, 2.0));
                             double th = GeometryLib.Geometry.ToDegs(Math.Atan2(_mouseLocPart.Y, _mouseLocPart.X));
-                            labelAngle.Text = "Angle: " + th.ToString("f6") + " " + _angleLabel;
-                            labelRadius.Text = "Radius: " + r.ToString("f6") + " " + _lengthLabel;
+                            labelXPosition.Text = "Angle: " + th.ToString("f6") + " " + _angleLabel;
+                            labelYPosition.Text = "Radius: " + r.ToString("f6") + " " + _lengthLabel;
 
                         }
                         else
                         {
                             double angle = GeometryLib.Geometry.ToDegs(_mouseLocPart.X);
-                            labelAngle.Text = "Angle: " + angle.ToString("f6") + " " + _angleLabel;
-                            labelRadius.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + " " + _lengthLabel;
+                            labelXPosition.Text = "Angle: " + angle.ToString("f6") + " " + _angleLabel;
+                            labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + " " + _lengthLabel;
 
                         }
                         labelZPosition.Text = "Axial: " + _inspScript.StartZ.ToString("F5") + _lengthLabel;
@@ -1650,6 +1669,10 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
+                if (_hilightPts == null)
+                {
+                    _hilightPts = new List<PointF>();
+                }
                 var nearestScreenPt = PictureBoxUtilities.GetNearestPoint(e.Location, _screenPts);
                 _hilightPts.Add(nearestScreenPt);
                 var pt = currentTransform.GetModelCoords(nearestScreenPt);
@@ -1660,10 +1683,7 @@ namespace BarrelInspectionProcessorForm
 
                 throw;
             }
-            if (_hilightPts == null)
-            {
-                _hilightPts = new List<PointF>();
-            }
+           
             
            
         }
@@ -2929,12 +2949,12 @@ namespace BarrelInspectionProcessorForm
         }
        
        
-        CalDataSet BuildCalibration(string filename,int probeCount, double ringCalInch,ProbeController.ProbeDirection probeDirection)
+        CalDataSet BuildCalibration(string filename,MeasurementUnit outputUnit,int probeCount, double ringCalInch,ProbeController.ProbeDirection probeDirection)
         {
            
            
             var cal = new CalDataBuilder(_barrel);
-            var calDataSet = cal.BuildCalData(probeCount, ringCalInch, filename,probeDirection);
+            var calDataSet = cal.BuildCalData(_inspScript.ScanFormat,outputUnit, probeCount, ringCalInch, filename,probeDirection);
            
             textBoxNomDiam.Text = this.GetShortenedPathString(filename);
             labelCalStatus.Text = "Cal Offset(in):" + calDataSet.ProbeSpacingInch.ToString("f4");
@@ -3124,5 +3144,7 @@ namespace BarrelInspectionProcessorForm
         {
 
         }
+
+        
     }
 }

@@ -19,7 +19,15 @@ namespace ProbeController
         public double MeasuringRange { get; set; }
          
         public MeasurementUnit MeasurementUnit {get;set;}
-
+        public static ProbeType GetProbeType(string probeType)
+        {
+            var type = ProbeType.LINE_SCAN;
+            if (probeType == "SI_DISTANCE")
+                type = ProbeType.SI_DISTANCE;
+            if (probeType == "LINE_SCAN")
+                type = ProbeType.LINE_SCAN;
+            return type;
+        }
         public Probe()
         {
             Name = "Not Connected";

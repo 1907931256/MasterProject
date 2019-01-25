@@ -33,7 +33,7 @@ namespace InspectionLib
                 throw;
             }
         }
-        override protected CylData GetDualProbeData(CylInspScript script, double[,] data)
+        override protected CylData GetDualProbeData(CylInspScript script, double[] data)
         {
             try
             {
@@ -50,16 +50,13 @@ namespace InspectionLib
                         var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
                         var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
                         int probe2Index = (i + indexShift) % script.PointsPerRevolution;
-
-                        var sum = data[i, 0] + data[probe2Index, 1];
+                        var sum = data[i];
                         if (sum < minSum)
                         {
                             minSum = sum;
                         }
                         var pt1 = new PointCyl(sum / 2.0, theta, z, i);
-
                         points.Add(pt1);
-
                     }
                     points.NominalMinDiam = minSum + script.CalDataSet.ProbeSpacingInch;
                     return points;
@@ -123,7 +120,7 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildFromSpiral(CylInspScript script, RawDataSet rawInputData, IProgress<int> progress)
+        InspDataSet BuildFromSpiral(CylInspScript script, KeyenceSiDataSet rawInputData, IProgress<int> progress)
         {
             try
             {
@@ -167,7 +164,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, RawDataSet rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, DataOutputOptions options)
         {
             try
             {
@@ -176,7 +173,7 @@ namespace InspectionLib
                 progress.Report(sw.Elapsed.Seconds);              
                
                 var dataSet = BuildFromSpiral(script, rawDataSet, progress);
-                dataSet.DataFormat = DataFormat.SPIRAL;
+                dataSet.DataFormat = ScanFormat.SPIRAL;
                 dataSet.Filename = rawDataSet.Filename;
                 return dataSet;
             }

@@ -5,6 +5,8 @@ using System.Text;
 using GeometryLib;
 using ToolpathLib;
 using CNCLib;
+using DataLib;
+using ProbeController;
 namespace InspectionLib
 {
  
@@ -20,24 +22,14 @@ namespace InspectionLib
     public  class InspectionScript
     {        
         public string FileName { get; set; }       
-        public InspectionMethod Method { get { return _method; } }
-        public MachineSpeed InspectionFeedRate { get; set; }
-        public double DataCollectionTimeSec { get; set; }
-        protected InspectionMethod _method;
-        
-       
+        public ScanFormat ScanFormat { get; protected set; }
+        public MeasurementUnit OutputUnit { get; protected set; }
+        public ProbeType ProbeType { get; protected set; }
         public InspectionScript()
         {
-            FileName = InspectionScriptFile.TempFileName;    
-            _method = InspectionMethod.RING;            
-            DataCollectionTimeSec = .1;
-           
-            InspectionFeedRate = new MachineSpeed()
-            {
-                LinearF = 1,
-                RotaryF = 1
-            };
-                   
+            FileName = InspectionScriptFile.TempFileName;
+            ScanFormat = ScanFormat.RING;
+            OutputUnit = new MeasurementUnit("inch");
         }
     }
 }

@@ -57,7 +57,7 @@ namespace BarrelInspectionProcessorForm
         int _firstCol;
         int _totalCols;
 
-        InspectionMethod _inspectionMethod;
+        /// _inspectionMethod;
         string _filename;
         void SetColumns()
         {

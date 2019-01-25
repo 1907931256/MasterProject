@@ -18,7 +18,7 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildAxialPoints(CylInspScript script, double[,] data)
+        InspDataSet BuildAxialPoints(CylInspScript script, double[] data)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace InspectionLib
                 {
                     var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
                     var theta = script.StartThetaRad;
-                    var r = (data[i, 0] + data[i, 1] + script.CalDataSet.ProbeSpacingInch) / 2.0;
+                    var r = (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0;
                     var pt = new PointCyl(r, theta, z, i);
                     points.Add(pt);
                 }
@@ -52,12 +52,12 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildFromAxial(CylInspScript script, RawDataSet rawInputData)
+        InspDataSet BuildFromAxial(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try
             {
                 Debug.WriteLine("building data from axial inspection");
-                var data = rawInputData.GetAllProbeData();
+                var data = rawInputData.GetData();
                 return BuildAxialPoints(script, data);
 
             }
@@ -76,14 +76,14 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, RawDataSet rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, DataOutputOptions options)
         {
             try
             {
                 Init(options, rawDataSet.Filename);
                 var dataSet = new InspDataSet();
                 dataSet = BuildFromAxial(script, rawDataSet);
-                dataSet.DataFormat = DataFormat.AXIAL;
+                dataSet.DataFormat = ScanFormat.AXIAL;
                 return dataSet;
             }
             catch (Exception)

@@ -15,8 +15,8 @@ namespace InspectionLib
             try
             {
                 var result = new CylData();
-                var dataSet = new KeyenceSISensorDataSet(script.ProbeSetup.ProbeCount, filename, 0);
-                var data = dataSet.GetAllProbeData();
+                var dataSet = new KeyenceSiDataSet(script.ScanFormat,script.OutputUnit, script.ProbeSetup.ProbeCount, filename);
+                var data = dataSet.GetData();
                 int pointCount = data.GetUpperBound(0);
                 double pointSpacing = _barrel.DimensionData.NomCircumference / pointCount;
                 int windowSize = (int)((minFeatureSize / pointSpacing) / 2);
@@ -40,23 +40,17 @@ namespace InspectionLib
             try
             {
                 var barrelProfile = new BarrelInspProfile();
-                List<DataFormat> formats = new List<DataFormat>();
                 if(inspDataSets != null && inspDataSets.Count>0)
-                {
-                    foreach(InspDataSet set in inspDataSets)
-                    {
-                        formats.Add(set.DataFormat);
-                    }
-                    DataFormat format = formats[0];
-                  
+                {                   
+                    ScanFormat format = inspDataSets[0].DataFormat;                  
                     switch(format)
                     {
-                        case DataFormat.RING:
+                        case ScanFormat.RING:
                             barrelProfile = BuildFromRings(inspDataSets );
                             break;
-                        case DataFormat.AXIAL:                            
-                        case DataFormat.GROOVE:                           
-                        case DataFormat.LAND:
+                        case ScanFormat.AXIAL:                            
+                        case ScanFormat.GROOVE:                           
+                        case ScanFormat.LAND:
                             barrelProfile = BuildFromAxial(inspDataSets);
                             break;
                     }
@@ -188,12 +182,12 @@ namespace InspectionLib
                     {
                         z = inspDataSets[i].CorrectedCylData[j].Z;
                         th = inspDataSets[i].CorrectedCylData[j].ThetaRad;
-                        if (inspDataSets[i].DataFormat== DataFormat.LAND)
+                        if (inspDataSets[i].DataFormat== ScanFormat.LAND)
                         {
                             landRadius += inspDataSets[i].CorrectedCylData[j].R;
                             landCount++;
                         }
-                        if(inspDataSets[i].DataFormat == DataFormat.GROOVE)
+                        if(inspDataSets[i].DataFormat == ScanFormat.GROOVE)
                         {
                             grooveRadius += inspDataSets[i].CorrectedCylData[j].R;
                             grooveCount++;

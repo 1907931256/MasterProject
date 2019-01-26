@@ -70,7 +70,7 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        void BuildFromRaster(CylInspScript script, KeyenceSiDataSet rawInputData)
+        void BuildRasterFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try
             {

@@ -100,7 +100,7 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildFromRing(CylInspScript script, KeyenceSiDataSet rawInputData)
+        InspDataSet BuildRingFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
         /// <param name="landPointArr"></param>
-        InspDataSet BuildFromRing(CylInspScript script, KeyenceSiDataSet rawInputData, PointCyl[] landPointArr)
+        InspDataSet BuildRingFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData, PointCyl[] landPointArr)
         {
             try
             {
@@ -152,10 +152,7 @@ namespace InspectionLib
             try
             {
                 Init(options, rawDataSet.Filename);
-                
-                
-                
-                var dataSet = BuildFromRing(script, rawDataSet);
+                var dataSet = BuildRingFromRadialData(script, rawDataSet);
                 dataSet.DataFormat = ScanFormat.RING;
                 dataSet.Filename = rawDataSet.Filename;
                 return dataSet;
@@ -181,7 +178,7 @@ namespace InspectionLib
                 Init(options, rawDataSet.Filename);
                 
                 
-                var dataSet = BuildFromRing(script, rawDataSet, landPointArr);
+                var dataSet = BuildRingFromRadialData(script, rawDataSet, landPointArr);
                 dataSet.DataFormat = ScanFormat.RING;
                 dataSet.Filename = rawDataSet.Filename;
                 return dataSet;

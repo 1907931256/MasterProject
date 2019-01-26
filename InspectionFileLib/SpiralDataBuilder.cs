@@ -120,7 +120,7 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildFromSpiral(CylInspScript script, KeyenceSiDataSet rawInputData, IProgress<int> progress)
+        InspDataSet BuildSpiralFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData, IProgress<int> progress)
         {
             try
             {
@@ -172,7 +172,7 @@ namespace InspectionLib
                 var sw = new Stopwatch();
                 progress.Report(sw.Elapsed.Seconds);              
                
-                var dataSet = BuildFromSpiral(script, rawDataSet, progress);
+                var dataSet = BuildSpiralFromRadialData(script, rawDataSet, progress);
                 dataSet.DataFormat = ScanFormat.SPIRAL;
                 dataSet.Filename = rawDataSet.Filename;
                 return dataSet;

@@ -594,7 +594,10 @@ namespace BarrelInspectionProcessorForm
                            // };
                             var spiralBuilder = new SpiralDataBuilder(_barrel);
                             return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
-
+                       
+                        case ScanFormat.SINGLELINE:
+                        var lineBuilder = new SingleLineDataBuilder(_barrel);
+                        return Task.Run(() => lineBuilder.BuildSingleLineAsync(ct, progress, _inspScript, _rawLineScanDataSet, _dataOutOptions));
                         default:
                             return null;
                     }               
@@ -915,25 +918,25 @@ namespace BarrelInspectionProcessorForm
             buttonGetAveAngle.Enabled = false;
             buttonSetRadius.Enabled = false;
         }
-        private void SetRasterSwitches()
-        {
-            _method = ScanFormat.RASTER;
-            textBoxStartPosA.Enabled = true;
-            textBoxStartPosX.Enabled = true;
-            textBoxEndPosA.Enabled = true;
-            textBoxEndPosX.Enabled = true;
+        //private void SetRasterSwitches()
+        //{
+        //    _method = ScanFormat.RASTER;
+        //    textBoxStartPosA.Enabled = true;
+        //    textBoxStartPosX.Enabled = true;
+        //    textBoxEndPosA.Enabled = true;
+        //    textBoxEndPosX.Enabled = true;
 
-            textBoxPitch.Enabled = true;
-            textBoxPtsPerRev.Enabled = true;
-            textBoxAngleInc.Enabled = true;
-            radioButtonAngleInc.Text = "Axial Increment(in):";
-            radioButtonPtsperRev.Text = "Points per inch:";
-            radioButtonPtsperRev.Checked = true;
-            textBoxRingRevs.Enabled = false;
+        //    textBoxPitch.Enabled = true;
+        //    textBoxPtsPerRev.Enabled = true;
+        //    textBoxAngleInc.Enabled = true;
+        //    radioButtonAngleInc.Text = "Axial Increment(in):";
+        //    radioButtonPtsperRev.Text = "Points per inch:";
+        //    radioButtonPtsperRev.Checked = true;
+        //    textBoxRingRevs.Enabled = false;
 
-            //textBoxExtractX.Enabled = true;
-            textBoxProbeCount.Text = "1";
-        }
+        //    //textBoxExtractX.Enabled = true;
+        //    textBoxProbeCount.Text = "1";
+        //}
         private void SetAxialSwitches()
         {
             _method = ScanFormat.AXIAL;
@@ -975,19 +978,21 @@ namespace BarrelInspectionProcessorForm
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
+        ProbeType _probeType;
         private void comboBoxProbeType_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
                 switch(comboBoxProbeType.SelectedIndex)
                 {
-                    case 0:
+                    case 0://si distance
+                        _probeType = ProbeType.SI_DISTANCE;
                         break;
-                    case 1:
+                    case 1://line scan
+                        _probeType = ProbeType.LINE_SCAN;
                         break;
                 }
             }
@@ -999,6 +1004,11 @@ namespace BarrelInspectionProcessorForm
         }
         private void ComboBoxMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Ring
+            //Spiral           
+            //Axial
+           //Single Line Scan
+
             try
             {
                 switch (comboBoxMethod.SelectedIndex)
@@ -1010,10 +1020,10 @@ namespace BarrelInspectionProcessorForm
                         SetSpiralSwitches();
                         break;
                     case 2:
-                        SetRasterSwitches();
+                        SetAxialSwitches();
                         break;
                     case 3:
-                        SetAxialSwitches();
+                        
                         break;
                 }
             }
@@ -1328,6 +1338,49 @@ namespace BarrelInspectionProcessorForm
 
         BoundingBox _bbOverall;
         private void DisplayData()
+        {
+            try
+            {
+                switch (_probeType)
+                {
+                    case ProbeType.LINE_SCAN:
+                        DisplayLineScanData();
+                        break;
+                    case ProbeType.SI_DISTANCE:
+                        DisplaySiDistanceData();
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        private void DisplayLineScanData()
+        {
+            try
+            {
+                switch (_displayData.DataFormat)
+                {
+                    case ScanFormat.SINGLELINE:
+                        DisplaySingleLineData();
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        private void DisplaySingleLineData()
+        {
+
+        }
+        private void DisplaySiDistanceData()
         { 
             try
             {
@@ -3145,6 +3198,9 @@ namespace BarrelInspectionProcessorForm
 
         }
 
-        
+        private void labelMethod_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

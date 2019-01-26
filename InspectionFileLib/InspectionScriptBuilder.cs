@@ -208,9 +208,9 @@ namespace InspectionLib
             dict.Add("AX", ScanFormat.AXIAL);
             dict.Add("SP", ScanFormat.SPIRAL);
             dict.Add("LD", ScanFormat.LAND);
-            dict.Add("GV", ScanFormat.GROOVE);
-            dict.Add("RS", ScanFormat.RASTER);
+            dict.Add("GV", ScanFormat.GROOVE);           
             dict.Add("CAL", ScanFormat.CAL);
+            dict.Add("LN", ScanFormat.SINGLELINE);
             return dict;
         }
         static InspectionScriptBuilder()

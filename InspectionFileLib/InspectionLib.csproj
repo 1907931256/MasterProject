@@ -110,6 +110,7 @@
     <Compile Include="KeyenceSIDataSet.cs" />
     <Compile Include="RasterDataBuilder.cs" />
     <Compile Include="RingDataBuilder.cs" />
+    <Compile Include="SingleLineDataBuilder.cs" />
     <Compile Include="SpiralDataBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

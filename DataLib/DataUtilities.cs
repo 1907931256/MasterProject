@@ -476,15 +476,77 @@ namespace DataLib
                 throw;
             }
         }
-       
+        static Vector2[] FindCirclesofKnownR(Vector2 p1, Vector2 p2, double radius)
+        {
+            try
+            {
+                if (radius < 0) throw new ArgumentException("Negative radius.");
+                if (radius == 0)
+                {
+                    if (p1 == p2) return new[] { p1 };
+                    else throw new InvalidOperationException("No circles.");
+                }
+                if (p1 == p2) throw new InvalidOperationException("Infinite number of circles.");
+
+                double sqDistance = p1.Distance2To(p2);
+                double sqDiameter = 4 * radius * radius;
+                if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
+
+                Vector2 midPoint = new Vector2((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+                if (sqDistance == sqDiameter) return new[] { midPoint };
+
+                double d = Math.Sqrt(radius * radius - sqDistance / 4);
+                double distance = Math.Sqrt(sqDistance);
+                double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
+                return new[] {
+                    new Vector2(midPoint.X - oy, midPoint.Y + ox),
+                    new Vector2(midPoint.X + oy, midPoint.Y - ox)
+                };
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public static CylData ConverToCylData(Vector2[] points)
+        {
+            try
+            {
+                var cd = new CylData();
+                foreach (Vector2 pt in points)
+                {
+                    double r = Math.Sqrt(Math.Pow(pt.X, 2) + Math.Pow(pt.Y, 2));
+                    double th = Math.Atan2(pt.Y, pt.X) + Math.PI / 2;
+                    double z = 0;
+                    cd.Add(new PointCyl(r, th, z));
+                }
+                return cd;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
         static CylData ConvertToCylData(PointCyl[] points)
         {
-            var cd = new CylData();
-            foreach(PointCyl pt in points)
+            try
             {
-                cd.Add(pt);
+                var cd = new CylData();
+                foreach (PointCyl pt in points)
+                {
+                    cd.Add(pt);
+                }
+                return cd;
             }
-            return cd;
+            catch (Exception)
+            {
+                throw;
+            }
+           
         }
         
     }

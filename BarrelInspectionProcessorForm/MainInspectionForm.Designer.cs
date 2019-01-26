@@ -277,12 +277,8 @@
             this.comboBoxMethod.Items.AddRange(new object[] {
             "Ring",
             "Spiral",
-            "Raster",
             "Axial",
-            "Groove",
-            "Land",
-            "Calibration",
-            "Line Scan"});
+            "Single Line Scan"});
             this.comboBoxMethod.Location = new System.Drawing.Point(145, 37);
             this.comboBoxMethod.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMethod.Name = "comboBoxMethod";
@@ -343,12 +339,13 @@
             // labelMethod
             // 
             this.labelMethod.AutoSize = true;
-            this.labelMethod.Location = new System.Drawing.Point(98, 39);
+            this.labelMethod.Location = new System.Drawing.Point(75, 40);
             this.labelMethod.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelMethod.Name = "labelMethod";
-            this.labelMethod.Size = new System.Drawing.Size(43, 13);
+            this.labelMethod.Size = new System.Drawing.Size(67, 13);
             this.labelMethod.TabIndex = 1;
-            this.labelMethod.Text = "Method";
+            this.labelMethod.Text = "Scan Format";
+            this.labelMethod.Click += new System.EventHandler(this.labelMethod_Click);
             // 
             // textBoxProbeCount
             // 
@@ -814,7 +811,7 @@
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.OptionsToolStripMenuItem_Click);
             // 
@@ -1348,9 +1345,8 @@
             // 
             this.comboBoxProbeType.FormattingEnabled = true;
             this.comboBoxProbeType.Items.AddRange(new object[] {
-            "S.I.",
-            "Line Scan",
-            "Triangulation"});
+            "SI Distance",
+            "Line Scan"});
             this.comboBoxProbeType.Location = new System.Drawing.Point(99, 300);
             this.comboBoxProbeType.Name = "comboBoxProbeType";
             this.comboBoxProbeType.Size = new System.Drawing.Size(121, 21);

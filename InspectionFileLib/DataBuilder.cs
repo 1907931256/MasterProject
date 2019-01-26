@@ -38,6 +38,22 @@ namespace InspectionLib
         {
             return new CylData();
         }
+       
+        protected CylData GetUncorrectedData(CylInspScript script, KeyenceLineScanDataSet rawInputData)
+        {
+            try
+            {
+                var probeData = new CylData();
+                
+
+                return probeData;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         protected CylData GetUncorrectedData(CylInspScript script, KeyenceSiDataSet rawInputData)
         {
             try

@@ -19,9 +19,9 @@ namespace DataLib
         SPIRAL,
         AXIAL,
         LAND,
-        GROOVE,
-        RASTER,
-        CAL
+        GROOVE,        
+        CAL,
+        SINGLELINE
     }
 
 }

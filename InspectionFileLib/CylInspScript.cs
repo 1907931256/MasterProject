@@ -8,6 +8,10 @@ using GeometryLib;
 using ProbeController;
 namespace InspectionLib
 {
+    public class CartInspScript:InspectionScript
+    {
+
+    }
     public class CylInspScript : InspectionScript
     {
         public double StartZ { get { return _start.Z; } }

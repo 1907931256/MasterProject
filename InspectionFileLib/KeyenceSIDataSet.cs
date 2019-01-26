@@ -29,6 +29,7 @@ namespace InspectionLib
     }
     public class KeyenceLineScanDataSet : RawDataFile<GeometryLib.Vector2>
     {
+        public GeometryLib.PointCyl ScanCenterLine { get; private set; }
         public GeometryLib.Vector2[] GetData()
         {
             return this.ToArray();
@@ -42,7 +43,9 @@ namespace InspectionLib
                 throw new Exception("File does not contain data.");
             }
             this.AddRange(ExtractData(words));
+            
         }
+      
         List<GeometryLib.Vector2> ExtractData(string[,] words)
         {
             try
@@ -62,8 +65,11 @@ namespace InspectionLib
                         double x = 0;
                         double y = 0;
                         if (double.TryParse(words[i, 0], out x) && double.TryParse(words[i, 1], out y))
-                        {
-                            data.Add(new GeometryLib.Vector2(x, y));
+                        {         
+                            if(y<=_maxValue && y>=_minValue)
+                            {
+                                data.Add(new GeometryLib.Vector2(x, y));
+                            }                                                                                
                         }
                     }
                 }
@@ -76,13 +82,18 @@ namespace InspectionLib
             }
 
         }
-        
-        public KeyenceLineScanDataSet(ScanFormat format,MeasurementUnit measurementUnit, MeasurementUnit outputUnit, int probeCount, string CsvFileName)
+        double _minValue;
+        double _maxValue;
+        public KeyenceLineScanDataSet(ScanFormat format,MeasurementUnit measurementUnit, MeasurementUnit outputUnit,
+            int probeCount,GeometryLib.PointCyl scanCenterline,double minValue,double maxValue, string CsvFileName)
         {
             DataFormat = RawDataFormat.XY;
             _firstDataRow = 0;
             ScanFormat = format;
+            ScanCenterLine = scanCenterline;
             _headerRowCount = 0;
+            _minValue = minValue;
+            _maxValue = maxValue;
             Filename = CsvFileName;
             OutputUnits = outputUnit;
             InputUnits = measurementUnit;
@@ -159,9 +170,7 @@ namespace InspectionLib
                 }
                 int columnCount = words.GetUpperBound(1);
                 for (int i = _headerRowCount; i < _rowCount; i++)
-                {
-                    int j = 0;
-
+                {                    
                     foreach (int col in colList)
                     {
                         double result = 0;

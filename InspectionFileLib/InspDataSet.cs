@@ -11,7 +11,8 @@ using BarrelLib;
 
 namespace InspectionLib
 {
-    
+   
+
     public class InspDataSet
     {
         public CylData CorrectedCylData { get; set; }
@@ -23,7 +24,6 @@ namespace InspectionLib
         public Barrel Barrel { get; set; }
         public ScanFormat DataFormat { get; set; }
         public string Filename { get; set; }
-       
 
         public double GetRVariation(PointCyl[] points)
         {

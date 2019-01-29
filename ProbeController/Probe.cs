@@ -32,7 +32,7 @@ namespace ProbeController
         {
             Name = "Not Connected";
             SerialNumber = "";
-            MeasurementUnit = new MeasurementUnit("micron");
+            MeasurementUnit = new MeasurementUnit(MeasurementUnitEnum.MICRON);
             StartMeasuringRange = 0;
             MeasuringRange = 0;
         }

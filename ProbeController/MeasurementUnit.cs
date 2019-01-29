@@ -6,16 +6,22 @@ using System.Threading.Tasks;
 
 namespace ProbeController
 {
+     
     public class MeasurementUnit
     {
         public double ConversionFactor{ get; private set; }
         public string Name { get; private set; }
-
-        public MeasurementUnit(string name)
+        public MeasurementUnitEnum MeasurementUnitEnum { get; private set; }
+        //public MeasurementUnit(string name)
+        //{
+        //    ConversionFactor = 1;
+        //    Name = name.ToUpper();
+        //    ConversionFactor = MeasurementUnitDictionary.GetConversionFactor(Name);
+        //}
+        public MeasurementUnit(MeasurementUnitEnum measurementUnitEnum)
         {
-            ConversionFactor = 1;
-            Name = name.ToUpper();
-            ConversionFactor = MeasurementUnitDictionary.GetConversionFactor(Name);
+            ConversionFactor = (int)measurementUnitEnum;
+            
         }
 
     }

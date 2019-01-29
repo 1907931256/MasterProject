@@ -510,6 +510,23 @@ namespace DataLib
             }
 
         }
+        public static CartData ConvertToCartData(Vector2[] points,double z)
+        {
+            try
+            {
+                var cartdata = new CartData();
+                foreach(Vector2 pt in points)
+                {
+                    cartdata.Add(new Vector3(pt.X, pt.Y, z));
+                }
+                return cartdata;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public static CylData ConverToCylData(Vector2[] points)
         {
             try

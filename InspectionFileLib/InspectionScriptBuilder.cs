@@ -97,82 +97,8 @@ namespace InspectionLib
             return fileCodeList.ToArray();
         }
 
-        static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev, ScanFormat method)
-        {
-            CylInspScript script;
-            var fileCodes = ParseFilename(filename);
-
-            int len = fileCodes.Length;
-            
-            // var start = new MachinePosition(MachineGeometry.CYLINDER);
-            var start = FindStartPosition(fileCodes, _linAxisName);
-
-            // var end = new MachinePosition(MachineGeometry.CYLINDER);
-            var end = FindEndPosition(fileCodes, _linAxisName);
-            //start.X = getVal(fileCodes[2].ToUpper(), _linAxisName);
-
-            switch (method)
-            {
-                case ScanFormat.RING:
-                    end.X = start.X;
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.AXIAL:
-                case ScanFormat.SPIRAL:
-                    end.X = getVal(fileCodes[3].ToUpper(), _linAxisName);
-                    start.Adeg = getVal(fileCodes[4].ToUpper(), _rotAxisName);
-                    end.Adeg = getVal(fileCodes[5].ToUpper(), _rotAxisName);
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.GROOVE:
-                case ScanFormat.LAND:
-                    var groovelabels = new string[] { _grooveName, _landName };
-                    var groove1 = (int)getVal(fileCodes[4].ToUpper(), groovelabels);
-                    var groove2 = (int)getVal(fileCodes[5].ToUpper(), groovelabels);
-                    int[] grooves = new int[2] { groove1, groove2 };
-                    script = new CylInspScript(method, start, end, axisIncrement, grooves);
-                    break;
-                default:
-                    script = new CylInspScript(method, start, end);
-                    break;
-            }
-            return script;
-        }
-        static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev)
-        {           
-            var fileCodes = ParseFilename(filename);
-            int len = fileCodes.Length;
-            var method = GetMethod(fileCodes[len - 1]);
-            if(method == ScanFormat.UNKNOWN)
-            {
-                method = ScanFormat.RING;
-            }
-            return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
-        }
-        static public CylInspScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method, MachinePosition start, MachinePosition end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
-        {
-            CylInspScript script;
-            switch (method)
-            {
-                case ScanFormat.RING:
-                    end.X = start.X;
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.AXIAL:
-                case ScanFormat.SPIRAL:
-
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.GROOVE:
-                case ScanFormat.LAND:
-                    script = new CylInspScript(method, start, end, axisIncrement, grooves);
-                    break;
-                default:
-                    script = new CylInspScript(method, start, end);
-                    break;
-            }
-            return script;
-        }
+        
+       
         static ScanFormat GetMethod(string label)
         {
             label = label.Trim();
@@ -219,6 +145,84 @@ namespace InspectionLib
             _rotAxisName = "A";
             _landName = "LANDS";
             _grooveName = "GROOVES";
+        }
+        static CylInspScript BuildScript(string filename, double axisIncrement, double revs,
+            double pitchInch, int ptsPerRev, ScanFormat method)
+        {
+            CylInspScript script;
+            var fileCodes = ParseFilename(filename);
+
+            int len = fileCodes.Length;
+
+            // var start = new MachinePosition(MachineGeometry.CYLINDER);
+            var start = FindStartPosition(fileCodes, _linAxisName);
+
+            // var end = new MachinePosition(MachineGeometry.CYLINDER);
+            var end = FindEndPosition(fileCodes, _linAxisName);
+            //start.X = getVal(fileCodes[2].ToUpper(), _linAxisName);
+
+            switch (method)
+            {
+                case ScanFormat.RING:
+                    end.X = start.X;
+                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
+                    break;
+                case ScanFormat.AXIAL:
+                case ScanFormat.SPIRAL:
+                    end.X = getVal(fileCodes[3].ToUpper(), _linAxisName);
+                    start.Adeg = getVal(fileCodes[4].ToUpper(), _rotAxisName);
+                    end.Adeg = getVal(fileCodes[5].ToUpper(), _rotAxisName);
+                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
+                    break;
+                case ScanFormat.GROOVE:
+                case ScanFormat.LAND:
+                    var groovelabels = new string[] { _grooveName, _landName };
+                    var groove1 = (int)getVal(fileCodes[4].ToUpper(), groovelabels);
+                    var groove2 = (int)getVal(fileCodes[5].ToUpper(), groovelabels);
+                    int[] grooves = new int[2] { groove1, groove2 };
+                    script = new CylInspScript(method, start, end, axisIncrement, grooves);
+                    break;
+                default:
+                    script = new CylInspScript(method, start, end);
+                    break;
+            }
+            return script;
+        }
+        static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev)
+        {
+            var fileCodes = ParseFilename(filename);
+            int len = fileCodes.Length;
+            var method = GetMethod(fileCodes[len - 1]);
+            if (method == ScanFormat.UNKNOWN)
+            {
+                method = ScanFormat.RING;
+            }
+            return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
+        }
+        static public CylInspScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method,
+            MachinePosition start, MachinePosition end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
+        {
+            CylInspScript script;
+            switch (method)
+            {
+                case ScanFormat.RING:
+                    end.X = start.X;
+                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
+                    break;
+                case ScanFormat.AXIAL:
+                case ScanFormat.SPIRAL:
+
+                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
+                    break;
+                case ScanFormat.GROOVE:
+                case ScanFormat.LAND:
+                    script = new CylInspScript(method, start, end, axisIncrement, grooves);
+                    break;
+                default:
+                    script = new CylInspScript(method, start, end);
+                    break;
+            }
+            return script;
         }
     }
 }

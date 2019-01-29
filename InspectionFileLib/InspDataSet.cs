@@ -15,6 +15,8 @@ namespace InspectionLib
 
     public class InspDataSet
     {
+        public CartData CartData { get; set; }
+        public CartGridData CartGridData { get; set; }
         public CylData CorrectedCylData { get; set; }
         public CylData UncorrectedCylData { get; set; }
         public CylGridData CorrectedSpiralData { get; set; }

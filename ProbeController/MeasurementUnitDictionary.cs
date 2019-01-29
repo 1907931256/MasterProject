@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace ProbeController
 {
+    public enum MeasurementUnitEnum
+    {        
+        MICRON=1,
+        MM=1000,
+        INCH = 25400
+    }
+
     static public class MeasurementUnitDictionary
     {
-        static public double GetConversionFactor(string name)
+        static public MeasurementUnitEnum GetUnits(string name)
         {
-            double value = 1;
+            MeasurementUnitEnum value = MeasurementUnitEnum.MICRON;
             unitDictionary.TryGetValue(name, out value);
             return value;
         }
@@ -25,15 +32,15 @@ namespace ProbeController
             return keyList;
         }
 
-        static Dictionary<string, double> unitDictionary;
+        static Dictionary<string, MeasurementUnitEnum> unitDictionary;
         static MeasurementUnitDictionary()
         {
-            unitDictionary = new Dictionary<string, double>();
-            unitDictionary.Add("INCH", 25400);
-            unitDictionary.Add("IN", 25400);
-            unitDictionary.Add("MICRON", 1);
-            unitDictionary.Add("MM", 1000);
-            unitDictionary.Add("UM", 1);
+            unitDictionary = new Dictionary<string, MeasurementUnitEnum>();
+            unitDictionary.Add("INCH", MeasurementUnitEnum.INCH);
+            unitDictionary.Add("IN", MeasurementUnitEnum.INCH);
+            unitDictionary.Add("MICRON", MeasurementUnitEnum.MICRON);
+            unitDictionary.Add("MM", MeasurementUnitEnum.MM);
+            unitDictionary.Add("UM", MeasurementUnitEnum.MICRON);
 
         }
     }

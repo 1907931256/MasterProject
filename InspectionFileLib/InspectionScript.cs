@@ -29,7 +29,7 @@ namespace InspectionLib
         {
             FileName = InspectionScriptFile.TempFileName;
             ScanFormat = ScanFormat.RING;
-            OutputUnit = new MeasurementUnit("inch");
+            OutputUnit = new MeasurementUnit(MeasurementUnitEnum.INCH);
         }
     }
 }

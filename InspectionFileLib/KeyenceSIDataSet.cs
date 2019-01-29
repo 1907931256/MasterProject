@@ -36,13 +36,23 @@ namespace InspectionLib
         }
         void ProcessFile()
         {
-            var words = FileIOLib.CSVFileParser.ParseFile(Filename);   
-            _rowCount = words.GetLength(0);
-            if (_rowCount == 0 || _colCount == 0 || _headerRowCount >= _rowCount)
+            try
             {
-                throw new Exception("File does not contain data.");
+                var words = FileIOLib.CSVFileParser.ParseFile(Filename);
+                _rowCount = words.GetLength(0);
+                _colCount = words.GetLength(1);
+                if (_rowCount == 0 || _colCount == 0 || _headerRowCount >= _rowCount)
+                {
+                    throw new Exception("File does not contain data.");
+                }
+                this.AddRange(ExtractData(words));
             }
-            this.AddRange(ExtractData(words));
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
             
         }
       
@@ -57,7 +67,7 @@ namespace InspectionLib
                 {
                     throw new Exception("Data rows not found");
                 }
-                int columnCount = words.GetUpperBound(1);
+                int columnCount = words.GetLength(1);
                 if(columnCount==2)
                 {
                     for (int i = _headerRowCount; i < _rowCount; i++)
@@ -84,20 +94,29 @@ namespace InspectionLib
         }
         double _minValue;
         double _maxValue;
-        public KeyenceLineScanDataSet(ScanFormat format,MeasurementUnit measurementUnit, MeasurementUnit outputUnit,
-            int probeCount,GeometryLib.PointCyl scanCenterline,double minValue,double maxValue, string CsvFileName)
+        public KeyenceLineScanDataSet(ScanFormat format, MeasurementUnit outputUnit,
+           GeometryLib.PointCyl scanCenterline,double minValue,double maxValue, string CsvFileName)
         {
-            DataFormat = RawDataFormat.XY;
-            _firstDataRow = 0;
-            ScanFormat = format;
-            ScanCenterLine = scanCenterline;
-            _headerRowCount = 0;
-            _minValue = minValue;
-            _maxValue = maxValue;
-            Filename = CsvFileName;
-            OutputUnits = outputUnit;
-            InputUnits = measurementUnit;
-            ProcessFile();
+            try
+            {
+                DataFormat = RawDataFormat.XY;
+                _firstDataRow = 0;
+                ScanFormat = format;
+                ScanCenterLine = scanCenterline;
+                _headerRowCount = 0;
+                _minValue = minValue;
+                _maxValue = maxValue;
+                Filename = CsvFileName;
+                OutputUnits = outputUnit;
+                InputUnits = new MeasurementUnit(MeasurementUnitEnum.INCH);
+                ProcessFile();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
     }
     /// <summary>
@@ -193,7 +212,7 @@ namespace InspectionLib
             try
             {                               
                 var unitList = MeasurementUnitDictionary.MeasurementUnitNames();
-                var inputUnit = new MeasurementUnit("micron");
+                var inputUnit = new MeasurementUnit(MeasurementUnitEnum.MICRON);
                 foreach (string unitStr in unitList)
                 {
                     for (int i = 0; i < 6 ; i++)
@@ -203,7 +222,7 @@ namespace InspectionLib
                             string upperw = words[i, j].ToUpper();
                             if (upperw.Contains(unitStr))
                             {                               
-                                inputUnit=  new MeasurementUnit(unitStr);
+                                inputUnit=  new MeasurementUnit(MeasurementUnitDictionary.GetUnits(unitStr));
                                 break;
                             }                            
                         }                       
@@ -237,7 +256,7 @@ namespace InspectionLib
 
                 if (InputUnits == null)
                 {
-                    InputUnits = new MeasurementUnit("micron");
+                    InputUnits = new MeasurementUnit(MeasurementUnitEnum.MICRON);
                 }
                 if(ProbeCount ==1)
                 {

@@ -17,9 +17,8 @@ namespace InspectionLib
         {
             try
             {
-                var dataSet = new InspDataSet();
-               
-                dataSet.UncorrectedCylData = DataUtilities.ConverToCylData(rawDataSet.GetData());
+                var dataSet = new InspDataSet();               
+                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartZ);
                 dataSet.CorrectedCylData = dataSet.UncorrectedCylData;
                
                 return dataSet;

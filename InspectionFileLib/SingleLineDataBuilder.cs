@@ -10,16 +10,15 @@ using System.Threading;
 
 namespace InspectionLib
 {
-    public class SingleLineDataBuilder : DataBuilder
+    public class CartesianDataBuilder : DataBuilder
     {
        
-        InspDataSet BuildSingleLineFromLineData(CylInspScript script, KeyenceLineScanDataSet rawDataSet)
+        InspDataSet BuildCartDataFromLineData(CylInspScript script, KeyenceLineScanDataSet rawDataSet)
         {
             try
             {
-                var dataSet = new InspDataSet();               
-                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartZ);
-                dataSet.CorrectedCylData = dataSet.UncorrectedCylData;
+                var dataSet = new CartDataSet(_barrel);               
+                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartZ);               
                
                 return dataSet;
             }
@@ -35,33 +34,15 @@ namespace InspectionLib
             try
             {
                 Init(options, rawDataSet.Filename);
-                var dataSet = BuildSingleLineFromLineData(script, rawDataSet);
-                dataSet.DataFormat = ScanFormat.SINGLELINE;
-                dataSet.Filename = rawDataSet.Filename;
+                var dataSet = BuildCartDataFromLineData(script, rawDataSet);               
                 return dataSet;
             }
             catch (Exception)
             {
                 throw;
             }
-        }
-        public InspDataSet BuildSingleLineAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, 
-            KeyenceLineScanDataSet rawDataSet,DataOutputOptions options, PointCyl[] landPointArr)
-        {
-            try
-            {
-                Init(options, rawDataSet.Filename);
-                var dataSet = BuildSingleLineFromLineData(script, rawDataSet);
-                dataSet.DataFormat = ScanFormat.SINGLELINE;
-                dataSet.Filename = rawDataSet.Filename;
-                return dataSet;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        public SingleLineDataBuilder(Barrel barrel) : base(barrel)
+        }       
+        public CartesianDataBuilder(Barrel barrel) : base(barrel)
         {
 
         }

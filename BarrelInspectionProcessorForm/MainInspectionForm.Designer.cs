@@ -72,8 +72,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.labelLandCount = new System.Windows.Forms.Label();
-            this.textBoxLandList = new System.Windows.Forms.TextBox();
             this.labelDxMeasured = new System.Windows.Forms.Label();
             this.labelDyMeasured = new System.Windows.Forms.Label();
             this.labelRadiusMeasured = new System.Windows.Forms.Label();
@@ -85,9 +83,6 @@
             this.textBoxCurrentRadius = new System.Windows.Forms.TextBox();
             this.labelInputValue = new System.Windows.Forms.Label();
             this.textBoxKnownRadius = new System.Windows.Forms.TextBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.radioButtonViewRolled = new System.Windows.Forms.RadioButton();
-            this.radioButtonViewUnrolled = new System.Windows.Forms.RadioButton();
             this.panel3 = new System.Windows.Forms.Panel();
             this.radioButtonViewProcessed = new System.Windows.Forms.RadioButton();
             this.radioButtonViewRaw = new System.Windows.Forms.RadioButton();
@@ -115,10 +110,7 @@
             this.viewLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelStatus = new System.Windows.Forms.Label();
             this.buttonGetAveAngle = new System.Windows.Forms.Button();
-            this.checkBoxGrooveInter = new System.Windows.Forms.CheckBox();
-            this.checkBoxAutoSaveOutput = new System.Windows.Forms.CheckBox();
             this.checkBoxAngleCorrect = new System.Windows.Forms.CheckBox();
-            this.checkBoxLandPoints = new System.Windows.Forms.CheckBox();
             this.textBoxSerialN = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxCurrentPasses = new System.Windows.Forms.TextBox();
@@ -126,14 +118,12 @@
             this.textBoxTotalPasses = new System.Windows.Forms.TextBox();
             this.labelTotalPasses = new System.Windows.Forms.Label();
             this.toolStripButtonCursor = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonLand = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButtonFileOpen = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonFileSave = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButtonLength = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonSetKnownRadius = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonSelectGrooves = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonGrooveMidpoint = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
@@ -165,7 +155,6 @@
             this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxProbePhaseDeg = new System.Windows.Forms.TextBox();
-            this.checkBoxDualProbeAve = new System.Windows.Forms.CheckBox();
             this.checkBoxUseFilename = new System.Windows.Forms.CheckBox();
             this.tabControlOutput = new System.Windows.Forms.TabControl();
             this.tabPageGraph = new System.Windows.Forms.TabPage();
@@ -178,7 +167,6 @@
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -460,8 +448,6 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.labelLandCount);
-            this.panel2.Controls.Add(this.textBoxLandList);
             this.panel2.Controls.Add(this.labelDxMeasured);
             this.panel2.Controls.Add(this.labelDyMeasured);
             this.panel2.Controls.Add(this.labelRadiusMeasured);
@@ -473,26 +459,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(173, 310);
             this.panel2.TabIndex = 11;
-            // 
-            // labelLandCount
-            // 
-            this.labelLandCount.AutoSize = true;
-            this.labelLandCount.Location = new System.Drawing.Point(5, 232);
-            this.labelLandCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelLandCount.Name = "labelLandCount";
-            this.labelLandCount.Size = new System.Drawing.Size(39, 13);
-            this.labelLandCount.TabIndex = 24;
-            this.labelLandCount.Text = "Lands:";
-            // 
-            // textBoxLandList
-            // 
-            this.textBoxLandList.Location = new System.Drawing.Point(2, 251);
-            this.textBoxLandList.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxLandList.Multiline = true;
-            this.textBoxLandList.Name = "textBoxLandList";
-            this.textBoxLandList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLandList.Size = new System.Drawing.Size(164, 46);
-            this.textBoxLandList.TabIndex = 3;
             // 
             // labelDxMeasured
             // 
@@ -596,42 +562,6 @@
             this.textBoxKnownRadius.Name = "textBoxKnownRadius";
             this.textBoxKnownRadius.Size = new System.Drawing.Size(78, 20);
             this.textBoxKnownRadius.TabIndex = 25;
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.radioButtonViewRolled);
-            this.panel1.Controls.Add(this.radioButtonViewUnrolled);
-            this.panel1.Location = new System.Drawing.Point(7, 120);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(114, 57);
-            this.panel1.TabIndex = 12;
-            // 
-            // radioButtonViewRolled
-            // 
-            this.radioButtonViewRolled.AutoSize = true;
-            this.radioButtonViewRolled.Location = new System.Drawing.Point(6, 32);
-            this.radioButtonViewRolled.Margin = new System.Windows.Forms.Padding(2);
-            this.radioButtonViewRolled.Name = "radioButtonViewRolled";
-            this.radioButtonViewRolled.Size = new System.Drawing.Size(81, 17);
-            this.radioButtonViewRolled.TabIndex = 1;
-            this.radioButtonViewRolled.TabStop = true;
-            this.radioButtonViewRolled.Text = "View Rolled";
-            this.radioButtonViewRolled.UseVisualStyleBackColor = true;
-            this.radioButtonViewRolled.CheckedChanged += new System.EventHandler(this.RadioButtonViewRolled_CheckedChanged);
-            // 
-            // radioButtonViewUnrolled
-            // 
-            this.radioButtonViewUnrolled.AutoSize = true;
-            this.radioButtonViewUnrolled.Checked = true;
-            this.radioButtonViewUnrolled.Location = new System.Drawing.Point(6, 10);
-            this.radioButtonViewUnrolled.Margin = new System.Windows.Forms.Padding(2);
-            this.radioButtonViewUnrolled.Name = "radioButtonViewUnrolled";
-            this.radioButtonViewUnrolled.Size = new System.Drawing.Size(90, 17);
-            this.radioButtonViewUnrolled.TabIndex = 0;
-            this.radioButtonViewUnrolled.TabStop = true;
-            this.radioButtonViewUnrolled.Text = "View Unrolled";
-            this.radioButtonViewUnrolled.UseVisualStyleBackColor = true;
             // 
             // panel3
             // 
@@ -875,49 +805,16 @@
             this.buttonGetAveAngle.UseVisualStyleBackColor = true;
             this.buttonGetAveAngle.Click += new System.EventHandler(this.ButtonGetAveAngle_Click);
             // 
-            // checkBoxGrooveInter
-            // 
-            this.checkBoxGrooveInter.AutoSize = true;
-            this.checkBoxGrooveInter.Location = new System.Drawing.Point(7, 50);
-            this.checkBoxGrooveInter.Name = "checkBoxGrooveInter";
-            this.checkBoxGrooveInter.Size = new System.Drawing.Size(153, 17);
-            this.checkBoxGrooveInter.TabIndex = 29;
-            this.checkBoxGrooveInter.Text = "User Sidewall Intersections";
-            this.checkBoxGrooveInter.UseVisualStyleBackColor = true;
-            this.checkBoxGrooveInter.CheckedChanged += new System.EventHandler(this.CheckBoxGrooveInter_CheckedChanged);
-            // 
-            // checkBoxAutoSaveOutput
-            // 
-            this.checkBoxAutoSaveOutput.AutoSize = true;
-            this.checkBoxAutoSaveOutput.Location = new System.Drawing.Point(8, 158);
-            this.checkBoxAutoSaveOutput.Name = "checkBoxAutoSaveOutput";
-            this.checkBoxAutoSaveOutput.Size = new System.Drawing.Size(111, 17);
-            this.checkBoxAutoSaveOutput.TabIndex = 26;
-            this.checkBoxAutoSaveOutput.Text = "Auto Save Output";
-            this.checkBoxAutoSaveOutput.UseVisualStyleBackColor = true;
-            this.checkBoxAutoSaveOutput.CheckedChanged += new System.EventHandler(this.CheckBoxAutoSaveOutput_CheckedChanged);
-            // 
             // checkBoxAngleCorrect
             // 
             this.checkBoxAngleCorrect.AutoSize = true;
-            this.checkBoxAngleCorrect.Location = new System.Drawing.Point(7, 75);
+            this.checkBoxAngleCorrect.Location = new System.Drawing.Point(7, 29);
             this.checkBoxAngleCorrect.Name = "checkBoxAngleCorrect";
             this.checkBoxAngleCorrect.Size = new System.Drawing.Size(115, 17);
             this.checkBoxAngleCorrect.TabIndex = 24;
             this.checkBoxAngleCorrect.Text = "Auto Angle Correct";
             this.checkBoxAngleCorrect.UseVisualStyleBackColor = true;
             this.checkBoxAngleCorrect.CheckedChanged += new System.EventHandler(this.CheckBoxAngleCorrect_CheckedChanged);
-            // 
-            // checkBoxLandPoints
-            // 
-            this.checkBoxLandPoints.AutoSize = true;
-            this.checkBoxLandPoints.Location = new System.Drawing.Point(7, 30);
-            this.checkBoxLandPoints.Name = "checkBoxLandPoints";
-            this.checkBoxLandPoints.Size = new System.Drawing.Size(134, 17);
-            this.checkBoxLandPoints.TabIndex = 23;
-            this.checkBoxLandPoints.Text = "User Input Land Points";
-            this.checkBoxLandPoints.UseVisualStyleBackColor = true;
-            this.checkBoxLandPoints.CheckedChanged += new System.EventHandler(this.CheckBoxLandPoints_CheckedChanged);
             // 
             // textBoxSerialN
             // 
@@ -983,17 +880,6 @@
             this.toolStripButtonCursor.Text = "Cursor";
             this.toolStripButtonCursor.Click += new System.EventHandler(this.ToolStripButtonCursor_Click);
             // 
-            // toolStripButtonLand
-            // 
-            this.toolStripButtonLand.CheckOnClick = true;
-            this.toolStripButtonLand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonLand.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonLand.Image")));
-            this.toolStripButtonLand.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonLand.Name = "toolStripButtonLand";
-            this.toolStripButtonLand.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonLand.Text = "Select Lands";
-            this.toolStripButtonLand.Click += new System.EventHandler(this.ToolStripButtonLand_Click);
-            // 
             // toolStrip1
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(26, 26);
@@ -1002,10 +888,8 @@
             this.toolStripButtonFileSave,
             this.toolStripSeparator1,
             this.toolStripButtonCursor,
-            this.toolStripButtonLand,
             this.toolStripButtonLength,
             this.toolStripButtonSetKnownRadius,
-            this.toolStripButtonSelectGrooves,
             this.toolStripButtonGrooveMidpoint,
             this.toolStripButtonRotate,
             this.toolStripButtonMirror,
@@ -1064,18 +948,6 @@
             this.toolStripButtonSetKnownRadius.Text = "Set Known Radius";
             this.toolStripButtonSetKnownRadius.Click += new System.EventHandler(this.ToolStripButtonSetKnownRadius_Click);
             // 
-            // toolStripButtonSelectGrooves
-            // 
-            this.toolStripButtonSelectGrooves.BackColor = System.Drawing.SystemColors.Control;
-            this.toolStripButtonSelectGrooves.CheckOnClick = true;
-            this.toolStripButtonSelectGrooves.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonSelectGrooves.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSelectGrooves.Image")));
-            this.toolStripButtonSelectGrooves.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonSelectGrooves.Name = "toolStripButtonSelectGrooves";
-            this.toolStripButtonSelectGrooves.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonSelectGrooves.Text = "Select Groove Sidewalls";
-            this.toolStripButtonSelectGrooves.Click += new System.EventHandler(this.ToolStripButtonSelectGrooves_Click);
-            // 
             // toolStripButtonGrooveMidpoint
             // 
             this.toolStripButtonGrooveMidpoint.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1123,7 +995,7 @@
             this.tabControlParams.Location = new System.Drawing.Point(760, 23);
             this.tabControlParams.Name = "tabControlParams";
             this.tabControlParams.SelectedIndex = 0;
-            this.tabControlParams.Size = new System.Drawing.Size(276, 610);
+            this.tabControlParams.Size = new System.Drawing.Size(323, 610);
             this.tabControlParams.TabIndex = 24;
             // 
             // tabPage1
@@ -1326,7 +1198,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(268, 584);
+            this.tabPage2.Size = new System.Drawing.Size(315, 584);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Inspection Params";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1401,13 +1273,9 @@
             this.tabPage3.Controls.Add(this.labelInputValue);
             this.tabPage3.Controls.Add(this.textBoxProbePhaseDeg);
             this.tabPage3.Controls.Add(this.textBoxKnownRadius);
-            this.tabPage3.Controls.Add(this.checkBoxDualProbeAve);
             this.tabPage3.Controls.Add(this.checkBoxUseFilename);
-            this.tabPage3.Controls.Add(this.checkBoxGrooveInter);
-            this.tabPage3.Controls.Add(this.checkBoxLandPoints);
             this.tabPage3.Controls.Add(this.buttonProcessFile);
             this.tabPage3.Controls.Add(this.buttonGetAveAngle);
-            this.tabPage3.Controls.Add(this.checkBoxAutoSaveOutput);
             this.tabPage3.Controls.Add(this.checkBoxAngleCorrect);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -1439,7 +1307,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(27, 129);
+            this.label5.Location = new System.Drawing.Point(27, 74);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(125, 13);
@@ -1448,23 +1316,12 @@
             // 
             // textBoxProbePhaseDeg
             // 
-            this.textBoxProbePhaseDeg.Location = new System.Drawing.Point(156, 126);
+            this.textBoxProbePhaseDeg.Location = new System.Drawing.Point(156, 71);
             this.textBoxProbePhaseDeg.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxProbePhaseDeg.Name = "textBoxProbePhaseDeg";
             this.textBoxProbePhaseDeg.Size = new System.Drawing.Size(36, 20);
             this.textBoxProbePhaseDeg.TabIndex = 37;
             this.textBoxProbePhaseDeg.Text = "179.5";
-            // 
-            // checkBoxDualProbeAve
-            // 
-            this.checkBoxDualProbeAve.AutoSize = true;
-            this.checkBoxDualProbeAve.Location = new System.Drawing.Point(7, 107);
-            this.checkBoxDualProbeAve.Name = "checkBoxDualProbeAve";
-            this.checkBoxDualProbeAve.Size = new System.Drawing.Size(152, 17);
-            this.checkBoxDualProbeAve.TabIndex = 36;
-            this.checkBoxDualProbeAve.Text = "Use Dual Probe Averaging";
-            this.checkBoxDualProbeAve.UseVisualStyleBackColor = true;
-            this.checkBoxDualProbeAve.CheckedChanged += new System.EventHandler(this.checkBoxDualProbeAve_CheckedChanged);
             // 
             // checkBoxUseFilename
             // 
@@ -1564,7 +1421,6 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel3);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -1576,8 +1432,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -1633,13 +1487,9 @@
         private System.Windows.Forms.Label labelYPosition;
         private System.Windows.Forms.Label labelDxMeasured;
         private System.Windows.Forms.Label labelDyMeasured;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RadioButton radioButtonViewRolled;
-        private System.Windows.Forms.RadioButton radioButtonViewUnrolled;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.RadioButton radioButtonViewProcessed;
         private System.Windows.Forms.RadioButton radioButtonViewRaw;
-        private System.Windows.Forms.TextBox textBoxLandList;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openRawDataFileToolStripMenuItem;
@@ -1661,11 +1511,8 @@
         private System.Windows.Forms.ComboBox comboBoxProbeDirection;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ToolStripButton toolStripButtonCursor;
-        private System.Windows.Forms.ToolStripButton toolStripButtonLand;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButtonLength;
-        private System.Windows.Forms.CheckBox checkBoxLandPoints;
-        private System.Windows.Forms.Label labelLandCount;
         private System.Windows.Forms.Label labelInputValue;
         private System.Windows.Forms.TextBox textBoxKnownRadius;
         private System.Windows.Forms.ToolStripButton toolStripButtonSetKnownRadius;
@@ -1683,9 +1530,6 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonFileSave;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.CheckBox checkBoxAngleCorrect;
-        private System.Windows.Forms.CheckBox checkBoxAutoSaveOutput;
-        private System.Windows.Forms.ToolStripButton toolStripButtonSelectGrooves;
-        private System.Windows.Forms.CheckBox checkBoxGrooveInter;
         private System.Windows.Forms.ToolStripMenuItem saveProfileDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveDepthDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveDXFProfileToolStripMenuItem;
@@ -1710,7 +1554,6 @@
         private System.Windows.Forms.ToolStripMenuItem viewLogFileToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.CheckBox checkBoxUseFilename;
-        private System.Windows.Forms.CheckBox checkBoxDualProbeAve;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxProbePhaseDeg;
         private System.Windows.Forms.TextBox textBoxGrooveList;

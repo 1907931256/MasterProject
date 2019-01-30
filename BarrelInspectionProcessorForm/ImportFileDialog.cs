@@ -14,6 +14,8 @@ namespace BarrelInspectionProcessorForm
 {
     public partial class ImportFileDialog : Form
     {
+        public InspDataSet InspDataSet { get; private set; }
+
         public ImportFileDialog()
         {
             InitializeComponent();
@@ -23,10 +25,13 @@ namespace BarrelInspectionProcessorForm
         {
             this.Close();
         }
-
-        private void buttonOK_Click(object sender, EventArgs e)
+        private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            
         }
         void OpenFile(string filename)
         {
@@ -45,7 +50,9 @@ namespace BarrelInspectionProcessorForm
         private void buttonBrowse_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
-            if(ofd.ShowDialog()==DialogResult.OK)
+            ofd.Filter = "(*.csv)|*.csv";
+
+            if (ofd.ShowDialog()==DialogResult.OK)
             {
                 _filename = ofd.FileName;
                 OpenFile(_filename);
@@ -84,5 +91,7 @@ namespace BarrelInspectionProcessorForm
         {
 
         }
+
+        
     }
 }

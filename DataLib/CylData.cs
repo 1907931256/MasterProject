@@ -4,12 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GeometryLib;
-
+using System.Drawing;
 namespace DataLib
 {
+   
     public class CylData : List<PointCyl>
     {
+        public ScanFormat ScanFormat { get; protected set; }
         public double NominalMinDiam { get; set; }
+        public DisplayData AsScreenData( ViewPlane viewplane)
+        {
+            var pts = new DisplayData();
+            foreach (PointCyl v in this)
+            {
+                switch (viewplane)
+                {
+                    case ViewPlane.ZR:
+                        pts.Add(new PointF((float)v.Z, (float)v.R));
+                        break;
+                    case ViewPlane.THETAR:
+                    default:
+                        pts.Add(new PointF((float)v.ThetaDeg(), (float)v.R));
+                        break;                    
+                }
+                
+            }
+            return pts;
+        }
+
         public BoundingBox BoundingBox
         {
             get
@@ -88,5 +110,11 @@ namespace DataLib
             this.AddRange(arr);
         }
         BoundingBox _boundingBox;
+      
+
+        public CylData()
+        {
+           
+        }
     }
 }

@@ -3,17 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Drawing;
+using GeometryLib;
 namespace DataLib
 {
-    public class DisplayData<T>:List<T> 
+    public class DisplayData : List<PointF>
     {
-        public ScanFormat DataFormat { get; set; }
-        public List<T> HiLightPoints { get; set; }
-        public DisplayData()
+        public RectangleF BoundingRect()
         {
-            HiLightPoints = new List<T>();
-            DataFormat = ScanFormat.UNKNOWN;
+                float maxX = float.MinValue;
+                float minX = float.MaxValue;
+                float maxY = float.MinValue;
+                float minY = float.MaxValue;
+                foreach (PointF pt in this)
+                {
+                    maxX = Math.Max(pt.X, maxX);
+                    minX = Math.Min(pt.X, minX);
+                    maxY = Math.Max(pt.Y, maxY);
+                    minY = Math.Min(pt.Y, minY);
+                }
+                return new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
+     
     }
+   
+    
+
 }

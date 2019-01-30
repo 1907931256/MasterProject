@@ -42,7 +42,7 @@ namespace InspectionLib
                     var pt = new PointCyl(r, theta, z, i);
                     points.Add(pt);
                 }
-                var dataSet = new InspDataSet();
+                var dataSet = new AxialDataSet(_barrel);
                 dataSet.CorrectedCylData = points;
                 return dataSet;
             }
@@ -80,11 +80,8 @@ namespace InspectionLib
         {
             try
             {
-                Init(options, rawDataSet.Filename);
-                var dataSet = new InspDataSet();
-                dataSet = BuildFromAxial(script, rawDataSet);
-                dataSet.DataFormat = ScanFormat.AXIAL;
-                return dataSet;
+                Init(options, rawDataSet.Filename);                
+                return BuildFromAxial(script, rawDataSet);
             }
             catch (Exception)
             {

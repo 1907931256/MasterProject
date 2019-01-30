@@ -23,6 +23,7 @@ namespace DataLib
         }
          public CylData AsCylData()
         {
+            
             var stripd = new CylData();
             foreach (var strip in this)
             {
@@ -35,5 +36,9 @@ namespace DataLib
             return stripd;
         }
         BoundingBox _boundingBox;
+       
+        public CylGridData()
+        {
+        }
     }
 }

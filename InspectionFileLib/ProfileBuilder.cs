@@ -10,31 +10,7 @@ namespace InspectionLib
 {
     public class ProfileBuilder:DataBuilder
     {
-        public PointCyl  BuildMinDProfile(CylInspScript script, string filename,double minFeatureSize)
-        {
-            try
-            {
-                var result = new CylData();
-                var dataSet = new KeyenceSiDataSet(script.ScanFormat,script.OutputUnit, script.ProbeSetup.ProbeCount, filename);
-                var data = dataSet.GetData();
-                int pointCount = data.GetUpperBound(0);
-                double pointSpacing = _barrel.DimensionData.NomCircumference / pointCount;
-                int windowSize = (int)((minFeatureSize / pointSpacing) / 2);
-                if(windowSize>pointCount*.01 || windowSize==0)
-                {
-                    windowSize = (int)(pointSpacing * .01);
-                }
-
-                var rb = new RingDataBuilder(_barrel);
-                var pt = rb.GetMinRadiusDualProbe(script, data,windowSize);
-                return pt;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+       
         public BarrelInspProfile Build(List<InspDataSet> inspDataSets)
         {
             try
@@ -73,77 +49,73 @@ namespace InspectionLib
             {
                 var profile = new BarrelInspProfile();
                 var groovePointList = new List<CylData>();
-                var aveLandPointList = new List<CylData>();
-               
+                var aveLandPointList = new List<CylData>();               
                 var aveGrooveProfile = new CylData();
                 var minLandProfile = new CylData();
                 var aveLandProfile = new CylData();
                 
-
-                for(int i=0;i< inspDataSets.Count;i++)
+                
+                foreach(InspDataSet dataset in inspDataSets)
                 {
-                    
-                    var inspData = inspDataSets[i].CorrectedCylData;
-                    
-                    var groovePoints = new CylData();
-                    var landPoints = new CylData();
-                    int grooveCt = inspDataSets[i].Barrel.DimensionData.GrooveCount;
-                    int pointCt = inspDataSets[i].CorrectedCylData.Count;
-                    int deltaIndex = pointCt / grooveCt;
+                    if(dataset is RingDataSet ringData)
+                    {
+                        var inspData =ringData.CorrectedCylData;
 
-                    int[] grooveIndices = new int[grooveCt];
-                    int[] landIndices = new int[grooveCt];
-                    //get land and groove indices
-                    int grooveIndex = 0;
-                    
-                    
-                    int landIndex = 0;
-                    for (int j=0;j< grooveCt;j++)
-                    {
-                        grooveIndex = (int)(j * deltaIndex);
-                        landIndex = (int)(j * deltaIndex + deltaIndex / 2);
-                        grooveIndices[j] = grooveIndex;
-                        landIndices[j] = landIndex;
-                    }
-                  
-                    double rGrooveAve = 0;
-                    double rLandAve = 0;
-                    var pt0 = inspData[0];
-                    //average groove values
-                    for (int k = 0; k < grooveIndices.Length; k++)
-                    {
-                        var groovePt = inspData[grooveIndices[k]];
-                        rGrooveAve += groovePt.R;
-                        var landPt = inspData[landIndices[k]];
-                        rLandAve += landPt.R;
-                    }
-                    rLandAve /= grooveIndices.Length;
-                    rGrooveAve/= grooveIndices.Length;                   
-                    aveGrooveProfile.Add(new PointCyl(rGrooveAve, pt0.ThetaRad, pt0.Z));
-                    aveLandProfile.Add(new PointCyl(rLandAve, pt0.ThetaRad, pt0.Z));
-                //use min or average land values
+                        var groovePoints = new CylData( );
+                        var landPoints = new CylData( );
+                        int grooveCt = ringData.Barrel.DimensionData.GrooveCount;
+                        int pointCt = ringData.CorrectedCylData.Count;
+                        int deltaIndex = pointCt / grooveCt;
 
-                double minR = double.MaxValue;                        
-                    foreach(PointCyl pt in inspData)
-                    {
-                            if(pt.R<minR)
+                        int[] grooveIndices = new int[grooveCt];
+                        int[] landIndices = new int[grooveCt];
+                        //get land and groove indices
+                        int grooveIndex = 0;
+
+
+                        int landIndex = 0;
+                        for (int j = 0; j < grooveCt; j++)
+                        {
+                            grooveIndex = (int)(j * deltaIndex);
+                            landIndex = (int)(j * deltaIndex + deltaIndex / 2);
+                            grooveIndices[j] = grooveIndex;
+                            landIndices[j] = landIndex;
+                        }
+
+                        double rGrooveAve = 0;
+                        double rLandAve = 0;
+                        var pt0 = inspData[0];
+                        //average groove values
+                        for (int k = 0; k < grooveIndices.Length; k++)
+                        {
+                            var groovePt = inspData[grooveIndices[k]];
+                            rGrooveAve += groovePt.R;
+                            var landPt = inspData[landIndices[k]];
+                            rLandAve += landPt.R;
+                        }
+                        rLandAve /= grooveIndices.Length;
+                        rGrooveAve /= grooveIndices.Length;
+                        aveGrooveProfile.Add(new PointCyl(rGrooveAve, pt0.ThetaRad, pt0.Z));
+                        aveLandProfile.Add(new PointCyl(rLandAve, pt0.ThetaRad, pt0.Z));
+                        //use min or average land values
+
+                        double minR = double.MaxValue;
+                        foreach (PointCyl pt in inspData)
+                        {
+                            if (pt.R < minR)
                             {
                                 minR = pt.R;
                             }
+                        }
+                        var ptMin = new PointCyl(minR, pt0.ThetaRad, pt0.Z);
+                        minLandProfile.Add(ptMin);
                     }
-                    var ptMin = new PointCyl(minR, pt0.ThetaRad, pt0.Z);
-                    minLandProfile.Add(ptMin);
-                    
-                    
-                   
-                   
-                                     
-                   
+                    profile.AveGrooveProfile = aveGrooveProfile;
+                    profile.AveLandProfile = aveLandProfile;
+                    profile.MinLandProfile = minLandProfile;
+                    profile.Barrel = inspDataSets[0].Barrel;
                 }
-                profile.AveGrooveProfile = aveGrooveProfile;
-                profile.AveLandProfile = aveLandProfile;
-                profile.MinLandProfile= minLandProfile;
-                profile.Barrel = inspDataSets[0].Barrel;
+                    
                 return profile;
             }
             catch (Exception)
@@ -162,13 +134,17 @@ namespace InspectionLib
                 var landProfile = new List<PointCyl>();
 
                 int minLength = int.MaxValue;
-                for (int i = 0; i < inspDataSets.Count; i++)
+                foreach(InspDataSet dataset in inspDataSets)
                 {
-                  int len = inspDataSets[i].CorrectedCylData.Count;
-                  if(len < minLength)
-                  {
-                        minLength = len;
-                  }                  
+                    if(dataset  is AxialDataSet axialData)
+                    {
+                        int len = axialData.CorrectedCylData.Count;
+                        if (len < minLength)
+                        {
+                            minLength = len;
+                        }
+                    }
+                  
                 }
                 for(int j=0; j< minLength;j++)
                 {
@@ -178,19 +154,22 @@ namespace InspectionLib
                     int landCount = 0;
                     double z = 0;
                     double th = 0;
-                    for (int i = 0; i < inspDataSets.Count; i++)
+                    foreach (InspDataSet dataset in inspDataSets)
                     {
-                        z = inspDataSets[i].CorrectedCylData[j].Z;
-                        th = inspDataSets[i].CorrectedCylData[j].ThetaRad;
-                        if (inspDataSets[i].DataFormat== ScanFormat.LAND)
+                        if (dataset is AxialDataSet axialData)
                         {
-                            landRadius += inspDataSets[i].CorrectedCylData[j].R;
-                            landCount++;
-                        }
-                        if(inspDataSets[i].DataFormat == ScanFormat.GROOVE)
-                        {
-                            grooveRadius += inspDataSets[i].CorrectedCylData[j].R;
-                            grooveCount++;
+                            z = axialData.CorrectedCylData[j].Z;
+                            th = axialData.CorrectedCylData[j].ThetaRad;
+                            if (axialData.DataFormat == ScanFormat.LAND)
+                            {
+                                landRadius += axialData.CorrectedCylData[j].R;
+                                landCount++;
+                            }
+                            if (axialData.DataFormat == ScanFormat.GROOVE)
+                            {
+                                grooveRadius += axialData.CorrectedCylData[j].R;
+                                grooveCount++;
+                            }
                         }
                     }
                     grooveRadius /= grooveCount;

@@ -514,7 +514,7 @@ namespace DataLib
         {
             try
             {
-                var cartdata = new CartData();
+                var cartdata = new CartData(ScanFormat.SINGLELINE );
                 foreach(Vector2 pt in points)
                 {
                     cartdata.Add(new Vector3(pt.X, pt.Y, z));
@@ -527,44 +527,5 @@ namespace DataLib
                 throw;
             }
         }
-        public static CylData ConverToCylData(Vector2[] points)
-        {
-            try
-            {
-                var cd = new CylData();
-                foreach (Vector2 pt in points)
-                {
-                    double r = Math.Sqrt(Math.Pow(pt.X, 2) + Math.Pow(pt.Y, 2));
-                    double th = Math.Atan2(pt.Y, pt.X) + Math.PI / 2;
-                    double z = 0;
-                    cd.Add(new PointCyl(r, th, z));
-                }
-                return cd;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            
-        }
-        static CylData ConvertToCylData(PointCyl[] points)
-        {
-            try
-            {
-                var cd = new CylData();
-                foreach (PointCyl pt in points)
-                {
-                    cd.Add(pt);
-                }
-                return cd;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-           
-        }
-        
     }
 }

@@ -42,7 +42,7 @@ namespace InspectionLib
             try
             {
 
-                var points = new CylData();
+                var points = new CylData(ScanFormat.RING );
 
                 int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
                 int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
@@ -77,7 +77,7 @@ namespace InspectionLib
         {
             try
             {
-                var points = new CylData();
+                var points = new CylData(ScanFormat.RING );
                 for (int i = 0; i < data.Length; i++)
                 {
                     var z = script.StartZ;
@@ -104,7 +104,7 @@ namespace InspectionLib
         {
             try
             {
-                var dataSet = new InspDataSet();                
+                var dataSet = new RingDataSet(_barrel);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution);
                 dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.ProbeDirection);
@@ -126,7 +126,7 @@ namespace InspectionLib
         {
             try
             {
-                var dataSet = new InspDataSet();
+                var dataSet = new RingDataSet(_barrel);
                 
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = landPointArr;
@@ -152,9 +152,7 @@ namespace InspectionLib
             try
             {
                 Init(options, rawDataSet.Filename);
-                var dataSet = BuildRingFromRadialData(script, rawDataSet);
-                dataSet.DataFormat = ScanFormat.RING;
-                dataSet.Filename = rawDataSet.Filename;
+                var dataSet = BuildRingFromRadialData(script, rawDataSet);               
                 return dataSet;
             }
             catch (Exception)
@@ -175,12 +173,9 @@ namespace InspectionLib
         {
             try
             {
-                Init(options, rawDataSet.Filename);
-                
-                
+                Init(options, rawDataSet.Filename);      
                 var dataSet = BuildRingFromRadialData(script, rawDataSet, landPointArr);
-                dataSet.DataFormat = ScanFormat.RING;
-                dataSet.Filename = rawDataSet.Filename;
+               
                 return dataSet;
             }
             catch (Exception)

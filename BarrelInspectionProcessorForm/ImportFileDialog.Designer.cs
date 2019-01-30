@@ -42,6 +42,7 @@
             this.numericUpDownFirstRow = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownColCount = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownFirstCol = new System.Windows.Forms.NumericUpDown();
+            this.buttonClose = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewImport)).BeginInit();
             this.panelDataGrid.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstRow)).BeginInit();
@@ -109,8 +110,8 @@
             this.comboBoxMethod.Items.AddRange(new object[] {
             "Ring",
             "Spiral",
-            "Raster",
-            "Axial"});
+            "Axial",
+            "SingleLineXY"});
             this.comboBoxMethod.Location = new System.Drawing.Point(98, 107);
             this.comboBoxMethod.Name = "comboBoxMethod";
             this.comboBoxMethod.Size = new System.Drawing.Size(100, 21);
@@ -128,7 +129,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(368, 145);
+            this.buttonOK.Location = new System.Drawing.Point(286, 145);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 11;
@@ -148,7 +149,7 @@
             // 
             // buttonBrowse
             // 
-            this.buttonBrowse.Location = new System.Drawing.Point(287, 145);
+            this.buttonBrowse.Location = new System.Drawing.Point(205, 145);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
             this.buttonBrowse.TabIndex = 13;
@@ -210,11 +211,22 @@
             0});
             this.numericUpDownFirstCol.ValueChanged += new System.EventHandler(this.numericUpDownFirstCol_ValueChanged);
             // 
+            // buttonClose
+            // 
+            this.buttonClose.Location = new System.Drawing.Point(368, 145);
+            this.buttonClose.Name = "buttonClose";
+            this.buttonClose.Size = new System.Drawing.Size(75, 23);
+            this.buttonClose.TabIndex = 15;
+            this.buttonClose.Text = "Close";
+            this.buttonClose.UseVisualStyleBackColor = true;
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            // 
             // ImportFileDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(536, 447);
+            this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.numericUpDownFirstCol);
             this.Controls.Add(this.numericUpDownColCount);
             this.Controls.Add(this.numericUpDownFirstRow);
@@ -258,5 +270,6 @@
         private System.Windows.Forms.NumericUpDown numericUpDownFirstRow;
         private System.Windows.Forms.NumericUpDown numericUpDownColCount;
         private System.Windows.Forms.NumericUpDown numericUpDownFirstCol;
+        private System.Windows.Forms.Button buttonClose;
     }
 }

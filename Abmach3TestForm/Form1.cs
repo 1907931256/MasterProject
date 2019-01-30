@@ -261,7 +261,7 @@ namespace Abmach3TestForm
         {
             try
             {
-                string startFileName = "SURF-TEST-1.STL";
+                //string startFileName = "SURF-TEST-1.STL";
                 // string targetFileName = "";
                 // StlFile startStlFile = StlFileParser.Open(startFileName);
                 //StlFile targetStlFile = StlFileParser.Open(targetFileName);

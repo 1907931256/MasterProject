@@ -17,7 +17,7 @@ namespace InspectionLib
         {
             try
             {
-                var points = new CylData();
+                var points = new CylData(ScanFormat.SPIRAL );
                 for (int i = 0; i < data.Length; i++)
                 {
                     var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
@@ -40,7 +40,7 @@ namespace InspectionLib
                 try
                 {
 
-                    var points = new CylData();
+                    var points = new CylData(ScanFormat.SPIRAL);
 
                     int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
                     int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
@@ -86,8 +86,8 @@ namespace InspectionLib
                 int pointIndex = 0;
                 double thetaStart = Math.Abs(uncorrectedData[0].ThetaRad);
                 double thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
-                var pointList = new CylData();
-                var uncorrectedGridData = new CylGridData();
+                var pointList = new CylData(ScanFormat.SPIRAL);
+                var uncorrectedGridData = new CylGridData(ScanFormat.SPIRAL);
 
                 while (pointIndex < uncorrectedData.Count)
                 {
@@ -107,7 +107,7 @@ namespace InspectionLib
 
                         pointCountPerRev = 0;
                         uncorrectedGridData.Add(pointList);
-                        pointList = new CylData();
+                        pointList = new CylData(ScanFormat.SPIRAL );
                         thetaStart = thetaEnd;
                         thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
                     }
@@ -120,18 +120,18 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildSpiralFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData, IProgress<int> progress)
+        SpiralDataSet BuildSpiralFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData, IProgress<int> progress)
         {
             try
             {
                
 
                 var data = GetUncorrectedData(script, rawInputData);
-                var dataSet = new InspDataSet();
-                dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
-                dataSet.UncorrectedSpiralData = BuildGridList(dataSet.UncorrectedCylData, script.ThetaDir);
-                int totalrings = dataSet.UncorrectedSpiralData.Count;
-                dataSet.CorrectedSpiralData = new CylGridData();
+                var dataSet = new SpiralDataSet(_barrel);
+                var ringData = new RingDataSet(_barrel);
+                ringData.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
+                dataSet.UncorrectedSpiralData = BuildGridList(ringData.UncorrectedCylData, script.ThetaDir);
+                int totalrings = dataSet.UncorrectedSpiralData.Count;                
 
                 //find all land points
                 int i = 1;
@@ -173,8 +173,7 @@ namespace InspectionLib
                 progress.Report(sw.Elapsed.Seconds);              
                
                 var dataSet = BuildSpiralFromRadialData(script, rawDataSet, progress);
-                dataSet.DataFormat = ScanFormat.SPIRAL;
-                dataSet.Filename = rawDataSet.Filename;
+
                 return dataSet;
             }
             catch (Exception)
@@ -191,7 +190,7 @@ namespace InspectionLib
                 var ringList = new List<CylData>();
                 if (script.ExtractLocations.Length != 0)
                 {
-                    var tempList = new CylData();
+                    var tempList = new CylData(ScanFormat.SPIRAL );
                     foreach (var ring in data)
                     {
                         tempList.AddRange(ring);

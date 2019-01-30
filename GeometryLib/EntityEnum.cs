@@ -5,6 +5,14 @@ using System.Text;
 
 namespace GeometryLib
 {
+    public enum ViewPlane
+    {
+        XY,
+        XZ,
+        YZ,
+        THETAR,
+        ZR
+    }
     public enum EntityType
     {
         

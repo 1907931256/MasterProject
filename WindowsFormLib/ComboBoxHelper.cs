@@ -9,6 +9,26 @@ namespace WinFormsLib
 {
     public class ComboListBoxHelper
     {
+        static public  int GetIndexOf( string item, ComboBox.ObjectCollection comboBoxitems )
+        {
+            
+            int index = 0;
+            int i = 0;
+            item = item.ToUpper();
+            foreach (object o in comboBoxitems)
+            {
+                string s = o.ToString();
+                s = s.ToUpper();
+                if (item == s.ToString())
+                {
+                    index = i;
+                    break;
+                }
+                i++;
+            }
+            return index;
+        }
+
         static public void FillComboBox(ComboBox control, string[] items)
         {
             int selectedIndex = 0;

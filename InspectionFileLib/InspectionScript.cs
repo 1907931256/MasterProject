@@ -24,12 +24,20 @@ namespace InspectionLib
         public string FileName { get; set; }       
         public ScanFormat ScanFormat { get; protected set; }
         public MeasurementUnit OutputUnit { get; protected set; }
-        public ProbeType ProbeType { get; protected set; }
+       
+        public ProbeSetup ProbeSetup { get; set; }
+        public CalDataSet CalDataSet { get; set; }        
+        public MachinePosition StartLocation { get; set; }
+        public MachinePosition EndLocation { get; set; }
         public InspectionScript()
         {
             FileName = InspectionScriptFile.TempFileName;
             ScanFormat = ScanFormat.RING;
-            OutputUnit = new MeasurementUnit(MeasurementUnitEnum.INCH);
+            OutputUnit = new MeasurementUnit(LengthUnitEnum.INCH);
+            CalDataSet = new CalDataSet();
+            ProbeSetup = new ProbeSetup();
+            StartLocation = new MachinePosition(MachineGeometry.XYZBC);
+            EndLocation = new MachinePosition(MachineGeometry.XYZBC);
         }
     }
 }

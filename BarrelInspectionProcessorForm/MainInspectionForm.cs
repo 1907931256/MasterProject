@@ -28,41 +28,86 @@ namespace BarrelInspectionProcessorForm
         RAW,
         PROCESSED
     }
+    
     public partial class MainInspectionForm : Form
     {
         LogFile _logFile;
         InputFileType inputFileType;
+        LengthUnitEnum _lengthUnits;
+        int _probeCount;
+        string barrelTypeStr;
+        string scanFormatStr;
+        string probeDirectionStr;
+        string probeTypeStr;
+        string knownDiamTypeStr;
+        string manufStepStr;
         public MainInspectionForm()
         {
-            InitializeComponent();
-            _logFile = LogFile.GetLogFile();
-            _lines = new List<string>();
-            comboBoxBarrel.SelectedIndex = 0;
-            comboBoxMethod.SelectedIndex = 0;
-            comboBoxProbeDirection.SelectedIndex = 0;
-            comboBoxManStep.SelectedIndex = 4;
-            comboBoxDiameterType.SelectedIndex = 3;
-            labelMethod.Text = "";
-            _units = LengthUnits.INCH;
-            _lengthLabel = "inch";
-            _angleLabel = "degs";
+            try
+            {
+                var barrelTypeList = new List<string>() { "M2_50_Cal", "M242_25mm", "M284_155mm", "M240_762mm" };
+                var scanFormatList = new List<string>() { "RING", "SPIRAL", "AXIAL", "LAND", "GROOVE", "CAL", "FLATPLATELINE", "FLATPLATEGRID" };
+                var probeDirectionList = new List<string>() { "BORE I.D.", "ROD O.D." };
+                var probeTypeList = new List<string>() { "SI Distance", "Line Scan" };
+                var knownDiamList = new List<string>() { "Default Value", "Set Value", "Diameter Profile", "Ring Calibrated" };
+                var manufStepList = new List<string>(){ "Pre-Boring ","Boring In-process","Post Boring","Post Honing","Groove Machining In-Process",
+                                                    "Post Groove Machining","Post Final Honing","In Use"};
+                InitializeComponent();
+                _logFile = LogFile.GetLogFile();
+                dataOuputText = new List<string>();
+
+                barrelTypeStr = Properties.Settings.Default.barrelType;
+                scanFormatStr = Properties.Settings.Default.scanFormat;
+                probeDirectionStr = Properties.Settings.Default.probeDirection;
+                probeTypeStr = Properties.Settings.Default.probeType;
+                _probeCount = Properties.Settings.Default.probeCount;
+                knownDiamTypeStr = Properties.Settings.Default.diamCalType;
+                manufStepStr = Properties.Settings.Default.manufStep;
+
+                ComboListBoxHelper.FillComboBox(comboBoxMethod, scanFormatList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxBarrel, barrelTypeList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxDiameterType, knownDiamList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxProbeDirection, probeDirectionList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxProbeType, probeTypeList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxManStep, manufStepList.ToArray());
+
+                comboBoxBarrel.SelectedIndex = ComboListBoxHelper.GetIndexOf(barrelTypeStr, comboBoxBarrel.Items);
+                comboBoxMethod.SelectedIndex = ComboListBoxHelper.GetIndexOf(scanFormatStr, comboBoxMethod.Items);
+                comboBoxProbeDirection.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeDirectionStr, comboBoxProbeDirection.Items);
+                comboBoxProbeType.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeTypeStr, comboBoxProbeType.Items);
+                comboBoxDiameterType.SelectedIndex = ComboListBoxHelper.GetIndexOf(knownDiamTypeStr, comboBoxDiameterType.Items);
+                comboBoxManStep.SelectedIndex = ComboListBoxHelper.GetIndexOf(manufStepStr, comboBoxManStep.Items);
+
+
+                labelMethod.Text = "";
+                _lengthUnits = LengthUnitEnum.INCH;
+                _lengthLabel = "inch";
+                _angleLabel = "degs";
+
+                radioButtonViewProcessed.Checked = true;
+                checkBoxAngleCorrect.Checked = true;
+
+                textBoxPitch.ReadOnly = true;
+                textBoxProbeCount.Text = _probeCount.ToString();
+
+                //_barrel = new Barrel(_barrelType);
+                //_probeDirection = ProbeController.ProbeDirection.ID;
+                Size = new Size(1600, 800);
+                if (DataOutputOptions.FileName != null && System.IO.File.Exists(DataOutputOptions.FileName))
+                {
+                    _dataOutOptions = DataOptionsFile.Open(DataOutputOptions.FileName);
+                }
+                else
+                {
+                    _dataOutOptions = new DataOutputOptions();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             
-            radioButtonViewProcessed.Checked = true;
-            checkBoxAngleCorrect.Checked = true;           
-           
-            textBoxPitch.ReadOnly = true;
-            textBoxProbeCount.Text = "2";
-            _barrel = new Barrel();
-            _probeDirection = ProbeController.ProbeDirection.ID;          
-            Size = new Size(1600, 800);
-            if (DataOutputOptions.FileName != null && System.IO.File.Exists(DataOutputOptions.FileName))
-            {
-                _dataOutOptions = DataOptionsFile.Open(DataOutputOptions.FileName);
-            }
-            else
-            {
-                _dataOutOptions = new DataOutputOptions();
-            }
 
         }
         string _inputFileName;
@@ -97,8 +142,8 @@ namespace BarrelInspectionProcessorForm
                     {
                         labelInputFIlename.Text = "Multiple Files";
                     }
-                    _lines.Add("opening: ");
-                    _lines.AddRange(_inputFileNames);
+                    dataOuputText.Add("opening: ");
+                    dataOuputText.AddRange(_inputFileNames);
                     _outputPath = System.IO.Path.GetDirectoryName(_inputFileNames[0]);                   
                     
                     labelStatus.Text = "Raw Files Read In OK";
@@ -121,7 +166,7 @@ namespace BarrelInspectionProcessorForm
             buttonCorrectMidpoint.Enabled = state;            
                      
             _dataSelection = DataSelection.NONE;
-            DisplayData();
+           // DisplayData();
             Clear3DView();
         }
         private void OpenProcessedFile(int firstRow)
@@ -129,7 +174,7 @@ namespace BarrelInspectionProcessorForm
             try
             {
 
-
+                
                 var ofd = new OpenFileDialog();
                 
                 if (ofd.ShowDialog() == DialogResult.OK)
@@ -151,28 +196,10 @@ namespace BarrelInspectionProcessorForm
                         labelInputFIlename.Text = "Multiple Files";                        
                     }
                     _outputPath = System.IO.Path.GetDirectoryName(_inputFileNames[0]);
-                    _lines.Add("opening: ");
-                    _lines.AddRange(_inputFileNames);
+                    dataOuputText.Add("opening: ");
+                    dataOuputText.AddRange(_inputFileNames);
 
-                    foreach (string filename in _inputFileNames)
-                    {
-                        var inspDataSet = new RingDataSet(_barrel);
-                        var lines = FileIO.ReadDataTextFile(filename);
-                        for (int i = firstRow; i < lines.Count; i++)
-                        {
-                            var words = FileIO.Split(lines[i]);
-                            if( double.TryParse(words[1], out double th) && double.TryParse(words[2], out double r) &&
-                            double.TryParse(words[3], out double z))                            
-                            {
-                                var pt = new PointCyl(r, th, z);
-                                inspDataSet.CorrectedCylData.Add(pt);
-                            }
-
-                        }                        
-                        _inspScript = new CylInspScript(ScanFormat.RING, new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER),
-                            new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER));                        
-                        _inspDataSetList.Add(inspDataSet);
-                    }
+                    OpenProcessedCartDataFiles(_inputFileNames);
                     
                     DisplayData();
                     labelStatus.Text = "Processed File Read In OK";
@@ -185,6 +212,62 @@ namespace BarrelInspectionProcessorForm
             }
 
 
+        }
+        void OpenProcessedCartDataFiles(List<string> filenames)
+        {
+            int firstRow = 0;
+            foreach (string filename in filenames)
+            {
+                var inspDataSet = new CartDataSet(_barrel);
+                var lines = FileIO.ReadDataTextFile(filename);
+                for (int i = firstRow; i < lines.Count; i++)
+                {
+                    var words = FileIO.Split(lines[i]);
+                    if(words.Length==2)
+                    {
+                        if (double.TryParse(words[0], out double x) && double.TryParse(words[1], out double y))
+                        {
+                            var pt = new Vector3(x, y, 0);
+                            inspDataSet.CartData.Add(pt);
+                        }
+                    }
+                    if(words.Length==3)
+                    {
+                        if (double.TryParse(words[0], out double x) && double.TryParse(words[1], out double y) && double.TryParse(words[1], out double z))
+                        {
+                            var pt = new Vector3(x, y, z);
+                            inspDataSet.CartData.Add(pt);
+                        }
+                    }
+                    
+
+                }
+                _inspScript = new CartInspScript(ScanFormat.FLATPLATELINE);
+                _inspDataSetList.Add(inspDataSet);
+            }
+        }
+        void OpenProcessedRingDataFiles(List<string> filenames)
+        {
+            int firstRow = 6;
+            foreach (string filename in filenames)
+            {
+                var inspDataSet = new RingDataSet(_barrel);
+                var lines = FileIO.ReadDataTextFile(filename);
+                for (int i = firstRow; i < lines.Count; i++)
+                {
+                    var words = FileIO.Split(lines[i]);
+                    if (double.TryParse(words[1], out double th) && double.TryParse(words[2], out double r) &&
+                    double.TryParse(words[3], out double z))
+                    {
+                        var pt = new PointCyl(r, th, z);
+                        inspDataSet.CorrectedCylData.Add(pt);
+                    }
+
+                }
+                _inspScript = new CylInspScript(ScanFormat.RING, new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER),
+                    new CNCLib.MachinePosition(CNCLib.MachineGeometry.CYLINDER));
+                _inspDataSetList.Add(inspDataSet);
+            }
         }
         private void rawFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -305,8 +388,8 @@ namespace BarrelInspectionProcessorForm
                
 
                 //read probe count
-                int probeCount = 2;
-                InputVerification.TryGetValue(textBoxProbeCount, "x=1,2", 0, 3, out probeCount);
+                _probeCount = 1;
+                InputVerification.TryGetValue(textBoxProbeCount, "x=1,2", 0, 3, out _probeCount);
                 
                 
                 //read ring revolutions
@@ -405,7 +488,7 @@ namespace BarrelInspectionProcessorForm
                         ringRevs, pitch, ptsPerRev, grooves);
                 }
                 
-                _inspScript.ProbeSetup.UseDualProbeAve = (probeCount==2);
+                _inspScript.ProbeSetup.UseDualProbeAve = (_probeCount==2);
                 double probePhase = 0;
                 if(_inspScript.ProbeSetup.UseDualProbeAve)
                 {
@@ -415,14 +498,16 @@ namespace BarrelInspectionProcessorForm
                 double ringCalDiameterInch=0;
                 InputVerification.TryGetValue(textBoxRingCal, "x>0", out ringCalDiameterInch);
                 _inspScript.ProbeSetup.ProbeDirection = _probeDirection;
-                _inspScript.ProbeSetup.ProbeCount = probeCount;
+                _inspScript.ProbeSetup.ProbeCount = _probeCount;
+                _inspScript.ProbeSetup.ProbeList.AddRange(_probes);
+
                 CalDataSet calDataSet = new CalDataSet(_barrel.DimensionData.LandNominalDiam/2);
                 switch(_knownDiamType)
                 {
                     case DiamCalType.RINGCAL:
                         if (_calFilename != "")
                         {
-                            calDataSet = BuildCalibration(_calFilename,_inspScript.OutputUnit, probeCount, ringCalDiameterInch, _inspScript.ProbeSetup.ProbeDirection);
+                            calDataSet = BuildCalibration(_calFilename,_inspScript.OutputUnit, _probeCount, ringCalDiameterInch, _inspScript.ProbeSetup.ProbeDirection);
                             _barrel.DimensionData.ActualLandDiam = calDataSet.NominalRadius * 2;
                         }
                         break;
@@ -471,7 +556,7 @@ namespace BarrelInspectionProcessorForm
 
 
 
-        CylInspScript _inspScript;
+        InspectionScript _inspScript;
         Task<InspDataSet> ProcessDataAsync(string dataFilename, CancellationToken ct, Progress<int> progress)
         {
             try
@@ -485,7 +570,9 @@ namespace BarrelInspectionProcessorForm
                 }
                  if(_probeType==ProbeType.LINE_SCAN)
                 {
-                    _rawLineScanDataSet = new KeyenceLineScanDataSet(_inspScript.ScanFormat, _inspScript.OutputUnit, centerline, -1, 1, dataFilename);
+                    double minValue = _inspScript.ProbeSetup.ProbeList[0].StartMeasuringRange;
+                    double maxValue = _inspScript.ProbeSetup.ProbeList[0].MeasuringRange + minValue;
+                    _rawLineScanDataSet = new KeyenceLineScanDataSet(_inspScript.ScanFormat, _inspScript.OutputUnit, centerline, minValue, maxValue, dataFilename);
                 }
                    
 
@@ -493,19 +580,19 @@ namespace BarrelInspectionProcessorForm
                     {
                         case ScanFormat.AXIAL:                           
                             var axialbuilder = new AxialDataBuilder(_barrel);
-                            return Task.Run(() => axialbuilder.BuildAxialAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
+                            return Task.Run(() => axialbuilder.BuildAxialAsync(ct, progress, _inspScript as CylInspScript, _rawSiDataSet, _dataOutOptions));
 
                         case ScanFormat.RING:                          
                             var ringBuilder = new RingDataBuilder(_barrel);                          
-                             return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
+                             return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript as CylInspScript, _rawSiDataSet, _dataOutOptions));
 
                         case ScanFormat.SPIRAL:                          
                             var spiralBuilder = new SpiralDataBuilder(_barrel);
-                            return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript, _rawSiDataSet, _dataOutOptions));
+                            return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript as CylInspScript, _rawSiDataSet, _dataOutOptions));
                        
-                        case ScanFormat.SINGLELINE:
+                        case ScanFormat.FLATPLATELINE:
                         var lineBuilder = new CartesianDataBuilder(_barrel);
-                        return Task.Run(() => lineBuilder.BuildSingleLineAsync(ct, progress, _inspScript, _rawLineScanDataSet, _dataOutOptions));
+                        return Task.Run(() => lineBuilder.BuildSingleLineAsync(ct, progress, _inspScript as CartInspScript, _rawLineScanDataSet, _dataOutOptions));
                         default:
                             return null;
                     }               
@@ -551,27 +638,30 @@ namespace BarrelInspectionProcessorForm
 
                 radioButtonViewProcessed.Checked = true;
                 
-                _lines.Add("***Processing***");
-                _lines.Add(_inspScript.ScanFormat.ToString());
-                _lines.Add("ProbeSpacing: "+ _inspScript.CalDataSet.ProbeSpacingInch.ToString());
+                dataOuputText.Add("***Processing***");
+                dataOuputText.Add(_inspScript.ScanFormat.ToString());
+                dataOuputText.Add("ProbeSpacing: "+ _inspScript.CalDataSet.ProbeSpacingInch.ToString());
 
                 if(_inspDataSetList!= null && _inspDataSetList.Count>=1)               
                 {
 
                     foreach(InspDataSet dataset in _inspDataSetList)
                     {
-                        if (dataset is RingDataSet)
+                        dataOuputText.Add("Processing: " + dataset.Filename);
+                        if (dataset is RingDataSet ringData)
                         {
-                            RingDataSet ringData = (RingDataSet)dataset;
-
-                            _lines.Add("Processing: " + dataset.Filename);
+                            
                             if (dataset.DataFormat == ScanFormat.RING)
                             {
-                                _lines.Add("Nominal Minimum Diameter: " + ringData.CorrectedCylData.NominalMinDiam.ToString());
-                                _lines.Add("---Correcting Eccentricity---");
-                                _lines.Add("Raw land variation: " + ringData.GetRawLandVariation().ToString());
-                                _lines.Add("Corrected land variation: " + ringData.GetCorrectedLandVariation().ToString());
+                                dataOuputText.Add("Nominal Minimum Diameter: " + ringData.CorrectedCylData.NominalMinDiam.ToString());
+                                dataOuputText.Add("---Correcting Eccentricity---");
+                                dataOuputText.Add("Raw land variation: " + ringData.GetRawLandVariation().ToString());
+                                dataOuputText.Add("Corrected land variation: " + ringData.GetCorrectedLandVariation().ToString());
                             }
+                        }
+                        if(dataset is CartDataSet cartData)
+                        {
+
                         }
                     }                  
                     
@@ -579,9 +669,7 @@ namespace BarrelInspectionProcessorForm
                                         
                 }
                 progressBarProcessing.Value = 0;
-
-
-
+                DisplayData();
             }
             catch (Exception)
             {
@@ -675,7 +763,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetRingSwitches()
         {
-            _scanFormat = ScanFormat.RING;
+            
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = false;
@@ -701,7 +789,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetSpiralSwitches()
         {
-            _scanFormat = ScanFormat.SPIRAL;
+            
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = true;
@@ -747,7 +835,7 @@ namespace BarrelInspectionProcessorForm
         //}
         private void SetAxialSwitches()
         {
-            _scanFormat = ScanFormat.AXIAL;
+            
             textBoxStartPosA.Enabled = true;
             textBoxStartPosX.Enabled = true;
             textBoxEndPosA.Enabled = false;
@@ -770,7 +858,7 @@ namespace BarrelInspectionProcessorForm
         }
         private void SetLineSwitches()
         {
-            _scanFormat = ScanFormat.SINGLELINE;
+            
 
         }
         ScanFormat _scanFormat;
@@ -787,6 +875,7 @@ namespace BarrelInspectionProcessorForm
                     case 1: //rod od
                         _probeDirection = ProbeController.ProbeDirection.OD;
                         break;
+                    
                 }
             }
             catch (Exception)
@@ -795,16 +884,23 @@ namespace BarrelInspectionProcessorForm
             }
         }
         ProbeType _probeType;
+        List<Probe> _probes;
         private void comboBoxProbeType_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                switch(comboBoxProbeType.SelectedIndex)
+                _probes = new List<Probe>();
+                switch (comboBoxProbeType.SelectedIndex)
                 {
                     case 0://si distance
                         _probeType = ProbeType.SI_DISTANCE;
                         break;
                     case 1://line scan
+                        var probe = new Probe();
+                        probe.MeasurementUnit = new MeasurementUnit( LengthUnitEnum.INCH);
+                        probe.StartMeasuringRange = 0;
+                        probe.MeasuringRange = .62;
+                        _probes.Add(probe);
                         _probeType = ProbeType.LINE_SCAN;
                         break;
                 }
@@ -817,25 +913,45 @@ namespace BarrelInspectionProcessorForm
         }
         private void ComboBoxMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Ring
-            //Spiral           
-            //Axial
-           //Single Line Scan
+            //RING 0
+            //SPIRAL 1
+            //AXIAL 2
+            //LAND 3
+            //GROOVE 4
+            //CAL 5
+            //FLATPLATELINE 6 
+            //FLATPLATEGRID 7
 
             try
             {
                 switch (comboBoxMethod.SelectedIndex)
                 {
                     case 0:
+                        _scanFormat = ScanFormat.RING;
                         SetRingSwitches();
                         break;
                     case 1:
+                        _scanFormat = ScanFormat.SPIRAL;
                         SetSpiralSwitches();
                         break;
                     case 2:
+                        _scanFormat = ScanFormat.AXIAL;
                         SetAxialSwitches();
                         break;
                     case 3:
+                        _scanFormat = ScanFormat.LAND;
+                        break;
+                    case 4:
+                        _scanFormat = ScanFormat.GROOVE;
+                        break;
+                    case 5:
+                        _scanFormat = ScanFormat.CAL;
+                        break;
+                    case 6:
+                        _scanFormat = ScanFormat.FLATPLATELINE;
+                        break;
+                    case 7:
+                        _scanFormat = ScanFormat.FLATPLATEGRID;
                         SetLineSwitches();
                         break;
                 }
@@ -848,13 +964,14 @@ namespace BarrelInspectionProcessorForm
 
         }
         Barrel _barrel;
-      
+        BarrelType _barrelType;
         
         private void ComboBoxBarrel_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                //barrelType = Barrel.GetBarrelType(comboBoxBarrel.SelectedItem.ToString());
+                _barrelType = Barrel.GetBarrelType(comboBoxBarrel.SelectedItem.ToString());
+                _barrel = new Barrel(_barrelType);
             }
             catch (Exception ex)
             {
@@ -894,15 +1011,7 @@ namespace BarrelInspectionProcessorForm
         }
         string _lengthLabel;
         string _angleLabel;
-        LengthUnits _units;
-
-        enum LengthUnits
-        {
-            METRIC_MM,
-            INCH,
-            METRIC_MICRONS,
-            MICRO_INCH
-        }
+        
 
         //
 #region PictureBox1
@@ -921,7 +1030,7 @@ namespace BarrelInspectionProcessorForm
       
         List<PointF> _screenPts;
         Graphics _graphics;
-        
+        ScreenTransform _screenTransform;
         private void SetupDisplay()
         {
             try
@@ -983,7 +1092,7 @@ namespace BarrelInspectionProcessorForm
             }
            
         }
-        void DrawGrid(RectangleF rect, ScreenTransform currentTransform,ScanFormat method)
+        void DrawGrid(RectangleF rect  )
         {
             try
             {
@@ -992,7 +1101,7 @@ namespace BarrelInspectionProcessorForm
                 var sizeY = GetGridRange(rect.Height);
                 int xGridCount;
                 int yGridCount = 10;
-                if (_scanFormat == ScanFormat.AXIAL)
+                if (_scanFormat == ScanFormat.AXIAL || _scanFormat== ScanFormat.FLATPLATEGRID || _scanFormat== ScanFormat.FLATPLATELINE)
                 {
                     xGridCount = 10;
                 }
@@ -1008,21 +1117,25 @@ namespace BarrelInspectionProcessorForm
                 for (int i = 0; i <= xGridCount; i++)
                 {
                     double xLabel = rect.X + (i * dxGrid);
-                    var ptX = currentTransform.GetScreenCoords(xLabel, rect.Top);
-                    var ptYGridStart = currentTransform.GetScreenCoords(xLabel, rect.Top);
-                    var ptYGridEnd = currentTransform.GetScreenCoords(xLabel, rect.Top + xGridCount* dyGrid);
+                    var ptX = _screenTransform.GetScreenCoords(xLabel, rect.Top);
+                    var ptYGridStart = _screenTransform.GetScreenCoords(xLabel, rect.Top);
+                    var ptYGridEnd = _screenTransform.GetScreenCoords(xLabel, rect.Top + xGridCount* dyGrid);
                     string xLabelstr = "";
                     var sizeXlabel = _graphics.MeasureString(xLabelstr, font);
                     float xLabelxOffset = (float)(sizeXlabel.Width / 2.0);
                     float xLabelyOffset = (float)(sizeXlabel.Height * 0.1);
-                    if (_scanFormat == ScanFormat.AXIAL)
+                    switch (_scanFormat)                        
                     {
-                        xLabelstr = xLabel.ToString("f3");
-                    }
-                    else
-                    {
-                        xLabelstr = GeometryLib.Geometry.ToDegs(xLabel).ToString("f0");
-                    }
+                        case ScanFormat.AXIAL:
+                        case ScanFormat.FLATPLATELINE:
+                        case ScanFormat.FLATPLATEGRID:
+                            xLabelstr = xLabel.ToString("f3");
+                            break;
+                        case ScanFormat.RING:
+                        case ScanFormat.SPIRAL:
+                            xLabelstr = GeometryLib.Geometry.ToDegs(xLabel).ToString("f0");
+                            break;
+                    }                 
                     _graphics.DrawString(xLabelstr, font, System.Drawing.Brushes.Black, ptX.X - xLabelxOffset, ptX.Y + xLabelyOffset);
                     _graphics.DrawLine(_greenPen, ptYGridStart, ptYGridEnd);
                 }
@@ -1033,9 +1146,9 @@ namespace BarrelInspectionProcessorForm
                     double yLabel = rect.Top + (i * dyGrid);
 
 
-                    var ptY = currentTransform.GetScreenCoords(rect.Top, yLabel);
-                    var ptXGridStart = currentTransform.GetScreenCoords(rect.Left, yLabel);
-                    var ptXGridEnd = currentTransform.GetScreenCoords(rect.Left + yGridCount * dxGrid, yLabel);
+                    var ptY = _screenTransform.GetScreenCoords(rect.Top, yLabel);
+                    var ptXGridStart = _screenTransform.GetScreenCoords(rect.Left, yLabel);
+                    var ptXGridEnd = _screenTransform.GetScreenCoords(rect.Left + yGridCount * dxGrid, yLabel);
 
 
                     string yLabelstr = yLabel.ToString("f4");
@@ -1062,14 +1175,14 @@ namespace BarrelInspectionProcessorForm
             }
            
         }
-        void DrawCircles(System.Drawing.Pen pen, List<PointF> points, int radius)
+        void DrawCircles(System.Drawing.Pen pen, List<PointF> screenPoints, int screenRadius)
         {
             try
             {
-                foreach (var pt in points)
+                foreach (var pt in screenPoints)
                 {
-                    var rect = new RectangleF(pt.X - radius, pt.Y - radius,
-                        radius * 2, radius * 2);
+                    var rect = new RectangleF(pt.X - screenRadius, pt.Y - screenRadius,
+                        screenRadius * 2, screenRadius * 2);
                     _graphics.DrawEllipse(pen, rect);
                 }
             }
@@ -1080,43 +1193,104 @@ namespace BarrelInspectionProcessorForm
             }
 
         }
-        
+      
+        void DrawLines(System.Drawing.Pen pen, List<GeometryLib.Line2> lines)
+        {
+            try
+            {
+                foreach(GeometryLib.Line2 line in lines)
+                {
+                    var pt1 = _screenTransform.GetScreenCoords(line.Point1.X,line.Point1.Y);
+                    var pt2 = _screenTransform.GetScreenCoords(line.Point2.X, line.Point2.Y);
+                    _graphics.DrawLine(pen,pt1,pt2);
+                }
+                pictureBox1.Image = _bitmap;
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
+        RectangleF _dataRect;
+        
         private void DisplayData()
         { 
             try
             {
                 SetupDisplay();
+                _mouseDownLocation = new Point();
+                _mouseDownPart = new PointF();
+                _mouseDownPartXY = new PointF();
+                _prevMouseDownLocation = new Point();
+                _prevMouseDownPartXY = new PointF();
+
                 var screenPtsList = new List<List<PointF>>();
+                var displayData = new DisplayData();
+                _dataRect = (RectangleF) pictureBox1.DisplayRectangle;
+                _screenTransform = new ScreenTransform(_dataRect, pictureBox1.DisplayRectangle, .9, true);
                 foreach (InspDataSet dataSet in _inspDataSetList)
                 {
+                    if (dataSet is CartDataSet cartData)
+                    {
+                        _viewPlane = ViewPlane.XY;
+                        displayData = cartData.ModCartData.AsScreenData(_viewPlane);
+                    }
+                    if(dataSet is AxialDataSet axialData)
+                    {
+                        _viewPlane = ViewPlane.ZR;
+                        displayData = axialData.CorrectedCylData.AsScreenData(_viewPlane);
+                    }
                     if (dataSet is RingDataSet ringData)
                     {
                         //textBoxDataOut.Lines = _lines.ToArray();
-                        var displayData = ringData.CorrectedCylData.AsScreenData(ViewPlane.THETAR);
-                        var boundingRect = displayData.BoundingRect();
-                        var transform = new ScreenTransform(boundingRect,pictureBox1.DisplayRectangle,.9,true);
-                        // HilightLandPoints(currentTransform);
-
-
-                        
-                        foreach (var pt in displayData)
-                        {
-                            _screenPts.Add(transform.GetScreenCoords(pt.X, pt.Y));
-                        } 
-                        screenPtsList.Add(_screenPts);
-                        
-                        DrawGrid(boundingRect, transform,ScanFormat.RING );
-
-                        foreach (List<PointF> pointList in screenPtsList)
-                        {
-                            _graphics.DrawLines(_bluePen, pointList.ToArray());
-                        }
-                        pictureBox1.Image = _bitmap;
-
+                        _viewPlane = ViewPlane.THETAR;
+                        displayData = ringData.CorrectedCylData.AsScreenData(_viewPlane);
+                       
                     }
+                    _dataRect = displayData.BoundingRect();
+                    _screenTransform = new ScreenTransform(_dataRect, pictureBox1.DisplayRectangle, .9, true);
+                    // HilightLandPoints(currentTransform);
+                    _screenPts = new List<PointF>();
+                    foreach (var pt in displayData)
+                    {
+                        _screenPts.Add(_screenTransform.GetScreenCoords(pt.X, pt.Y));
+                    }
+                    screenPtsList.Add(_screenPts);
                 }
+                DrawGrid(_dataRect);
 
+                foreach (List<PointF> pointList in screenPtsList)
+                {
+                    _graphics.DrawLines(_bluePen, pointList.ToArray());
+                }
+                pictureBox1.Image = _bitmap;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        double _dataRotationRad;
+        void DrawWindow(Point start, Point end, DataSelection dataSelection)
+        {
+            try
+            {
+                endPartCoords = _screenTransform.GetModelCoords(end);
+                startPartCoords = _screenTransform.GetModelCoords(start);
+                var bit2 = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                var gtemp = Graphics.FromImage(bit2);
+                var dashpen = new System.Drawing.Pen(System.Drawing.Color.Red)
+                {
+                    DashStyle = System.Drawing.Drawing2D.DashStyle.Dot
+                };
+                gtemp.FillRectangle(_imgBrush, 0, 0, pictureBox1.Width, pictureBox1.Height);
+                var rect = new System.Drawing.Rectangle(start,new Size(Math.Abs(end.X - start.X), Math.Abs(end.Y - start.Y)));
+                gtemp.DrawRectangle(dashpen, rect);
+                SolidBrush brush = new SolidBrush(System.Drawing.Color.White);               
+                pictureBox1.Image = bit2;
             }
             catch (Exception)
             {
@@ -1125,7 +1299,10 @@ namespace BarrelInspectionProcessorForm
             }
 
         }
-        void DrawMeasurement(Point start, Point end, ScreenTransform currentTransform)
+        PointF endPartCoords;
+        PointF startPartCoords;
+
+        void DrawMeasurement(Point start, Point end,DataSelection dataSelection )
         {
             try
             {
@@ -1138,21 +1315,32 @@ namespace BarrelInspectionProcessorForm
                 gtemp.FillRectangle(_imgBrush, 0, 0, pictureBox1.Width, pictureBox1.Height);
 
                
-                var endPartCoords = currentTransform.GetModelCoords(end);
-                var startPartCoords = currentTransform.GetModelCoords(start);                
-                double xLen = GeometryLib.Geometry.ToDegs(Math.Abs(endPartCoords.X - startPartCoords.X));
-                double yLen = endPartCoords.Y - startPartCoords.Y;                
-                string length = xLen.ToString("f4") + "," + yLen.ToString("f5");
-                var size = _graphics.MeasureString(length, this.Font);
+                endPartCoords = _screenTransform.GetModelCoords(end);
+                startPartCoords = _screenTransform.GetModelCoords(start);
+                string measurement = "";
+                if (dataSelection ==DataSelection.MEASURELENGTH)
+                {
+                    double xLen = GeometryLib.Geometry.ToDegs(Math.Abs(endPartCoords.X - startPartCoords.X));
+                    double yLen = endPartCoords.Y - startPartCoords.Y;
+                    measurement = xLen.ToString("f4") + "," + yLen.ToString("f5");
+                    labelDxMeasured.Text = "DTheta: " + xLen.ToString("f4") + " " + _angleLabel;
+                    labelDyMeasured.Text = "Dr: " + yLen.ToString("f5") + " " + _lengthLabel;
+                }
+                if(dataSelection == DataSelection.ROTATE)
+                {
+                    _dataRotationRad = Math.Atan2(endPartCoords.Y - startPartCoords.Y, endPartCoords.X - startPartCoords.X);
+                    double angle = GeometryLib.Geometry.ToDegs(_dataRotationRad);
+                    measurement = angle.ToString("f4");
+                }
+                
+                var size = _graphics.MeasureString(measurement, this.Font);
                 int midX = (int)(start.X + (end.X - start.X - (size.Width / 2.0)) / 2.0);
                 int midY = (int)(start.Y + (end.Y - start.Y - (size.Height / 2.0)) / 2.0);
                 gtemp.DrawLine(_blackPen, end, start);
                 SolidBrush brush = new SolidBrush(System.Drawing.Color.White);
                 gtemp.FillRectangle(brush, midX, midY, size.Width, size.Height);
                 gtemp.DrawRectangle(_blackPen, midX, midY, size.Width, size.Height);
-                gtemp.DrawString(length, Font, System.Drawing.Brushes.Black, new PointF(midX, midY));
-                labelDxMeasured.Text = "DTheta: " + xLen.ToString("f4") + " " + _angleLabel;
-                labelDyMeasured.Text = "Dr: " + yLen.ToString("f5") + " " + _lengthLabel;
+                gtemp.DrawString(measurement, Font, System.Drawing.Brushes.Black, new PointF(midX, midY));                
                 pictureBox1.Image = bit2;
             }
             catch (Exception)
@@ -1162,51 +1350,7 @@ namespace BarrelInspectionProcessorForm
             }
  
         }
-        private void PictureBox1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            try
-            {
-                if (_inspDataSetList != null && _inspDataSetList.Count>0)
-                {
-                    var currentTransform = new ScreenTransform(_displayData.BoundingRect(),pictureBox1.DisplayRectangle,.9,true);
-                    _mouseLocation = e.Location;
-                    _mouseLocPart = currentTransform.GetModelCoords(e.Location);
-                    _mousePartXY = GetXYCoords(_mouseLocPart);
-                    if (_scanFormat == ScanFormat.AXIAL)
-                    {
-                        labelZPosition.Text = "Axial: " + _mouseLocPart.X.ToString("F6") + _lengthLabel;
-                        labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + _lengthLabel;
-                        labelXPosition.Text = "Angle: " + (180*(_inspScript.StartThetaRad)/Math.PI).ToString("f6") + _angleLabel;
-                    }
-                    else
-                    {
-                       
-                            double angle = GeometryLib.Geometry.ToDegs(_mouseLocPart.X);
-                            labelXPosition.Text = "Angle: " + angle.ToString("f6") + " " + _angleLabel;
-                            labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + " " + _lengthLabel;
-
-                        
-                        labelZPosition.Text = "Axial: " + _inspScript.StartZ.ToString("F5") + _lengthLabel;
-                    }
-
-
-
-                    if (_dataSelection==DataSelection.MEASURELENGTH)
-                    {
-                        if (_mouseDownCount == 1)
-                        {
-                            DrawMeasurement(_mouseDownLocation, _mouseLocation, currentTransform);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
-            }
-
-        }
+       
 
         
         
@@ -1219,26 +1363,29 @@ namespace BarrelInspectionProcessorForm
         PointCyl _knownRadiusPt;
         bool _mouseDown;
         Point _mouseDownLocation;
+        Point _prevMouseDownLocation;
         PointF _mouseDownPart;
         PointF _mouseUpPart;
         PointF _mouseLocPart;
         Point _mouseUpLocation;
         Point _mouseLocation;
         PointF _mouseDownPartXY;
+        PointF _prevMouseDownPartXY;
         PointF _mousePartXY;
         TextureBrush _imgBrush;
         int _mouseDownCount;
 
 
-        private PointF GetNearestModelPoint(System.Windows.Forms.MouseEventArgs e, ScreenTransform currentTransform)
+        private PointF GetNearestModelPoint(System.Windows.Forms.MouseEventArgs e)
         {
             try
             {
-               
+
                 var nearestScreenPt = PictureBoxUtilities.GetNearestPoint(e.Location, _screenPts);
-                _displayData.HiLightPts.Add(nearestScreenPt);
-                var pt = currentTransform.GetModelCoords(nearestScreenPt);
+                // _displayData.HiLightPts.Add(nearestScreenPt);
+                var pt = _screenTransform.GetModelCoords(nearestScreenPt);
                 return pt;
+                 
             }
             catch (Exception)
             {
@@ -1250,12 +1397,12 @@ namespace BarrelInspectionProcessorForm
            
         }
        
-        private void SetMidpointClick(System.Windows.Forms.MouseEventArgs e, ScreenTransform currentTransform)
+        private void SetMidpointClick(System.Windows.Forms.MouseEventArgs e)
         {
             try
             {
-                _displayData.HiLightPts.Clear();
-                var pt = GetNearestModelPoint(e, currentTransform);
+                //_displayData.HiLightPts.Clear();
+                var pt = GetNearestModelPoint(e);
                 _midpoint = new PointCyl(pt.Y, pt.X, 0);
             }
             catch (Exception)
@@ -1267,11 +1414,11 @@ namespace BarrelInspectionProcessorForm
 
         
 
-        private void SetRadiusMouseClick(System.Windows.Forms.MouseEventArgs e, ScreenTransform currentTransform)
+        private void SetRadiusMouseClick(System.Windows.Forms.MouseEventArgs e)
         {
             try
             {
-                var pt = GetNearestModelPoint(e, currentTransform);
+                var pt = GetNearestModelPoint(e);
                 _knownRadiusPt = new PointCyl(pt.Y, pt.X, 0);
                 textBoxCurrentRadius.Text = _knownRadiusPt.R.ToString("f5");
             }
@@ -1287,18 +1434,18 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_displayData != null && _displayData.Count > 0)
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
                 {
-                    var currentTransform = GetTransform(_displayData.BoundingBox,_displayData.DataFormat);
+                    
                     switch (_dataSelection)
-                    {                        
+                    {
                         case DataSelection.MEASURELENGTH:
-                            break;                        
+                            break;
                         case DataSelection.SETRADIUS:
-                            SetRadiusMouseClick(e, currentTransform);
+                            SetRadiusMouseClick(e);
                             break;
                         case DataSelection.SELECTMIDPOINT:
-                            SetMidpointClick(e, currentTransform);
+                            SetMidpointClick(e);
                             break;
                         case DataSelection.NONE:
                         default:
@@ -1313,17 +1460,69 @@ namespace BarrelInspectionProcessorForm
                 MessageBox.Show(ex.Message + ":" + ex.StackTrace);
             }
         }
+        private void PictureBox1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            try
+            {
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
+                {
+
+                    _mouseLocation = e.Location;
+                    _mouseLocPart = _screenTransform.GetModelCoords(e.Location);
+                    _mousePartXY = GetXYCoords(_mouseLocPart);
+                    switch (_scanFormat )
+                    {
+                        case ScanFormat.AXIAL:
+                            labelZPosition.Text = "Axial: " + _mouseLocPart.X.ToString("F6") + _lengthLabel;
+                            labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + _lengthLabel;
+                            //  labelXPosition.Text = "Angle: " + (180 * (_inspScript.StartThetaRad) / Math.PI).ToString("f6") + _angleLabel;
+                            break;
+
+                        case ScanFormat.RING:
+                        case ScanFormat.SPIRAL:
+                            double angle = GeometryLib.Geometry.ToDegs(_mouseLocPart.X);
+                            labelXPosition.Text = "Angle: " + angle.ToString("f6") + " " + _angleLabel;
+                            labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + " " + _lengthLabel;
+                            break;
+                        case ScanFormat.FLATPLATEGRID:
+                        case ScanFormat.FLATPLATELINE:
+                        default:
+                            labelZPosition.Text = "X: " + _mouseLocPart.X.ToString("F6") + _lengthLabel;
+                            labelYPosition.Text = "Y: " + _mouseLocPart.Y.ToString("f6") + _lengthLabel;
+                            break;
+                           
+                    }
+
+                    if (_mouseDownCount == 1)
+                    {
+                        if (_dataSelection == DataSelection.MEASURELENGTH || _dataSelection == DataSelection.ROTATE)
+                        {                        
+                            DrawMeasurement(_mouseDownLocation, _mouseLocation,_dataSelection);
+                        }
+                        if(_dataSelection == DataSelection.WINDOWDATA)
+                        {
+                            DrawWindow(_mouseDownLocation, _mouseLocation, _dataSelection);
+                        }
+                    }                  
+                }
+            }
+            catch (Exception ex)
+            {
+                _logFile.SaveMessage(ex);
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+
+        }
         private void PictureBox1_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             try
             {
-                if (_displayData != null && _displayData.Count >0)
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
                 {
                     
-                    var currentTransform = GetTransform(_displayData.BoundingBox, _displayData.DataFormat);
                     _mouseDown = false;
                     _mouseUpLocation = e.Location;
-                    _mouseUpPart = currentTransform.GetModelCoords(_mouseUpLocation);
+                    _mouseUpPart = _screenTransform.GetModelCoords(_mouseUpLocation);
 
                 }
             }
@@ -1337,31 +1536,53 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_displayData != null && _displayData.Count >0)
-                {
-                    var currentTransform = GetTransform(_displayData.BoundingBox, _displayData.DataFormat);
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
+                {  
+                     
                     _mouseDownCount++;
                     _mouseDown = true;
                     var prevMouseDownLoc = _mouseDownLocation;
                     _mouseDownLocation = e.Location;
-                    _mouseDownPart = currentTransform.GetModelCoords(_mouseDownLocation);
+
+                    _mouseDownPart = _screenTransform.GetModelCoords(_mouseDownLocation);
+                    _prevMouseDownPartXY = _mouseDownPartXY;
                     _mouseDownPartXY = GetXYCoords(_mouseDownPart);
 
 
                     var img = new Bitmap(pictureBox1.Image);
                     _imgBrush = new TextureBrush(img);
-                    if (_dataSelection==DataSelection.MEASURELENGTH)
+                    if (_dataSelection == DataSelection.MEASURELENGTH || _dataSelection == DataSelection.ROTATE ||
+                        _dataSelection==DataSelection.WINDOWDATA)
                     {
                         if (_mouseDownCount == 2)
                         {
-                            DrawMeasurement(prevMouseDownLoc, _mouseDownLocation,currentTransform);
+                            DrawMeasurement(prevMouseDownLoc, _mouseDownLocation,_dataSelection );
+                            if (_dataSelection == DataSelection.ROTATE)
+                            {
+                                RotateData();
+                                _dataSelection = DataSelection.NONE;
+                            }
+                            if(_dataSelection == DataSelection.WINDOWDATA)
+                            {
+                                WindowData();
+                                _dataSelection = DataSelection.NONE;
+                            }
+                            if(_dataSelection == DataSelection.FITCIRCLE)
+                            {
+                                FitToCircle();
+                                _dataSelection = DataSelection.NONE;
+                            }
                         }
-                        if (_mouseDownCount == 3)
-                        {
-                            pictureBox1.Image = _bitmap;
-                            pictureBox1.Refresh();
-                            _mouseDownCount = 1;
-                        }
+                        
+                    }
+                    if (_mouseDownCount >= 3)
+                    {                        
+                        _rotateActive = false;
+                        _windowData = false;                        
+                        pictureBox1.Image = _bitmap;
+                        pictureBox1.Refresh();
+                        _mouseDownCount = 1;
+
                     }
                 }
             }
@@ -1377,9 +1598,18 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                var x = Math.Cos(partCoords.X) * partCoords.Y;
-                var y = Math.Sin(partCoords.X) * partCoords.Y;
-                return new PointF((float)x, (float)y);
+
+                if(_viewPlane ==ViewPlane.THETAR)
+                {
+                    var x = Math.Cos(partCoords.X) * partCoords.Y;
+                    var y = Math.Sin(partCoords.X) * partCoords.Y;
+                    return new PointF((float)x, (float)y);
+                }
+                else
+                {
+                    return partCoords;
+                }
+               
             }
             catch (Exception)
             {
@@ -1403,8 +1633,9 @@ namespace BarrelInspectionProcessorForm
                     int gb1y = 60;
                     tabControlParams.Location = new Point(gb1x, gb1y);
                     
-                    if (_displayData != null)
+                    if (_inspDataSetList != null && _inspDataSetList.Count>0)
                     {
+                        _screenTransform = new ScreenTransform(_dataRect, pictureBox1.DisplayRectangle, .9, true);
                         DisplayData();
                     }
                 }
@@ -1474,7 +1705,7 @@ namespace BarrelInspectionProcessorForm
 
         }
 
-        List<string> _lines;
+        List<string> dataOuputText;
         void CorrectForAveAngle()
         {
             try
@@ -1495,10 +1726,10 @@ namespace BarrelInspectionProcessorForm
 
                             ringData.CorrectedCylData = corrData;
                             ringData.CorrectedLandPoints = da.CorrectForError(ringData.CorrectedLandPoints);
-                            _lines.Add("***Correcting Angle****" + inspDataSet.Filename);
+                            dataOuputText.Add("***Correcting Angle****" + inspDataSet.Filename);
 
-                            _lines.Add("Correction angle: " + GeometryLib.Geometry.ToDegs(da.CorrectionAngle).ToString("f5") + " degs");
-                            _lines.Add("Ave radius: " + da.AveRadius.ToString("f5"));
+                            dataOuputText.Add("Correction angle: " + GeometryLib.Geometry.ToDegs(da.CorrectionAngle).ToString("f5") + " degs");
+                            dataOuputText.Add("Ave radius: " + da.AveRadius.ToString("f5"));
                            // _displayData.Add(ringData.CorrectedCylData.AsScreenData(ViewPlane.THETAR));                            
                         }
                         
@@ -1544,85 +1775,12 @@ namespace BarrelInspectionProcessorForm
                 MessageBox.Show(ex.Message + ": Unable to auto correct for angle. Manually select sidewalls to correct for angle error.");
             }
         }
-        private void MeasureDepths()
-        {
-            try
-            {
-                string machineSpeedFilename = "";
-                if (_dataOutOptions.UseDefBrchRasterFile && _dataOutOptions.DefBreachRasterFilename != ""
-                    && System.IO.File.Exists(_dataOutOptions.DefBreachRasterFilename))
-                {
-
-                    machineSpeedFilename = _dataOutOptions.DefBreachRasterFilename;
-                }
-                else
-                {
-                    var ofd = new OpenFileDialog
-                    {
-                        Title = "Machine Speed & Raster Location Input file",
-                        Filter = "(*.csv)|*.csv"
-                    };
-                    if (ofd.ShowDialog() == DialogResult.OK)
-                    {
-                        machineSpeedFilename = ofd.FileName;
-                    }
-                }
-
-                BuildScriptFromInputs(_inputFileName);
-                
-                _grooveMeasurements = new BarrelXsectionProfile(_barrel, _dataOutOptions, _barrel.MachiningData.CurrentAWJPasses, _inspScript.StartZ, machineSpeedFilename);
-               // _grooveMeasurements.CalcAverageDepths(_displayData[0]);
-                textBoxDataOut.Lines = _grooveMeasurements.AsStringList().ToArray();
-                _depthMeasurePoints = new List<PointCyl>();
-                foreach (var groove in _grooveMeasurements)
-                {
-                    foreach (var dm in groove)
-                    {
-                        _depthMeasurePoints.Add(dm.Datum);
-                    }
-                }
-
-                //DisplayData();
-                
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        
         List<PointCyl> _depthMeasurePoints;
         BarrelXsectionProfile _grooveMeasurements;
-        private void ButtonMeasure_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                MeasureDepths();
+       
 
-            }
-            catch (Exception ex)
-            {
-
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message );
-            }
-        }
-
-        private void measureDepthsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                MeasureDepths();
-
-            }
-            catch (Exception ex)
-            {
-
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message );
-            }
-        }
+       
 #region Toolstrip buttons
 
         private void ToolStripButtonFileOpen_Click(object sender, EventArgs e)
@@ -1675,6 +1833,10 @@ namespace BarrelInspectionProcessorForm
             MEASURELENGTH,
             SELECTDATAFORFIT,
             SELECTMIDPOINT,
+            ROTATE,
+            MIRROR,
+            WINDOWDATA,
+            FITCIRCLE,
             NONE
         }
         private DataSelection _dataSelection;
@@ -1692,7 +1854,7 @@ namespace BarrelInspectionProcessorForm
             {
                 ResetOnClick();
 
-                _displayData.HiLightPts.Clear();
+                //_displayData.HiLightPts.Clear();
                 _dataSelection = DataSelection.MEASURELENGTH;
                 toolStripButtonLength.BackColor = System.Drawing.Color.Red;                
                
@@ -1778,27 +1940,35 @@ namespace BarrelInspectionProcessorForm
                             string fileCount = (i + 1).ToString();
                             string totalFileCount = _inspDataSetList.Count.ToString();
                             labelStatus.Text = "Saving File " + fileCount + " of " + totalFileCount;
-                            if (_inspDataSetList[i].CorrectedSpiralData.Count != 0)
+                            if (_inspDataSetList[i] is SpiralDataSet spiralData)
                             {
-                                DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, _inspDataSetList[i].CorrectedSpiralData,
+                                DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData,
                                     fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                 progressBarProcessing.Value = 0;
-                                DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, _inspDataSetList[i].CorrectedSpiralData,
+                                DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData,
                                     _barrel.DimensionData.LandNominalDiam / 2.0, fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                 progressBarProcessing.Value = 0;
                             }
-                            if (_inspDataSetList[i].CorrectedCylData.Count != 0)
+                            if (_inspDataSetList[i] is RingDataSet ringData)
                             {
 
-                                DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, _inspDataSetList[i].CorrectedCylData,
+                                DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, ringData.CorrectedCylData,
                                     fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                 progressBarProcessing.Value = 0;
-                                DataFileBuilder.SaveDXF(_inspDataSetList[i].CorrectedCylData, fileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                DataFileBuilder.SaveDXF(ringData.CorrectedCylData, fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                 progressBarProcessing.Value = 0;
                                 if (_grooveMeasurements != null)
                                 {
                                     _grooveMeasurements.SaveMeasurements(fileNames[i], fileNames[i], false, true);
                                 }
+                            }
+                            if(_inspDataSetList[i] is CartDataSet cartData)
+                            {
+                                DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, cartData.ModCartData,
+                                   fileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                progressBarProcessing.Value = 0;
+                                DataFileBuilder.SaveDXF(cartData.ModCartData, fileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                progressBarProcessing.Value = 0;
                             }
                         }
                        
@@ -1867,7 +2037,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_inspDataSetList != null && _inspDataSetList[0].CorrectedCylData.Count != 0)
+                if (_inspDataSetList != null && _inspDataSetList[0] is RingDataSet ringData)
                 {
                     var sfd = new SaveFileDialog
                     {
@@ -1880,7 +2050,7 @@ namespace BarrelInspectionProcessorForm
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         labelStatus.Text = "Saving CSV File";
-                        await SaveCSVFile(sfd.FileName, _inspDataSetList[0].CorrectedCylData, new Progress<int>(p => ShowProgress(p)));
+                        await SaveCSVFile(sfd.FileName, ringData.CorrectedCylData, new Progress<int>(p => ShowProgress(p)));
                         labelStatus.Text = "Finished Saving File";
                         progressBarProcessing.Value = 0;
                     }
@@ -1960,7 +2130,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_inspDataSetList != null && _inspDataSetList[0].CorrectedCylData.Count != 0)
+                if (_inspDataSetList != null && _inspDataSetList[0] is RingDataSet ringData)
                 {
                     var sfd = new SaveFileDialog
                     {
@@ -1974,7 +2144,7 @@ namespace BarrelInspectionProcessorForm
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         labelStatus.Text = "Saving DXF File";
-                        DataFileBuilder.SaveDXF(_inspDataSetList[0].CorrectedCylData, sfd.FileName, new Progress<int>(p => ShowProgress(p)));
+                        DataFileBuilder.SaveDXF(ringData.CorrectedCylData, sfd.FileName, new Progress<int>(p => ShowProgress(p)));
                         labelStatus.Text = "Finished Saving File";
                     }
                 }
@@ -2000,11 +2170,11 @@ namespace BarrelInspectionProcessorForm
             }
 
         }
-        private Task SavePlyFile(string filename, IProgress<int> progress)
+        private Task SavePlyFile(string filename,SpiralDataSet spiralData, IProgress<int> progress)
         {
             try
-            {
-                return Task.Run(() => DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, _inspDataSetList[0].CorrectedSpiralData, _barrel.DimensionData.LandNominalDiam / 2.0, filename, progress));
+            {               
+                return Task.Run(() => DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData, _barrel.DimensionData.LandNominalDiam / 2.0, filename, progress));
 
             }
             catch (Exception)
@@ -2018,7 +2188,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_inspDataSetList != null && _inspDataSetList[0].CorrectedSpiralData.Count != 0)
+                if (_inspDataSetList != null && _inspDataSetList[0] is SpiralDataSet spiralData)
                 {
                     var sfd = new SaveFileDialog
                     {
@@ -2032,7 +2202,7 @@ namespace BarrelInspectionProcessorForm
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         labelStatus.Text = "Saving 3D Surface File";
-                        await SavePlyFile(sfd.FileName, new Progress<int>(p => ShowProgress(p)));
+                        await SavePlyFile(sfd.FileName,spiralData, new Progress<int>(p => ShowProgress(p)));
                         labelStatus.Text = "Finished Saving File";
                         progressBarProcessing.Value = 0;
                     }
@@ -2057,15 +2227,15 @@ namespace BarrelInspectionProcessorForm
 
             }
         }
-        private Task SaveSTLFile(string filename,IProgress<int>progress)        
+        private Task SaveSTLFile(string filename,SpiralDataSet spiralData,IProgress<int>progress)        
         {
-            return Task.Run(() => DataFileBuilder.SaveSTLFile(_barrel, _dataOutOptions, _inspDataSetList[0].CorrectedSpiralData, _barrel.DimensionData.LandNominalDiam / 2.0, filename, progress));
+            return Task.Run(() => DataFileBuilder.SaveSTLFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData, _barrel.DimensionData.LandNominalDiam / 2.0, filename, progress));
         }
         private async Task SaveSTLFileAsync()
         {
             try
             {
-                if (_inspDataSetList != null && _inspDataSetList[0].CorrectedSpiralData.Count != 0)
+                if (_inspDataSetList != null && _inspDataSetList[0] is SpiralDataSet spiralData)
                 {
                     var sfd = new SaveFileDialog
                     {
@@ -2079,7 +2249,7 @@ namespace BarrelInspectionProcessorForm
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
                         labelStatus.Text = "Saving 3D Surface File";
-                        await SaveSTLFile(sfd.FileName, new Progress<int>(p => ShowProgress(p)));
+                        await SaveSTLFile(sfd.FileName,spiralData, new Progress<int>(p => ShowProgress(p)));
                         labelStatus.Text = "Finished Saving File";
                         progressBarProcessing.Value = 0;
                     }
@@ -2178,10 +2348,10 @@ namespace BarrelInspectionProcessorForm
                     double knownR = 0.0;
                     if(InputVerification.TryGetValue(textBoxKnownRadius, "x>=0",0,double.MaxValue, out knownR))
                     {
-                        if (_displayData != null)
+                        if (_inspDataSetList[0] is RingDataSet ringData)
                         {
-                            var resetData = DataBuilder.ResetToKnownRadius(_inspDataSetList[0].CorrectedCylData, _knownRadiusPt, knownR);
-                            _displayData.Add(resetData.AsScreenData(_viewPlane));
+                            var resetData = DataBuilder.ResetToKnownRadius(ringData.CorrectedCylData, _knownRadiusPt, knownR);
+                            //_displayData.Add(resetData.AsScreenData(_viewPlane));
                             DisplayData();
                         }
                     }                  
@@ -2241,13 +2411,7 @@ namespace BarrelInspectionProcessorForm
 
             }
         }   
-        enum DiamCalType
-        {
-            DEFAULT,
-            USER,
-            BOREPROFILE,
-            RINGCAL
-        }
+        
         DiamCalType _knownDiamType;
         
         private void ComboBoxDiameterType_SelectedIndexChanged(object sender, EventArgs e)
@@ -2391,6 +2555,7 @@ namespace BarrelInspectionProcessorForm
             }
             catch (Exception ex)
             {
+                _logFile.SaveMessage(ex);
                 MessageBox.Show(ex.Message + ":" + ex.StackTrace);
             }
            
@@ -2411,26 +2576,35 @@ namespace BarrelInspectionProcessorForm
        
         private void Load3DView(CylGridData spiralScan)
         {
-            var mb = new Model3DBuilder();
-            MainModel3Dgroup = new Model3DGroup();
-            userControl11.TheCamera = new PerspectiveCamera();
-            userControl11.TheCamera.FieldOfView = 90;
-            userControl11.MainViewport.Camera = userControl11.TheCamera;
-            userControl11.PositionCamera();
+            try
+            {
+                var mb = new Model3DBuilder();
+                MainModel3Dgroup = new Model3DGroup();
+                userControl11.TheCamera = new PerspectiveCamera();
+                userControl11.TheCamera.FieldOfView = 90;
+                userControl11.MainViewport.Camera = userControl11.TheCamera;
+                userControl11.PositionCamera();
 
-            COLORCODE colorcode = _dataOutOptions.SurfaceColorCode;
-            double maxDepth = (_barrel.DimensionData.GrooveMaxDiam - _barrel.DimensionData.LandMinDiam) / 2.0;
-            double nominalRadius = _barrel.DimensionData.LandNominalDiam / 2.0;
-            double scaleFactor = _dataOutOptions.SurfaceFileScaleFactor;
-            double radialDirection = -1;
+                COLORCODE colorcode = _dataOutOptions.SurfaceColorCode;
+                double maxDepth = (_barrel.DimensionData.GrooveMaxDiam - _barrel.DimensionData.LandMinDiam) / 2.0;
+                double nominalRadius = _barrel.DimensionData.LandNominalDiam / 2.0;
+                double scaleFactor = _dataOutOptions.SurfaceFileScaleFactor;
+                double radialDirection = -1;
 
-            mb.BuildModel(ref MainModel3Dgroup, spiralScan,radialDirection, nominalRadius, maxDepth, scaleFactor, colorcode);
+                mb.BuildModel(ref MainModel3Dgroup, spiralScan, radialDirection, nominalRadius, maxDepth, scaleFactor, colorcode);
 
-            ModelVisual3D model_visual = new ModelVisual3D();
-            model_visual.Content = MainModel3Dgroup;
-            // Display the main visual to the viewport
-            userControl11.MainViewport.Children.Add(model_visual);
-            tabControlOutput.SelectTab(2);
+                ModelVisual3D model_visual = new ModelVisual3D();
+                model_visual.Content = MainModel3Dgroup;
+                // Display the main visual to the viewport
+                userControl11.MainViewport.Children.Add(model_visual);
+                tabControlOutput.SelectTab(2);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }  
         private void MainInspectionForm_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
@@ -2446,25 +2620,308 @@ namespace BarrelInspectionProcessorForm
             // Create the WPF UserControl.
            // Load3DView();
         }
-
+       
         private void dViewImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save3DScreenView();
         }
+        private void RotateData()
+        {
+            try
+            {
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
+                {
+                    var origin = new Vector3(0, 0, 0);
+                    var start = new Vector3(startPartCoords.X, startPartCoords.Y, 0);
+                    var rotStart = start.RotateZ(origin, -1 * _dataRotationRad);
+                    var end = new Vector3(endPartCoords.X, endPartCoords.Y, 0);
+                    var rotEnd = end.RotateZ(origin, -1 * _dataRotationRad);
+                    var vTrans = new Vector3(0, -1 * rotEnd.Y, 0);
+                    foreach (InspDataSet dataSet in _inspDataSetList)
+                    {
+                        if (dataSet is CartDataSet cartData)
+                        {
+                            CartData rotData = new CartData();
 
+                            foreach (Vector3 pt in cartData.ModCartData)
+                            {
+                                var ptRot = pt.RotateZ(origin, -1 * _dataRotationRad);
+                                var ptTrans = ptRot.Translate(vTrans);
+                                rotData.Add(ptTrans);
+                            }
+                            cartData.ModCartData.Clear();
+                            cartData.ModCartData.AddRange(rotData);
+                        }
+                    }
+                    DisplayData();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        bool _rotateActive;
         private void toolStripButtonRotate_Click(object sender, EventArgs e)
         {
-
+            _dataSelection = DataSelection.ROTATE;
+            _rotateActive = !_rotateActive;           
         }
+        private void MirrorData()
+        {
+            try
+            {
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
+                {
+                    foreach (InspDataSet dataSet in _inspDataSetList)
+                    {
+                        if (dataSet is CartDataSet cartData)
+                        {
+                            CartData mirData = new CartData();
+                            foreach (Vector3 pt in cartData.ModCartData)
+                            {
+                                mirData.Add(new Vector3(-1 * pt.X, pt.Y, pt.Z));
+                            }
+                            cartData.ModCartData.Clear();
+                            _mirrored = !_mirrored;
+                            cartData.ModCartData.AddRange(mirData);
+                        }
+                    }
+                    DisplayData();
+                }
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+            
+        }
+        bool _mirrored;
         private void toolStripButtonMirror_Click(object sender, EventArgs e)
         {
+            try
+            {
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
+                {
+                    _dataSelection = DataSelection.MIRROR;
+                    MirrorData();
+                }
+            }
+            catch (Exception ex)
+            {
 
+                _logFile.SaveMessage(ex);
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+           
         }
+        bool _windowData;
+        void WindowData()
+        {
+            try
+            {
+                var minX = Math.Min(startPartCoords.X, endPartCoords.X);
+                var maxX = Math.Max(startPartCoords.X, endPartCoords.X);
+                var minY = Math.Min(startPartCoords.Y, endPartCoords.Y);
+                var maxY = Math.Max(startPartCoords.Y, endPartCoords.Y);
+                double maxYData = double.MinValue;
+                double minYData = double.MaxValue;
+                foreach (InspDataSet dataSet in _inspDataSetList)
+                {
+                    if (dataSet is CartDataSet cartData)
+                    {
+                        CartData winData = new CartData();
 
+                        foreach (Vector3 pt in cartData.ModCartData)
+                        {
+                            if (pt.X >= minX && pt.X <= maxX && pt.Y >= minY && pt.Y < maxY)
+                            {
+                                winData.Add(new Vector3(pt.X, pt.Y, pt.Z));
+                                if (pt.Y > maxYData)
+                                {
+                                    maxYData = pt.Y;
+                                }
+                                if (pt.Y < minYData)
+                                {
+                                    minYData = pt.Y;
+                                }
+                            }
+                        }
+                        double midYData = (maxYData + minYData) / 2.0;
+                        int midCount = (int)Math.Round(winData.Count / 2.0);
+                        double x1 = 0;
+                        for (int i = 1; i < midCount; i++)
+                        {
+                            if ((winData[i - 1].Y < midYData && winData[i].Y > midYData)
+                                ||(winData[i - 1].Y > midYData && winData[i].Y < midYData))
+                            {
+                                x1 = (winData[i - 1].X + winData[i].X) / 2.0;
+                                break;
+                            }
+                        }
+                        double x2 = 0;
+                        for (int i = midCount ; i < winData.Count; i++)
+                        {
+                            if ((winData[i - 1].Y < midYData && winData[i].Y > midYData)
+                                || (winData[i - 1].Y > midYData && winData[i].Y < midYData))
+                            {
+                                x2 = (winData[i - 1].X + winData[i].X) / 2.0;
+                                break;
+                            }
+                        }
+                        double midX = (x1 + x2) / 2.0;
+                        CartData transData = new CartData();
+                        foreach (Vector3 pt in winData)
+                        {
+                            transData.Add(new Vector3(pt.X - midX, pt.Y, pt.Z));
+                        }
+                        cartData.ModCartData.Clear();
+                        cartData.ModCartData.AddRange(transData);
+                    }
+                }
+                DisplayData();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        private void toolStripButtonWinData_Click(object sender, EventArgs e)
+        {       
+            _windowData = !_windowData;
+            _dataSelection = DataSelection.WINDOWDATA;
+        }
         private void labelMethod_Click(object sender, EventArgs e)
         {
 
         }
+        void MeasureDepths(ref ToolpathLib.XSecPathList xSecPathList)
+        {
+            try
+            {
+                dataOuputText.Clear();
+                dataOuputText.Add("input file: "+ _inputFileName);
+                dataOuputText.Add("depth location file: "+ depthLocationsFilename);
+                dataOuputText.Add("pass exec order, location, depth");
+                var depthLines = new List<GeometryLib.Line2>();
+                foreach (ToolpathLib.XSectionPathEntity xpe in xSecPathList)
+                {
+                    double xMeasure = xpe.CrossLoc;
+                    foreach (InspDataSet dataset in _inspDataSetList)
+                    {
+                        if (dataset is CartDataSet cartData)
+                        {
+                            for (int i = 1; i < cartData.ModCartData.Count; i++)
+                            {
+                                if ((xMeasure >= cartData.ModCartData[i - 1].X && xMeasure <= cartData.ModCartData[i].X)||
+                                    (xMeasure <= cartData.ModCartData[i - 1].X && xMeasure >= cartData.ModCartData[i].X))
+                                {                                    
+                                    xpe.CurrentDepth =( cartData.ModCartData[i - 1].Y + cartData.ModCartData[i ].Y)/2.0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    var line = new GeometryLib.Line2(xMeasure, 0,  xMeasure, xpe.CurrentDepth);
+                    depthLines.Add(line);
+                    dataOuputText.Add(xpe.PassExecOrder.ToString() + "," + xpe.CrossLoc.ToString() + "," + xpe.CurrentDepth.ToString());
+                }
+                textBoxDataOut.Lines = dataOuputText.ToArray();
+                DrawLines(_blackPen, depthLines);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        string depthLocationsFilename;
+        private void buttonMeasureDepths_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_inspDataSetList != null && _inspDataSetList.Count > 0)
+                {
+                    var ofd = new OpenFileDialog();
+                    ofd.Filter = "(*.csv)|*.csv";
+                    int headerrowCount = 1;
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        depthLocationsFilename = ofd.FileName;
+                        var xsecToolpath = new ToolpathLib.XSecPathList(depthLocationsFilename, headerrowCount);
+                        MeasureDepths(ref xsecToolpath);
+                        var lines = new List<string>();
+                        lines.Add("input file: " + _inputFileName);
+                        lines.Add("depth location file: " + depthLocationsFilename);
+                        lines.AddRange(xsecToolpath.AsCSVFile());
+                        var sfd = new SaveFileDialog();
+                        sfd.Filter = "(*.csv)|*.csv";
+                        if (sfd.ShowDialog() == DialogResult.OK)
+                        {
+                            FileIO.Save(lines, sfd.FileName);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logFile.SaveMessage(ex);
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+            
+        }
+        void FitToCircle()
+        {
+            try
+            {
+                var p1 = new Vector2(_mouseDownPartXY.X, _mouseDownPartXY.Y);
+                var p2 = new Vector2(_prevMouseDownPartXY.X, _prevMouseDownPartXY.Y);
+                var r = _barrel.DimensionData.ActualLandDiam;
+                var centers = DataUtilities.FindCirclesofKnownR(p1, p2, r);
+                var cen1 = _screenTransform.GetScreenCoords(centers[0].X, centers[0].Y);
+                var cen2 = _screenTransform.GetScreenCoords(centers[1].X, centers[1].Y);
+                var centerList = new List<PointF>() { cen1, cen2 };
+                var rscr = _screenTransform.GetScreenCoords(0, r);
+                DrawCircles(_blackPen, centerList, (int)rscr.Y);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        
+        private void toolStripButtonFitToCircle_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _dataSelection = DataSelection.FITCIRCLE;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        private void MainInspectionForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.barrelType = comboBoxBarrel.SelectedItem.ToString();
+            Properties.Settings.Default.probeType = comboBoxProbeType.SelectedItem.ToString();
+            Properties.Settings.Default.probeDirection = comboBoxProbeDirection.SelectedItem.ToString();
+            Properties.Settings.Default.scanFormat = comboBoxMethod.SelectedItem.ToString();
+            Properties.Settings.Default.probeCount = _probeCount;
+            Properties.Settings.Default.diamCalType = comboBoxDiameterType.SelectedItem.ToString();
+            Properties.Settings.Default.manufStep = comboBoxManStep.SelectedItem.ToString();
+            Properties.Settings.Default.Save();
+        }
+
+       
     }
 }

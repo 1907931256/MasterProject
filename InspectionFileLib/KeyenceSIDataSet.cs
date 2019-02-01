@@ -68,6 +68,7 @@ namespace InspectionLib
                     throw new Exception("Data rows not found");
                 }
                 int columnCount = words.GetLength(1);
+                
                 if(columnCount==2)
                 {
                     for (int i = _headerRowCount; i < _rowCount; i++)
@@ -76,7 +77,7 @@ namespace InspectionLib
                         double y = 0;
                         if (double.TryParse(words[i, 0], out x) && double.TryParse(words[i, 1], out y))
                         {         
-                            if(y<=_maxValue && y>=_minValue)
+                            if(Math.Abs(y)<=Math.Abs(_maxValue) && Math.Abs(y)>=Math.Abs(_minValue))
                             {
                                 data.Add(new GeometryLib.Vector2(x, y));
                             }                                                                                
@@ -108,7 +109,7 @@ namespace InspectionLib
                 _maxValue = maxValue;
                 Filename = CsvFileName;
                 OutputUnits = outputUnit;
-                InputUnits = new MeasurementUnit(MeasurementUnitEnum.INCH);
+                InputUnits = new MeasurementUnit(LengthUnitEnum.INCH);
                 ProcessFile();
             }
             catch (Exception)
@@ -212,7 +213,7 @@ namespace InspectionLib
             try
             {                               
                 var unitList = MeasurementUnitDictionary.MeasurementUnitNames();
-                var inputUnit = new MeasurementUnit(MeasurementUnitEnum.MICRON);
+                var inputUnit = new MeasurementUnit(LengthUnitEnum.MICRON);
                 foreach (string unitStr in unitList)
                 {
                     for (int i = 0; i < 6 ; i++)
@@ -256,7 +257,7 @@ namespace InspectionLib
 
                 if (InputUnits == null)
                 {
-                    InputUnits = new MeasurementUnit(MeasurementUnitEnum.MICRON);
+                    InputUnits = new MeasurementUnit(LengthUnitEnum.MICRON);
                 }
                 if(ProbeCount ==1)
                 {

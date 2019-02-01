@@ -91,6 +91,7 @@
     <Compile Include="DataColorCode.cs" />
     <Compile Include="DataOptionsFile.cs" />
     <Compile Include="DepthMeasurement.cs" />
+    <Compile Include="DiamCalType.cs" />
     <Compile Include="GrooveDepthProfile.cs" />
     <Compile Include="DataParser.cs" />
     <Compile Include="DataFileBuilder.cs" />
@@ -157,6 +158,10 @@
     <ProjectReference Include="..\ToolpathLib\ToolpathLib.csproj">
       <Project>{f48e523e-0c85-4379-8e8a-06033c61c476}</Project>
       <Name>ToolpathLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsFormLib\WindowsFormLib.csproj">
+      <Project>{872e3e7e-d5f8-4acd-a098-ea184ba0e7f9}</Project>
+      <Name>WindowsFormLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

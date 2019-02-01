@@ -42,7 +42,7 @@ namespace InspectionLib
             try
             {
 
-                var points = new CylData(ScanFormat.RING );
+                var points = new CylData();
 
                 int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
                 int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
@@ -77,7 +77,7 @@ namespace InspectionLib
         {
             try
             {
-                var points = new CylData(ScanFormat.RING );
+                var points = new CylData();
                 for (int i = 0; i < data.Length; i++)
                 {
                     var z = script.StartZ;

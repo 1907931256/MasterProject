@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProbeController
 {
-    public enum MeasurementUnitEnum
+    public enum LengthUnitEnum
     {        
         MICRON=1,
         MM=1000,
@@ -15,9 +15,9 @@ namespace ProbeController
 
     static public class MeasurementUnitDictionary
     {
-        static public MeasurementUnitEnum GetUnits(string name)
+        static public LengthUnitEnum GetUnits(string name)
         {
-            MeasurementUnitEnum value = MeasurementUnitEnum.MICRON;
+            LengthUnitEnum value = LengthUnitEnum.MICRON;
             unitDictionary.TryGetValue(name, out value);
             return value;
         }
@@ -32,15 +32,15 @@ namespace ProbeController
             return keyList;
         }
 
-        static Dictionary<string, MeasurementUnitEnum> unitDictionary;
+        static Dictionary<string, LengthUnitEnum> unitDictionary;
         static MeasurementUnitDictionary()
         {
-            unitDictionary = new Dictionary<string, MeasurementUnitEnum>();
-            unitDictionary.Add("INCH", MeasurementUnitEnum.INCH);
-            unitDictionary.Add("IN", MeasurementUnitEnum.INCH);
-            unitDictionary.Add("MICRON", MeasurementUnitEnum.MICRON);
-            unitDictionary.Add("MM", MeasurementUnitEnum.MM);
-            unitDictionary.Add("UM", MeasurementUnitEnum.MICRON);
+            unitDictionary = new Dictionary<string, LengthUnitEnum>();
+            unitDictionary.Add("INCH", LengthUnitEnum.INCH);
+            unitDictionary.Add("IN", LengthUnitEnum.INCH);
+            unitDictionary.Add("MICRON", LengthUnitEnum.MICRON);
+            unitDictionary.Add("MM", LengthUnitEnum.MM);
+            unitDictionary.Add("UM", LengthUnitEnum.MICRON);
 
         }
     }

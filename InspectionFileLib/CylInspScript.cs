@@ -10,14 +10,20 @@ namespace InspectionLib
 {
     public class CartInspScript:InspectionScript
     {
-
+       
+        public CartInspScript(DataLib.ScanFormat scanFormat)
+        {
+            ScanFormat = scanFormat;
+            StartLocation = new MachinePosition(MachineGeometry.XYZ);
+            EndLocation = new MachinePosition(MachineGeometry.XYZ);
+        }
     }
     public class CylInspScript : InspectionScript
     {
-        public double StartZ { get { return _start.Z; } }
-        public double EndZ { get { return _end.Z; } }
-        public double StartThetaRad { get { return _start.ThetaRad; } }
-        public double EndThetaRad { get { return _end.ThetaRad; } }
+        public double StartZ { get { return StartLocation.Z; } }
+        public double EndZ { get { return EndLocation.Z; } }
+        public double StartThetaRad { get { return Geometry.ToRadians(StartLocation.Adeg); } }
+        public double EndThetaRad { get { return Geometry.ToRadians(EndLocation.Adeg); } }
         public double AngleIncrement { get; set; }
         public double AxialIncrement { get; set; }
         public int ZDir { get { return _zDir; } }
@@ -25,13 +31,8 @@ namespace InspectionLib
         public int PointsPerRevolution { get { return _pointsPerRev; } }
         public int ThetaDir { get { return _thDir; } }
         public double[] ExtractLocations { get { return _extractX; } set { _extractX = value; } }
-        public ProbeSetup ProbeSetup { get; set; }
-       
-        public CalDataSet CalDataSet { get; set; }
-        protected MachinePosition _startPos;
-        protected MachinePosition _endPos;
-        protected PointCyl _start;
-        protected PointCyl _end;
+
+        
         
         protected int _zDir;
         
@@ -94,10 +95,8 @@ namespace InspectionLib
         void init(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end)
         {
             ScanFormat = scanformat;
-            _startPos = start;
-            _endPos = end;
-            _start = new PointCyl(1, Geometry.ToRadians(_startPos.Adeg), _startPos.X);
-            _end = new PointCyl(1, Geometry.ToRadians(_endPos.Adeg), _endPos.X);
+            StartLocation = start;
+            EndLocation = end;            
             ProbeSetup = new ProbeController.ProbeSetup();
             CalDataSet = new CalDataSet(0,0,0, ProbeController.ProbeDirection.ID);
         }

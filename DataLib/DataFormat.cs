@@ -13,15 +13,14 @@ namespace DataLib
     }
     public enum ScanFormat
     {
-        UNKNOWN,
         RING,
-        GRID,
         SPIRAL,
         AXIAL,
         LAND,
-        GROOVE,        
+        GROOVE,
         CAL,
-        SINGLELINE
+        FLATPLATELINE,
+        FLATPLATEGRID
     }
 
 }

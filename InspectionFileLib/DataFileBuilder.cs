@@ -240,6 +240,26 @@ namespace InspectionLib
                 throw;
             }           
         }
+        static DXFLine BuildLine(Vector3 pt1, Vector3 pt2)
+        {
+            try
+            {
+                double x1 = pt1.X;
+                double y1 = pt1.Y;
+                double z1 = pt1.Z;
+                double x2 = pt2.X;
+                double y2 = pt2.Y;
+                double z2 = pt2.Z;
+                RGBColor c;
+                c = new RGBColor(0, 255, 0);
+                DXFLine line = new DXFLine(x1, y1, z1, x2, y2, z2, c);
+                return line;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         static public void SaveDXF( CylData strip, string fileName, IProgress<int> progress)
         {
 
@@ -258,6 +278,32 @@ namespace InspectionLib
                 }
 
                 DxfFileBuilder.Save(entityList, outputFilename,progress);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        static public void SaveDXF(CartData strip, string fileName, IProgress<int> progress)
+        {
+
+            try
+            {
+
+                var outputFilename = BuildFileName(fileName, "", ".dxf");
+                List<GeometryLib.DwgEntity> entityList = new List<GeometryLib.DwgEntity>();
+                List<string> DwgConverterLibList = new List<string>();
+
+                for (int i = 1; i < strip.Count - 1; i++)
+                {
+
+                    entityList.Add(BuildLine(strip[i], strip[i + 1]));
+
+                }
+
+                DxfFileBuilder.Save(entityList, outputFilename, progress);
             }
             catch (Exception)
             {
@@ -322,7 +368,35 @@ namespace InspectionLib
                 throw;
             }
         }
+        /// <summary>
+        /// output csv file
+        /// </summary>
+        /// <param name="ring"></param>
+        /// <param name="csvFileName"></param>
+        static public void SaveCSVFile(Barrel barrel, DataOutputOptions options,
+            CartData data, string fileName, IProgress<int> progress)
+        {
+            try
+            {
+                //var outputFilename = BuildFileName(fileName,"_out", ".csv");
+                var headings = BuildFileHeader(barrel, fileName);
 
+                var filePoints = new List<string>();
+                filePoints.AddRange(headings);
+                filePoints.Add("ID,X(in),Y(in),Z(in)");
+                foreach (var pt in data)
+                {
+                    string line = string.Concat(pt.ID.ToString() + "," + pt.X.ToString(), ",", pt.Y.ToString(), ",", pt.Z.ToString());
+                    filePoints.Add(line);
+                }
+                FileIOLib.FileIO.Save(filePoints, fileName);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         /// <summary>
         /// output csv file from ring data
         /// </summary>

@@ -104,7 +104,7 @@ namespace InspectionLib
             label = label.Trim();
             label = label.ToUpper();
             var dict = BuildMethodDictionary();
-            var methType = ScanFormat.UNKNOWN;
+            var methType = ScanFormat.RING;
             dict.TryGetValue(label, out methType);
             return methType;
         }
@@ -132,11 +132,9 @@ namespace InspectionLib
             var dict = new Dictionary<string, ScanFormat>();
             dict.Add("RG", ScanFormat.RING);
             dict.Add("AX", ScanFormat.AXIAL);
-            dict.Add("SP", ScanFormat.SPIRAL);
-            dict.Add("LD", ScanFormat.LAND);
-            dict.Add("GV", ScanFormat.GROOVE);           
+            dict.Add("SP", ScanFormat.SPIRAL);            
             dict.Add("CAL", ScanFormat.CAL);
-            dict.Add("LN", ScanFormat.SINGLELINE);
+            dict.Add("LN", ScanFormat.FLATPLATELINE);
             return dict;
         }
         static InspectionScriptBuilder()
@@ -193,16 +191,13 @@ namespace InspectionLib
             var fileCodes = ParseFilename(filename);
             int len = fileCodes.Length;
             var method = GetMethod(fileCodes[len - 1]);
-            if (method == ScanFormat.UNKNOWN)
-            {
-                method = ScanFormat.RING;
-            }
+            method = ScanFormat.RING;            
             return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
         }
-        static public CylInspScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method,
+        static public InspectionScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method,
             MachinePosition start, MachinePosition end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
         {
-            CylInspScript script;
+            InspectionScript script;
             switch (method)
             {
                 case ScanFormat.RING:
@@ -218,6 +213,11 @@ namespace InspectionLib
                 case ScanFormat.LAND:
                     script = new CylInspScript(method, start, end, axisIncrement, grooves);
                     break;
+                case ScanFormat.FLATPLATELINE:
+                case ScanFormat.FLATPLATEGRID:
+                    script = new CartInspScript(method);
+                    break;
+                case ScanFormat.CAL:
                 default:
                     script = new CylInspScript(method, start, end);
                     break;

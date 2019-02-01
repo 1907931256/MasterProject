@@ -11,7 +11,7 @@ namespace WinFormsLibTests
         [TestMethod]
         public void ScreenTransform_GetScreenCoords()
         {
-            var bbox = new BoundingBox(-2, -2, 0, 1, 1, 0);
+            var bbox = new RectangleF(0,0,1,1);
             var rectf = new RectangleF(0, 0, 300, 200);
             var st = new ScreenTransform(bbox, rectf, true);
             PointF ptscreen = st.GetScreenCoords(1, -2);

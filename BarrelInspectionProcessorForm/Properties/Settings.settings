@@ -1,7 +1,27 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BarrelInspectionProcessorForm.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="barrelType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">M2_50_Cal</Value>
+    </Setting>
+    <Setting Name="scanFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RING</Value>
+    </Setting>
+    <Setting Name="probeType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LINE_SCAN</Value>
+    </Setting>
+    <Setting Name="probeDirection" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ID</Value>
+    </Setting>
+    <Setting Name="probeCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="diamCalType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">DEFAULT</Value>
+    </Setting>
+    <Setting Name="manufStep" Type="System.String" Scope="User">
+      <Value Profile="(Default)">unknown</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

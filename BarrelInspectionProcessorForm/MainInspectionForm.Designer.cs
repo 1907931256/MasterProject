@@ -127,7 +127,7 @@
             this.toolStripButtonGrooveMidpoint = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonCenterline = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonWinData = new System.Windows.Forms.ToolStripButton();
             this.tabControlParams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.labelCalStatus = new System.Windows.Forms.Label();
@@ -151,6 +151,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxProbeSpacing = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.buttonMeasureDepths = new System.Windows.Forms.Button();
             this.buttonCorrectMidpoint = new System.Windows.Forms.Button();
             this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -161,10 +162,11 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
+            this.toolStripButtonFitToCircle = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -263,14 +265,18 @@
             // 
             this.comboBoxMethod.FormattingEnabled = true;
             this.comboBoxMethod.Items.AddRange(new object[] {
-            "Ring",
-            "Spiral",
-            "Axial",
-            "Single Line Scan"});
-            this.comboBoxMethod.Location = new System.Drawing.Point(145, 37);
+            "RING",
+            "SPIRAL",
+            "AXIAL",
+            "LAND",
+            "GROOVE",
+            "CAL",
+            "FLATPLATELINE",
+            "FLATPLATEGRID"});
+            this.comboBoxMethod.Location = new System.Drawing.Point(101, 35);
             this.comboBoxMethod.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMethod.Name = "comboBoxMethod";
-            this.comboBoxMethod.Size = new System.Drawing.Size(92, 21);
+            this.comboBoxMethod.Size = new System.Drawing.Size(139, 21);
             this.comboBoxMethod.TabIndex = 3;
             this.comboBoxMethod.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMethod_SelectedIndexChanged);
             // 
@@ -327,7 +333,7 @@
             // labelMethod
             // 
             this.labelMethod.AutoSize = true;
-            this.labelMethod.Location = new System.Drawing.Point(75, 40);
+            this.labelMethod.Location = new System.Drawing.Point(31, 38);
             this.labelMethod.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelMethod.Name = "labelMethod";
             this.labelMethod.Size = new System.Drawing.Size(67, 13);
@@ -799,7 +805,7 @@
             // 
             this.buttonGetAveAngle.Location = new System.Drawing.Point(7, 324);
             this.buttonGetAveAngle.Name = "buttonGetAveAngle";
-            this.buttonGetAveAngle.Size = new System.Drawing.Size(115, 45);
+            this.buttonGetAveAngle.Size = new System.Drawing.Size(115, 30);
             this.buttonGetAveAngle.TabIndex = 16;
             this.buttonGetAveAngle.Text = "Correct Angle";
             this.buttonGetAveAngle.UseVisualStyleBackColor = true;
@@ -893,7 +899,8 @@
             this.toolStripButtonGrooveMidpoint,
             this.toolStripButtonRotate,
             this.toolStripButtonMirror,
-            this.toolStripButtonCenterline});
+            this.toolStripButtonWinData,
+            this.toolStripButtonFitToCircle});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1120, 33);
@@ -978,14 +985,15 @@
             this.toolStripButtonMirror.Text = "Mirror";
             this.toolStripButtonMirror.Click += new System.EventHandler(this.toolStripButtonMirror_Click);
             // 
-            // toolStripButtonCenterline
+            // toolStripButtonWinData
             // 
-            this.toolStripButtonCenterline.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonCenterline.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCenterline.Image")));
-            this.toolStripButtonCenterline.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonCenterline.Name = "toolStripButtonCenterline";
-            this.toolStripButtonCenterline.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonCenterline.Text = "Select Horizontal Centerline";
+            this.toolStripButtonWinData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonWinData.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonWinData.Image")));
+            this.toolStripButtonWinData.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonWinData.Name = "toolStripButtonWinData";
+            this.toolStripButtonWinData.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonWinData.Text = "Window Data";
+            this.toolStripButtonWinData.Click += new System.EventHandler(this.toolStripButtonWinData_Click);
             // 
             // tabControlParams
             // 
@@ -1024,7 +1032,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(268, 584);
+            this.tabPage1.Size = new System.Drawing.Size(315, 584);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Barrel Data";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1264,6 +1272,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.buttonMeasureDepths);
             this.tabPage3.Controls.Add(this.buttonSetRadius);
             this.tabPage3.Controls.Add(this.buttonCorrectMidpoint);
             this.tabPage3.Controls.Add(this.label8);
@@ -1279,16 +1288,26 @@
             this.tabPage3.Controls.Add(this.checkBoxAngleCorrect);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(268, 584);
+            this.tabPage3.Size = new System.Drawing.Size(315, 584);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Data processing";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // buttonMeasureDepths
+            // 
+            this.buttonMeasureDepths.Location = new System.Drawing.Point(7, 480);
+            this.buttonMeasureDepths.Name = "buttonMeasureDepths";
+            this.buttonMeasureDepths.Size = new System.Drawing.Size(115, 30);
+            this.buttonMeasureDepths.TabIndex = 46;
+            this.buttonMeasureDepths.Text = "MeasureDepths";
+            this.buttonMeasureDepths.UseVisualStyleBackColor = true;
+            this.buttonMeasureDepths.Click += new System.EventHandler(this.buttonMeasureDepths_Click);
             // 
             // buttonCorrectMidpoint
             // 
             this.buttonCorrectMidpoint.Location = new System.Drawing.Point(7, 426);
             this.buttonCorrectMidpoint.Name = "buttonCorrectMidpoint";
-            this.buttonCorrectMidpoint.Size = new System.Drawing.Size(115, 45);
+            this.buttonCorrectMidpoint.Size = new System.Drawing.Size(115, 30);
             this.buttonCorrectMidpoint.TabIndex = 45;
             this.buttonCorrectMidpoint.Text = "Correct To Midpoint";
             this.buttonCorrectMidpoint.UseVisualStyleBackColor = true;
@@ -1298,7 +1317,7 @@
             // 
             this.buttonBuildProfile.Location = new System.Drawing.Point(7, 375);
             this.buttonBuildProfile.Name = "buttonBuildProfile";
-            this.buttonBuildProfile.Size = new System.Drawing.Size(115, 45);
+            this.buttonBuildProfile.Size = new System.Drawing.Size(115, 30);
             this.buttonBuildProfile.TabIndex = 44;
             this.buttonBuildProfile.Text = "Build profile ";
             this.buttonBuildProfile.UseVisualStyleBackColor = true;
@@ -1392,6 +1411,13 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
+            // progressBarProcessing
+            // 
+            this.progressBarProcessing.Location = new System.Drawing.Point(9, 532);
+            this.progressBarProcessing.Name = "progressBarProcessing";
+            this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
+            this.progressBarProcessing.TabIndex = 26;
+            // 
             // elementHost1
             // 
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1402,12 +1428,16 @@
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.userControl11;
             // 
-            // progressBarProcessing
+            // toolStripButtonFitToCircle
             // 
-            this.progressBarProcessing.Location = new System.Drawing.Point(9, 532);
-            this.progressBarProcessing.Name = "progressBarProcessing";
-            this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
-            this.progressBarProcessing.TabIndex = 26;
+            this.toolStripButtonFitToCircle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonFitToCircle.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonFitToCircle.Image")));
+            this.toolStripButtonFitToCircle.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonFitToCircle.Name = "toolStripButtonFitToCircle";
+            this.toolStripButtonFitToCircle.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonFitToCircle.Text = "Fit to Circle";
+            this.toolStripButtonFitToCircle.ToolTipText = "Fit to Circle";
+            this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.toolStripButtonFitToCircle_Click);
             // 
             // MainInspectionForm
             // 
@@ -1426,6 +1456,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainInspectionForm";
             this.Text = "Barrel Inspection Processor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainInspectionForm_FormClosing);
             this.Load += new System.EventHandler(this.MainInspectionForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainInspectionForm_KeyDown);
             this.Resize += new System.EventHandler(this.MainInspectionForm_Resize);
@@ -1573,9 +1604,11 @@
         private System.Windows.Forms.ToolStripMenuItem dViewImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButtonRotate;
         private System.Windows.Forms.ToolStripButton toolStripButtonMirror;
-        private System.Windows.Forms.ToolStripButton toolStripButtonCenterline;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox comboBoxProbeType;
+        private System.Windows.Forms.ToolStripButton toolStripButtonWinData;
+        private System.Windows.Forms.Button buttonMeasureDepths;
+        private System.Windows.Forms.ToolStripButton toolStripButtonFitToCircle;
     }
 }
 

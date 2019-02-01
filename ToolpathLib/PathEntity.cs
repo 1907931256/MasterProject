@@ -22,39 +22,74 @@ namespace ToolpathLib
             Array.Sort(orderArr, cspArr);
             Clear();
             AddRange(cspArr);
-        }        
+        } 
+        public List<string>  AsCSVFile()
+        {
+            var lines = new List<string>();
+            lines.Add("pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction,Depth,TargetDepth");
+            foreach (XSectionPathEntity xpe in this)
+            {
+                string line = xpe.PassExecOrder.ToString() + "," + xpe.CrossLoc.ToString() + "," + xpe.AlongLocation.ToString() + ","
+                    + xpe.Feedrate.ToString() + "," + xpe.Direction.ToString() + "," + xpe.CurrentDepth.ToString() + "," + xpe.TargetDepth.ToString();
+                lines.Add(line);
+            }
+            return lines;
+        }
         public XSecPathList(string csvFilename,int headerRowCount)
         {
             var stringArr = FileIOLib.CSVFileParser.ParseFile(csvFilename);
-            //pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction(+,-)
+            //pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction(+,-),Depth,TargetDepth
             if (headerRowCount < 0)
                 headerRowCount = 0;
+            int colCount = stringArr.GetLength(1);
             for(int i =headerRowCount;i<stringArr.GetLength(0);i++)
             {
-                int pathExOrder = 1;
-                double feed = 1.0;
+                int pathExOrder = 0;
+                double feed = 0.0;
                 double xlocation = 0;
                 double ylocation = 0;
                 int direction = 1;
+                double depth = 0;
+                double targetDepth = 0;
                 int.TryParse(stringArr[i,0], out pathExOrder);
                 double.TryParse(stringArr[i, 1], out xlocation);
                 double.TryParse(stringArr[i, 2], out ylocation);
                 double.TryParse(stringArr[i, 3], out feed);
                 int.TryParse(stringArr[i, 4], out direction);
-                var xpe = new XSectionPathEntity() { PassExecOrder = pathExOrder, CrossLoc = xlocation, Feedrate = feed, Direction = direction };
-                this.Add(xpe);
+                if(colCount==7)
+                {
+                    double.TryParse(stringArr[i, 5], out depth);
+                    double.TryParse(stringArr[i, 6], out targetDepth);
+                }
+                if(pathExOrder>0)
+                {
+                    var xpe = new XSectionPathEntity()
+                    {
+                        PassExecOrder = pathExOrder,
+                        CrossLoc = xlocation,
+                        AlongLocation = ylocation,
+                        Feedrate = feed,
+                        Direction = direction,
+                        CurrentDepth = depth,
+                        TargetDepth = targetDepth
+                    };
+                    this.Add(xpe);
+                }
+               
             }
             SortByPassExcOrder();
         }
     }
     public class XSectionPathEntity
     {
-        public CNCLib.MachinePosition MachinePosition { get; set; }
+        public double AlongLocation { get; set; }
         public Vector2 JetVector { get; set; }
         public double CrossLoc { get; set; }       
         public double Feedrate { get; set; }
         public int PassExecOrder { get; set; }
         public int Direction { get; set; }
+        public double TargetDepth { get; set; }
+        public double CurrentDepth { get; set; }
     }
     public  class PathEntity
     {

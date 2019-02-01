@@ -13,13 +13,13 @@ namespace InspectionLib
     public class CartesianDataBuilder : DataBuilder
     {
        
-        InspDataSet BuildCartDataFromLineData(CylInspScript script, KeyenceLineScanDataSet rawDataSet)
+        InspDataSet BuildCartDataFromLineData(CartInspScript script, KeyenceLineScanDataSet rawDataSet)
         {
             try
             {
                 var dataSet = new CartDataSet(_barrel);               
-                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartZ);               
-               
+                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartLocation.X);
+                dataSet.ModCartData = dataSet.CartData;
                 return dataSet;
             }
             catch (Exception)
@@ -28,7 +28,7 @@ namespace InspectionLib
             }
 
         }
-        public InspDataSet BuildSingleLineAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script,
+        public InspDataSet BuildSingleLineAsync(CancellationToken ct, IProgress<int> progress, CartInspScript script,
            KeyenceLineScanDataSet rawDataSet, DataOutputOptions options)
         {
             try

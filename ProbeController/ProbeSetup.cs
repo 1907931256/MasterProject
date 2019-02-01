@@ -23,10 +23,14 @@ namespace ProbeController
         public List<Probe> ProbeList;
         public ProbeDirection ProbeDirection { get; set; }
         public int ProbeCount { get; set; }
+        public ProbeType ProbeType { get; protected set; }
+        public double MinValue { get; set; }
+        public double MaxValue { get; set; }
         public ProbeSetup()
         {
             ProbeList = new List<Probe>();
             ProbeDirection = ProbeDirection.ID;
+            ProbeType = ProbeType.SI_DISTANCE;
         }
     }
 }

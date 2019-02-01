@@ -17,7 +17,7 @@ namespace InspectionLib
         {
             try
             {
-                var points = new CylData(ScanFormat.SPIRAL );
+                var points = new CylData();
                 for (int i = 0; i < data.Length; i++)
                 {
                     var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
@@ -40,7 +40,7 @@ namespace InspectionLib
                 try
                 {
 
-                    var points = new CylData(ScanFormat.SPIRAL);
+                    var points = new CylData();
 
                     int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
                     int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
@@ -86,8 +86,8 @@ namespace InspectionLib
                 int pointIndex = 0;
                 double thetaStart = Math.Abs(uncorrectedData[0].ThetaRad);
                 double thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
-                var pointList = new CylData(ScanFormat.SPIRAL);
-                var uncorrectedGridData = new CylGridData(ScanFormat.SPIRAL);
+                var pointList = new CylData();
+                var uncorrectedGridData = new CylGridData();
 
                 while (pointIndex < uncorrectedData.Count)
                 {
@@ -107,7 +107,7 @@ namespace InspectionLib
 
                         pointCountPerRev = 0;
                         uncorrectedGridData.Add(pointList);
-                        pointList = new CylData(ScanFormat.SPIRAL );
+                        pointList = new CylData();
                         thetaStart = thetaEnd;
                         thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
                     }
@@ -190,7 +190,7 @@ namespace InspectionLib
                 var ringList = new List<CylData>();
                 if (script.ExtractLocations.Length != 0)
                 {
-                    var tempList = new CylData(ScanFormat.SPIRAL );
+                    var tempList = new CylData();
                     foreach (var ring in data)
                     {
                         tempList.AddRange(ring);

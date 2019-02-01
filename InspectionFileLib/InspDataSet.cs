@@ -74,10 +74,12 @@ namespace InspectionLib
     }
     public class CartDataSet:InspDataSet
     {
-        public CartData CartData { get; set; }        
+        public CartData CartData { get; set; }      
+        public CartData ModCartData { get; set; }
         public CartDataSet(Barrel barrel) : base(barrel)
         {
-            CartData = new CartData();            
+            CartData = new CartData();
+            ModCartData = new CartData();
         }
     }
     public class CartGridDataSet : InspDataSet

@@ -22,5 +22,89 @@ namespace BarrelInspectionProcessorForm.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("M2_50_Cal")]
+        public string barrelType {
+            get {
+                return ((string)(this["barrelType"]));
+            }
+            set {
+                this["barrelType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RING")]
+        public string scanFormat {
+            get {
+                return ((string)(this["scanFormat"]));
+            }
+            set {
+                this["scanFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("LINE_SCAN")]
+        public string probeType {
+            get {
+                return ((string)(this["probeType"]));
+            }
+            set {
+                this["probeType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ID")]
+        public string probeDirection {
+            get {
+                return ((string)(this["probeDirection"]));
+            }
+            set {
+                this["probeDirection"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int probeCount {
+            get {
+                return ((int)(this["probeCount"]));
+            }
+            set {
+                this["probeCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DEFAULT")]
+        public string diamCalType {
+            get {
+                return ((string)(this["diamCalType"]));
+            }
+            set {
+                this["diamCalType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("unknown")]
+        public string manufStep {
+            get {
+                return ((string)(this["manufStep"]));
+            }
+            set {
+                this["manufStep"] = value;
+            }
+        }
     }
 }

@@ -93,7 +93,6 @@
     <Compile Include="DepthMeasurement.cs" />
     <Compile Include="DiamCalType.cs" />
     <Compile Include="GrooveDepthProfile.cs" />
-    <Compile Include="DataParser.cs" />
     <Compile Include="DataFileBuilder.cs" />
     <Compile Include="DataOutputOptions.cs" />
     <Compile Include="DataBuilder.cs" />

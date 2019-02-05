@@ -36,7 +36,7 @@ namespace InspectionLib
             minDiam += script.CalDataSet.ProbeSpacingInch;
             return new PointCyl(minDiam / 2, 0, script.StartZ);
         }
-      
+
         override protected CylData GetDualProbeData(CylInspScript script, double[] data)
         {
             try
@@ -95,6 +95,7 @@ namespace InspectionLib
                 throw;
             }
         }
+        
         /// <summary>
         /// build ring data from raw data and auto find lands
         /// </summary>

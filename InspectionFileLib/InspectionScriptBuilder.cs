@@ -134,7 +134,7 @@ namespace InspectionLib
             dict.Add("AX", ScanFormat.AXIAL);
             dict.Add("SP", ScanFormat.SPIRAL);            
             dict.Add("CAL", ScanFormat.CAL);
-            dict.Add("LN", ScanFormat.FLATPLATELINE);
+            dict.Add("LN", ScanFormat.FLATPLATE);
             return dict;
         }
         static InspectionScriptBuilder()
@@ -213,8 +213,8 @@ namespace InspectionLib
                 case ScanFormat.LAND:
                     script = new CylInspScript(method, start, end, axisIncrement, grooves);
                     break;
-                case ScanFormat.FLATPLATELINE:
-                case ScanFormat.FLATPLATEGRID:
+                case ScanFormat.FLATPLATE:
+                
                     script = new CartInspScript(method);
                     break;
                 case ScanFormat.CAL:

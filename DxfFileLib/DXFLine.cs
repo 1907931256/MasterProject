@@ -70,6 +70,42 @@ namespace DwgConverterLib
             ID = entityNumber;
             Type = EntityType.Line;
         }
+        public DXFLine(PointCyl pt1, PointCyl pt2)
+        {
+            try
+            {
+                double x1 = pt1.R * Math.Cos(pt1.ThetaRad);
+                double y1 = pt1.R * Math.Sin(pt1.ThetaRad);
+                double z1 = pt1.Z;
+                double x2 = pt2.R * Math.Cos(pt2.ThetaRad);
+                double y2 = pt2.R * Math.Sin(pt2.ThetaRad);
+                double z2 = pt2.Z;
+                RGBColor c;
+                c = new RGBColor(0, 255, 0);
+                Point1 = new Vector3(x1, y1, z1);
+                Point2 = new Vector3(x2, y2, z2);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public DXFLine(Vector3 pt1, Vector3 pt2)
+        {
+            try
+            {
+                Point1 = pt1;
+                Point2 = pt2;
+
+                Type = EntityType.Line;
+                Col = new RGBColor(255, 0, 0);
+                DxfColor = new DxfColor();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public DXFLine(double x1In, double y1In, double z1In, double x2In, double y2In, double z2In)
          {
             Point1 = new Vector3(x1In, y1In, z1In);

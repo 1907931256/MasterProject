@@ -86,7 +86,8 @@ namespace BarrelLib
         M2_50_Cal,
         M242_25mm,
         M284_155mm,
-        M240_762mm
+        M240_762mm,
+        UNKNOWN
     }
     /// <summary>
     /// contains gun barrel definition filenames, twist profile and cross-section profiles
@@ -175,7 +176,7 @@ namespace BarrelLib
 
         public static BarrelType GetBarrelType(string name)
         {
-            BarrelType bt = BarrelType.M2_50_Cal;
+            BarrelType bt = BarrelType.UNKNOWN;
             
 
             if (name == "M2_50_Cal")

@@ -33,46 +33,46 @@ namespace InspectionLib
                 throw;
             }
         }
-        override protected CylData GetDualProbeData(CylInspScript script, double[] data)
-        {
-            try
-            {
-                try
-                {
+        //override protected CylData GetDualProbeData(CylInspScript script, double[] data)
+        //{
+        //    try
+        //    {
+        //        try
+        //        {
 
-                    var points = new CylData();
+        //            var points = new CylData();
 
-                    int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
-                    int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
-                    double minSum = double.MaxValue;
-                    for (int i = 0; i < pointCt; i++)
-                    {
-                        var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
-                        var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
-                        int probe2Index = (i + indexShift) % script.PointsPerRevolution;
-                        var sum = data[i];
-                        if (sum < minSum)
-                        {
-                            minSum = sum;
-                        }
-                        var pt1 = new PointCyl(sum / 2.0, theta, z, i);
-                        points.Add(pt1);
-                    }
-                    points.NominalMinDiam = minSum + script.CalDataSet.ProbeSpacingInch;
-                    return points;
-                }
-                catch (Exception)
-                {
+        //            int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
+        //            int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
+        //            double minSum = double.MaxValue;
+        //            for (int i = 0; i < pointCt; i++)
+        //            {
+        //                var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
+        //                var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
+        //                int probe2Index = (i + indexShift) % script.PointsPerRevolution;
+        //                var sum = data[i];
+        //                if (sum < minSum)
+        //                {
+        //                    minSum = sum;
+        //                }
+        //                var pt1 = new PointCyl(sum / 2.0, theta, z, i);
+        //                points.Add(pt1);
+        //            }
+        //            points.NominalMinDiam = minSum + script.CalDataSet.ProbeSpacingInch;
+        //            return points;
+        //        }
+        //        catch (Exception)
+        //        {
 
-                    throw;
-                }
+        //            throw;
+        //        }
                
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
         /// <summary>
         /// separate point list into rings from spiral
         /// </summary>
@@ -183,44 +183,44 @@ namespace InspectionLib
             }
 
         }
-        public List<CylData> ExtractRings(CylGridData data, CylInspScript script)
-        {
-            try
-            {
-                var ringList = new List<CylData>();
-                if (script.ExtractLocations.Length != 0)
-                {
-                    var tempList = new CylData();
-                    foreach (var ring in data)
-                    {
-                        tempList.AddRange(ring);
-                    }
+        //public List<CylData> ExtractRings(CylGridData data, CylInspScript script)
+        //{
+        //    try
+        //    {
+        //        var ringList = new List<CylData>();
+        //        if (script.ExtractLocations.Length != 0)
+        //        {
+        //            var tempList = new CylData();
+        //            foreach (var ring in data)
+        //            {
+        //                tempList.AddRange(ring);
+        //            }
 
-                    double zMax = data.BoundingBox.Max.Z;
-                    double zMin = data.BoundingBox.Min.Z;
+        //            double zMax = data.BoundingBox.Max.Z;
+        //            double zMin = data.BoundingBox.Min.Z;
 
-                    var zList = new List<double>();
-                    foreach (double z in script.ExtractLocations)
-                    {
-                        if (z >= zMin && z <= zMax)
-                        {
-                            zList.Add(z);
-                        }
-                    }
-                    foreach (double z in zList)
-                    {
-                        ringList.Add(DataParser.GetRingFromSpiralMap(z, tempList, script.PointsPerRevolution));
-                    }
-                }
-                return ringList;
-            }
-            catch (Exception)
-            {
+        //            var zList = new List<double>();
+        //            foreach (double z in script.ExtractLocations)
+        //            {
+        //                if (z >= zMin && z <= zMax)
+        //                {
+        //                    zList.Add(z);
+        //                }
+        //            }
+        //            foreach (double z in zList)
+        //            {
+        //                ringList.Add(DataParser.GetRingFromSpiralMap(z, tempList, script.PointsPerRevolution));
+        //            }
+        //        }
+        //        return ringList;
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
+        //}
 
         public SpiralDataBuilder(Barrel barrel) : base(barrel)
         {

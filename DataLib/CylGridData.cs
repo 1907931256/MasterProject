@@ -21,7 +21,35 @@ namespace DataLib
                 return _boundingBox;
             }
         }
-         public CylData AsCylData()
+        /// <summary>
+        /// convert cylinder grid to cartesian grid
+        /// </summary>
+        /// <param name="correctedRingList"></param>
+        /// <returns></returns>
+        public CartGridData AsCartGridData()
+        {
+            try
+            {
+                var stripList = new CartGridData();
+                foreach (var cylstrip in this)
+                {
+                    var strip = new CartData();
+                    foreach (var ptCyl in cylstrip)
+                    {
+                        strip.Add(new Vector3(ptCyl));
+                    }
+                    stripList.Add(strip);
+                }
+                return stripList;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public CylData AsCylData()
         {
             
             var stripd = new CylData();

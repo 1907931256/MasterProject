@@ -7,8 +7,7 @@ using GeometryLib;
 using System.Diagnostics;
 using FileIOLib;
 using DataLib;
-using BarrelLib;
-namespace InspectionLib
+namespace DataLib
 {
     /// <summary>
     /// gets various subsets of data 
@@ -21,7 +20,7 @@ namespace InspectionLib
         /// <param name="passIndex"></param>
         /// <param name="ring"></param>
         /// <returns></returns>
-        static public CylData GetFirstRingFromMultiPassRing( int passIndex, CylData ring)
+        static public CylData GetFirstRingFromMultiPassRing(int passIndex, CylData ring)
         {
             try
             {
@@ -43,42 +42,42 @@ namespace InspectionLib
 
                 throw;
             }
-           
+
         }
-      
-      
+
+
         /// <summary>
         /// get single groove from ring data set
         /// </summary>
         /// <param name="grooveNumber"></param>
         /// <param name="ring"></param>
         /// <returns></returns>
-        static public CylData GetGrooveFromRing(Barrel barrel, int grooveNumber, CylData ring)
-        {
-            try
-            {
-                double z = (ring[0].Z + ring[ring.Count - 1].Z) / 2.0;
+        //static public CylData GetGrooveFromRing(Barrel barrel, int grooveNumber, CylData ring)
+        //{
+        //    try
+        //    {
+        //        double z = (ring[0].Z + ring[ring.Count - 1].Z) / 2.0;
 
 
-                var groove = new CylData();
-                foreach (PointCyl bp in ring)
-                {
-                    int gn = barrel.GetGrooveNumber(bp.Z, bp.ThetaRad);
-                    if (gn == grooveNumber)
-                    {
-                        groove.Add(bp);
-                    }
+        //        var groove = new CylData();
+        //        foreach (PointCyl bp in ring)
+        //        {
+        //            int gn = barrel.GetGrooveNumber(bp.Z, bp.ThetaRad);
+        //            if (gn == grooveNumber)
+        //            {
+        //                groove.Add(bp);
+        //            }
 
-                }
-                return groove;
-            }
-            catch (Exception)
-            {
+        //        }
+        //        return groove;
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-           
-        }
+        //        throw;
+        //    }
+
+        //}
         /// <summary>
         /// get section from ring data set
         /// </summary>
@@ -86,7 +85,7 @@ namespace InspectionLib
         /// <param name="endIndex"></param>
         /// <param name="ring"></param>
         /// <returns></returns>
-        static public CylData GetSectionFromRing( int startIndex,int endIndex, CylData ring)
+        static public CylData GetSectionFromRing(int startIndex, int endIndex, CylData ring)
         {
             try
             {
@@ -109,7 +108,7 @@ namespace InspectionLib
 
                 throw;
             }
-            
+
         }
         /// <summary>
         /// get first ring from spiral data set
@@ -118,36 +117,36 @@ namespace InspectionLib
         /// <param name="spiralMap"></param>
         /// <param name="pointsPerRev"></param>
         /// <returns></returns>
-        static public CylData GetRingFromSpiralMap( double z, CylData spiralMap,int pointsPerRev)
-        {
-            try
-            {
-                var result = new CylData();
-                int startIndex = 0;
-                for (int i = 0; i < spiralMap.Count - 1; i++)
-                {
-                    double zhi = Math.Max(spiralMap[i].Z, spiralMap[i + 1].Z);
-                    double zlow = Math.Min(spiralMap[i].Z, spiralMap[i + 1].Z);
-                    if (z > zlow && z <= zhi)
-                    {
-                        startIndex = i;
-                        break;
-                    }
-                }
-                int endIndex = Math.Min(spiralMap.Count - 1, startIndex + pointsPerRev);
-                for (int j = startIndex; j < endIndex; j++)
-                {
-                    result.Add(spiralMap[j]);
-                }
-                return result;
-            }
-            catch (Exception)
-            {
+        //static public CylData GetRingFromSpiralMap( double z, CylData spiralMap,int pointsPerRev)
+        //{
+        //    try
+        //    {
+        //        var result = new CylData();
+        //        int startIndex = 0;
+        //        for (int i = 0; i < spiralMap.Count - 1; i++)
+        //        {
+        //            double zhi = Math.Max(spiralMap[i].Z, spiralMap[i + 1].Z);
+        //            double zlow = Math.Min(spiralMap[i].Z, spiralMap[i + 1].Z);
+        //            if (z > zlow && z <= zhi)
+        //            {
+        //                startIndex = i;
+        //                break;
+        //            }
+        //        }
+        //        int endIndex = Math.Min(spiralMap.Count - 1, startIndex + pointsPerRev);
+        //        for (int j = startIndex; j < endIndex; j++)
+        //        {
+        //            result.Add(spiralMap[j]);
+        //        }
+        //        return result;
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-            
-        }
+        //        throw;
+        //    }
+
+        //}
         /// <summary>
         /// get single groove from spiral data set
         /// </summary>
@@ -156,21 +155,21 @@ namespace InspectionLib
         /// <param name="spiralMap"></param>
         /// <param name="pointsPerRev"></param>
         /// <returns></returns>
-        static public  CylData GetGrooveFromSpiralMap(Barrel barrel, int grooveNumber,double z, CylData spiralMap,int pointsPerRev)
-        {
-            try
-            {
-                CylData ring = GetRingFromSpiralMap(z, spiralMap, pointsPerRev);
-                CylData groove = GetGrooveFromRing(barrel, grooveNumber, ring);
-                return groove;
-            }
-            catch (Exception)
-            {
+        //static public  CylData GetGrooveFromSpiralMap(Barrel barrel, int grooveNumber,double z, CylData spiralMap,int pointsPerRev)
+        //{
+        //    try
+        //    {
+        //        CylData ring = GetRingFromSpiralMap(z, spiralMap, pointsPerRev);
+        //        CylData groove = GetGrooveFromRing(barrel, grooveNumber, ring);
+        //        return groove;
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-            
-        }
+        //        throw;
+        //    }
+
+        //}
         /// <summary>
         /// build error map from unrolled grid data
         /// </summary>
@@ -203,7 +202,7 @@ namespace InspectionLib
         //static public Histogram BuildRadialErrorHistogram(int binCount, CylData strip,bool normalize)
         //{
         //    var errors = new Histogram();
-            
+
         //    errors.BuildHistogram(binCount, strip, normalize);
         //    foreach (var bp in strip)
         //    {
@@ -233,6 +232,9 @@ namespace InspectionLib
         /// <param name="scaling"></param>
         /// <param name="unrollingRadius"></param>
         /// <returns></returns>
+    }
+    public class DataConverter
+    { 
         static Vector3 UnrollCylPt(PointCyl pt, double startTheta, Vector3 scaling, double unrollingRadius)
         {
             try
@@ -243,31 +245,43 @@ namespace InspectionLib
 
             catch (Exception)
             {
-                Debug.WriteLine(" exception in unrollCylPt");
+                
                 throw;
             }
         }
+        static public CartData UnrollCylinderRing(CylData correctedRing, Vector3 scaling, double unrollRadius)
+        {
+            try
+            {
+                var strip = new CartData();
+                foreach (var ptCyl in correctedRing)
+                {
+                    strip.Add(UnrollCylPt(ptCyl, correctedRing[0].ThetaRad, scaling, unrollRadius));
+                }
+                return strip;
+            }
+            catch (Exception)
+            {
 
-        /// <summary>
-        /// unroll cylinder into grid
-        /// </summary>
-        /// <param name="correctedRingList"></param>
-        /// <param name="scaling"></param>
-        /// <param name="unrollRadius"></param>
-        /// <returns></returns>
+                throw;
+            }
+                        
+        }
+            /// <summary>
+            /// unroll cylinder into grid
+            /// </summary>
+            /// <param name="correctedRingList"></param>
+            /// <param name="scaling"></param>
+            /// <param name="unrollRadius"></param>
+            /// <returns></returns>
         static public CartGridData UnrollCylinder( CylGridData correctedRingList, Vector3 scaling, double unrollRadius)
         {
             try
             {
                 var stripList = new CartGridData();
                 foreach (var cylstrip in correctedRingList)
-                {
-                    var strip = new CartData();
-                    foreach (var ptCyl in cylstrip)
-                    {
-                        strip.Add(UnrollCylPt(ptCyl, cylstrip[0].ThetaRad, scaling, unrollRadius));
-                    }
-                    stripList.Add(strip);
+                {                   
+                    stripList.Add(UnrollCylinderRing(cylstrip,scaling,unrollRadius));
                 }
                 return stripList;
             }
@@ -281,37 +295,7 @@ namespace InspectionLib
         
 
     }
-    public class DataConverter
-    {
-        /// <summary>
-        /// convert cylinder grid to cartesian grid
-        /// </summary>
-        /// <param name="correctedRingList"></param>
-        /// <returns></returns>
-        static public CartGridData ConvertToCartesian(CylGridData correctedRingList)
-        {
-            try
-            {
-                var stripList = new CartGridData();
-                foreach (var cylstrip in correctedRingList)
-                {
-                    var strip = new CartData();
-                    foreach (var ptCyl in cylstrip)
-                    {
-                        strip.Add(new Vector3(ptCyl));
-                    }
-                    stripList.Add(strip);
-                }
-                return stripList;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
-    }
+   
     public class Histogram
     {
         int _pointCount;

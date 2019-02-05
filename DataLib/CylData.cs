@@ -10,7 +10,7 @@ namespace DataLib
    
     public class CylData : List<PointCyl>
     {
-        public ScanFormat ScanFormat { get; protected set; }
+       
         public double NominalMinDiam { get; set; }
         public DisplayData AsScreenData( ViewPlane viewplane)
         {
@@ -42,6 +42,41 @@ namespace DataLib
 
                 }
                 return _boundingBox;
+            }
+        }
+        public void Translate(Vector3 translation)
+        {
+            try
+            {
+                var cartData = this.AsCartData();
+                cartData.Translate(translation);
+                this.Clear();
+                this.AddRange(cartData.AsCylData());                    
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public CartData AsCartData()
+        {
+            try
+            {
+                var cartData = new CartData();
+                var pts = new List<Vector3>();
+                foreach (var pt in this)
+                {
+                    var newPt = new Vector3(pt);
+                    pts.Add(newPt);
+                }
+                cartData.AddRange(pts);
+                return cartData;
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         public void RotateByThetaRad(double phaseShiftRad)

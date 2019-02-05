@@ -334,7 +334,7 @@ namespace InspectionLib
                     resultPts.Add(newPt);
                 }
                 resultPts.SortByTheta();
-                resultPts.NominalMinDiam = points.NominalMinDiam;
+                
                 return resultPts;
             }
             catch (Exception)

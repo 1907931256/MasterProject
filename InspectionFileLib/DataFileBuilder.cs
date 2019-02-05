@@ -16,8 +16,7 @@ namespace InspectionLib
     /// builds various output data files from data set
     /// </summary>
     public class DataFileBuilder
-    {
-        
+    {      
         
         static public string BuildFileName(string fileName,string suffix,string extension)
         {
@@ -109,7 +108,7 @@ namespace InspectionLib
                 
                var colorCodedData =  DataColorCode.ColorCodeData(barrel,options, correctedRingList, options.SurfaceColorCode);
                
-                var v3StripList = DataConverter.ConvertToCartesian(colorCodedData);
+                var v3StripList = colorCodedData.AsCartGridData();
                 SavePly(v3StripList, outputFilename,progress);
                
             }
@@ -125,7 +124,7 @@ namespace InspectionLib
                 var outputFilename = BuildFileName(fileName,"_flat", ".ply");
                 var colorCodedData = DataColorCode.ColorCodeData(barrel, options, correctedRingList, options.SurfaceColorCode);
 
-                var v3FlatStripList = DataParser.UnrollCylinder(colorCodedData,new Vector3(1,1, options.SurfaceFileScaleFactor), unrollRadius);
+                var v3FlatStripList = DataConverter.UnrollCylinder(colorCodedData,new Vector3(1,1, options.SurfaceFileScaleFactor), unrollRadius);
                  SavePly(v3FlatStripList, outputFilename, progress);
                 
             }
@@ -162,7 +161,7 @@ namespace InspectionLib
                 var _flatStlFile = new StlFile();
                 
                 
-                var v3flatptList = DataParser.UnrollCylinder(correctedRingList, new Vector3(1,1,options.SurfaceFileScaleFactor), unrollRadius);
+                var v3flatptList = DataConverter.UnrollCylinder(correctedRingList, new Vector3(1,1,options.SurfaceFileScaleFactor), unrollRadius);
                 var trimesh = new TriMesh();
                 trimesh.BuildFromGrid(v3flatptList);
                 StlFile.SaveBinary(trimesh, fileName);
@@ -184,7 +183,7 @@ namespace InspectionLib
         {
             try
             {
-                var v3rolledPtList = DataConverter.ConvertToCartesian(correctedRingList);
+                var v3rolledPtList = correctedRingList.AsCartGridData();
                 var _flatStlFile = new StlFile();
                 var trimesh = new TriMesh();
                 trimesh.BuildFromGrid(v3rolledPtList);
@@ -209,7 +208,7 @@ namespace InspectionLib
                 {
                     for(int i =0;i<strip.Count-1;i++)
                     {
-                        entityList.Add(BuildLine(strip[i], strip[i + 1]));
+                        entityList.Add(new DXFLine(strip[i], strip[i + 1]));
                     }
                 }
                 DxfFileBuilder.Save(entityList, outputFilename, progress);
@@ -220,46 +219,7 @@ namespace InspectionLib
                 throw;
             }
         }
-        static DXFLine BuildLine(PointCyl pt1, PointCyl pt2)
-        {
-            try
-            {
-                double x1 = pt1.R * Math.Cos(pt1.ThetaRad);
-                double y1 = pt1.R * Math.Sin(pt1.ThetaRad);
-                double z1 = pt1.Z;
-                double x2 = pt2.R * Math.Cos(pt2.ThetaRad);
-                double y2 = pt2.R * Math.Sin(pt2.ThetaRad);
-                double z2 = pt2.Z;
-                RGBColor c;
-                c = new RGBColor(0, 255, 0);
-                DXFLine line = new DXFLine(x1, y1, z1, x2, y2, z2, c);
-                return line;
-            }
-            catch (Exception)
-            {
-                throw;
-            }           
-        }
-        static DXFLine BuildLine(Vector3 pt1, Vector3 pt2)
-        {
-            try
-            {
-                double x1 = pt1.X;
-                double y1 = pt1.Y;
-                double z1 = pt1.Z;
-                double x2 = pt2.X;
-                double y2 = pt2.Y;
-                double z2 = pt2.Z;
-                RGBColor c;
-                c = new RGBColor(0, 255, 0);
-                DXFLine line = new DXFLine(x1, y1, z1, x2, y2, z2, c);
-                return line;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+
         static public void SaveDXF( CylData strip, string fileName, IProgress<int> progress)
         {
 
@@ -273,7 +233,7 @@ namespace InspectionLib
                 for (int i = 1; i < strip.Count - 1; i++)
                 {
 
-                    entityList.Add(BuildLine(strip[i], strip[i + 1]));
+                    entityList.Add(new DXFLine(strip[i], strip[i + 1]));
 
                 }
 
@@ -299,7 +259,7 @@ namespace InspectionLib
                 for (int i = 1; i < strip.Count - 1; i++)
                 {
 
-                    entityList.Add(BuildLine(strip[i], strip[i + 1]));
+                    entityList.Add(new DXFLine(strip[i], strip[i + 1]));
 
                 }
 

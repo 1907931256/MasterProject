@@ -8,7 +8,8 @@ using System.Drawing;
 namespace DataLib
 {
     public class CartGridData : List<CartData>
-    {       
+    {
+       
         public BoundingBox BoundingBox
         {
             get

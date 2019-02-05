@@ -34,6 +34,7 @@ namespace InspectionLib
     }
     public class RingDataSet : InspDataSet
     {
+        public double NominalMinDiam { get; set; }
         public CylData CorrectedCylData { get; set; }
         public CylData UncorrectedCylData { get; set; }
         public PointCyl[] RawLandPoints { get; set; }

@@ -476,7 +476,7 @@ namespace DataLib
                 throw;
             }
         }
-        static public Vector2[] FindCirclesofKnownR(Vector2 p1, Vector2 p2, double radius)
+        static public Vector3[] FindCirclesofKnownR(Vector3 p1, Vector3 p2, double radius)
         {
             try
             {
@@ -492,15 +492,15 @@ namespace DataLib
                 double sqDiameter = 4 * radius * radius;
                 if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
 
-                Vector2 midPoint = new Vector2((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+                var midPoint = new Vector3((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2,0);
                 if (sqDistance == sqDiameter) return new[] { midPoint };
 
                 double d = Math.Sqrt(radius * radius - sqDistance / 4);
                 double distance = Math.Sqrt(sqDistance);
                 double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
                 return new[] {
-                    new Vector2(midPoint.X - oy, midPoint.Y + ox),
-                    new Vector2(midPoint.X + oy, midPoint.Y - ox)
+                    new Vector3(midPoint.X - oy, midPoint.Y + ox,0),
+                    new Vector3(midPoint.X + oy, midPoint.Y - ox,0)
                 };
             }
             catch (Exception)

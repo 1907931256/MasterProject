@@ -92,6 +92,12 @@ namespace InspectionLib
         {
             init(scanformat, start, end);
         }
+        public CylInspScript(DataLib.ScanFormat scanFormat)
+        {
+            ScanFormat = scanFormat;
+            StartLocation = new MachinePosition(MachineGeometry.CYLINDER);
+            EndLocation = new MachinePosition(MachineGeometry.CYLINDER);
+        }
         void init(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end)
         {
             ScanFormat = scanformat;

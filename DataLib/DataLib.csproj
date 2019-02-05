@@ -60,6 +60,7 @@
     <Compile Include="CylData.cs" />
     <Compile Include="CylGridData.cs" />
     <Compile Include="DataFormat.cs" />
+    <Compile Include="DataParser.cs" />
     <Compile Include="DataUtilities.cs" />
     <Compile Include="DisplayData.cs" />
     <Compile Include="FreqAnalysis.cs" />

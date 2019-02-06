@@ -919,7 +919,7 @@ namespace BarrelInspectionProcessorForm
             //GROOVE 4
             //CAL 5
             //FLATPLATE 6 
-            //FLATPLATEGRID 7
+           
 
             try
             {
@@ -1055,7 +1055,7 @@ namespace BarrelInspectionProcessorForm
                 double gridRange = range;
                 if (range <= .001)
                     gridRange = .001;               
-                if ((range > .001) && (range <= .01))
+                if (range > .001 & range <= .01)
                     gridRange = .01;
                 if (range > .01 & range < .1)
                 {
@@ -1086,34 +1086,57 @@ namespace BarrelInspectionProcessorForm
             }
            
         }
+        void DrawVGridLine(double xLabel,RectangleF rect,Font font )
+        {
+            var ptX = _screenTransform.GetScreenCoords(xLabel, rect.Top);
+            var ptYGridStart = _screenTransform.GetScreenCoords(xLabel, rect.Top);
+            var ptYGridEnd = _screenTransform.GetScreenCoords(xLabel, rect.Bottom);
+            string xLabelstr = "";
+            var sizeXlabel = _graphics.MeasureString(xLabelstr, font);
+            float xLabelxOffset = (float)(sizeXlabel.Width / 2.0);
+            float xLabelyOffset = (float)(sizeXlabel.Height * 0.1);
+            switch (_scanFormat)
+            {
+                case ScanFormat.AXIAL:
+                case ScanFormat.FLATPLATE:
+                    xLabelstr = xLabel.ToString("f3");
+                    break;
+                case ScanFormat.RING:
+                case ScanFormat.SPIRAL:
+                    xLabelstr = GeometryLib.Geometry.ToDegs(xLabel).ToString("f0");
+                    break;
+            }
+            _graphics.DrawString(xLabelstr, font, System.Drawing.Brushes.Black, ptX.X - xLabelxOffset, ptX.Y + xLabelyOffset);
+            _graphics.DrawLine(_greenPen, ptYGridStart, ptYGridEnd);
+        }
         void DrawVGrid(int xGridCount,double dxGrid,double dyGrid, Font font, RectangleF rect)
         {
             try
             {
-                for (int i = 0; i <= xGridCount; i++)
-                {
-                    double xLabel = rect.X + (i * dxGrid);
-                    var ptX = _screenTransform.GetScreenCoords(xLabel, rect.Top);
-                    var ptYGridStart = _screenTransform.GetScreenCoords(xLabel, rect.Top);
-                    var ptYGridEnd = _screenTransform.GetScreenCoords(xLabel, rect.Top + xGridCount * dyGrid);
-                    string xLabelstr = "";
-                    var sizeXlabel = _graphics.MeasureString(xLabelstr, font);
-                    float xLabelxOffset = (float)(sizeXlabel.Width / 2.0);
-                    float xLabelyOffset = (float)(sizeXlabel.Height * 0.1);
-                    switch (_scanFormat)
+                double xLabel = 0;
+                if (rect.X <0 & rect.X+ xGridCount* dxGrid > 0)
+                {                    
+                    while(xLabel <= rect.Right)
                     {
-                        case ScanFormat.AXIAL:
-                        case ScanFormat.FLATPLATE:
-                            xLabelstr = xLabel.ToString("f3");
-                            break;
-                        case ScanFormat.RING:
-                        case ScanFormat.SPIRAL:
-                            xLabelstr = GeometryLib.Geometry.ToDegs(xLabel).ToString("f0");
-                            break;
+                        DrawVGridLine(xLabel, rect, font);
+                        xLabel += dxGrid;
                     }
-                    _graphics.DrawString(xLabelstr, font, System.Drawing.Brushes.Black, ptX.X - xLabelxOffset, ptX.Y + xLabelyOffset);
-                    _graphics.DrawLine(_greenPen, ptYGridStart, ptYGridEnd);
+                    xLabel = -1* dxGrid;
+                    while(xLabel>= rect.Left)
+                    {
+                        DrawVGridLine(xLabel, rect, font);
+                        xLabel -= dxGrid;
+                    }
                 }
+                else
+                {
+                    for (int i = 0; i <= xGridCount; i++)
+                    {
+                        xLabel = rect.X + (i * dxGrid);
+                        DrawVGridLine(xLabel, rect, font);
+                    }
+                }
+               
             }
             catch (Exception)
             {
@@ -1163,21 +1186,23 @@ namespace BarrelInspectionProcessorForm
             try
             {
 
-                var sizeX = rect.Width;
+                double sizeX = 0;
                 var sizeY = GetGridRange(rect.Height);
                 int xGridCount;
                 int yGridCount = 10;
                 if (_scanFormat == ScanFormat.AXIAL ||  _scanFormat== ScanFormat.FLATPLATE)
                 {
                     xGridCount = 10;
+                    sizeX = GetGridRange(rect.Width);
                 }
                 else
                 {
                     xGridCount = _barrel.DimensionData.GrooveCount;
+                    sizeX = rect.Width;
                 }
                 var rounding =(int)Math.Round( Math.Abs(Math.Log10(sizeY)));
                 double dxGrid = sizeX / xGridCount;
-                double dyGrid = Math.Round(sizeY / yGridCount,rounding);
+                double dyGrid = sizeY / yGridCount;
                 var font = new Font(this.Font, FontStyle.Regular);
                 //VERTICAL LINE grids
                 DrawVGrid(xGridCount, dxGrid, dyGrid, font, rect);
@@ -1303,7 +1328,11 @@ namespace BarrelInspectionProcessorForm
                     DashStyle = System.Drawing.Drawing2D.DashStyle.Dot
                 };
                 gtemp.FillRectangle(_imgBrush, 0, 0, pictureBox1.Width, pictureBox1.Height);
-                var rect = new System.Drawing.Rectangle(start,new Size(Math.Abs(end.X - start.X), Math.Abs(end.Y - start.Y)));
+                var pt = new Point(Math.Min(start.X, end.X), Math.Min(start.Y, end.Y));
+                
+                var rect = new System.Drawing.Rectangle(pt, new Size(Math.Abs(end.X - start.X), Math.Abs(end.Y - start.Y)));
+               
+                
                 gtemp.DrawRectangle(dashpen, rect);
                 SolidBrush brush = new SolidBrush(System.Drawing.Color.White);               
                 pictureBox1.Image = bit2;
@@ -1455,19 +1484,16 @@ namespace BarrelInspectionProcessorForm
                     
                     switch (_dataSelection)
                     {
-                        case DataSelection.MEASURELENGTH:
-                            break;
+                       
                         case DataSelection.SETRADIUS:
                             SetRadiusMouseClick(e);
+                            DisplayData();
                             break;
                         case DataSelection.SELECTMIDPOINT:
                             SetMidpointClick(e);
-                            break;
-                        case DataSelection.NONE:
-                        default:
+                            DisplayData();
                             break;
                     }
-                    DisplayData();
                 }
             }
             catch (Exception ex)
@@ -1508,7 +1534,7 @@ namespace BarrelInspectionProcessorForm
                            
                     }
 
-                    if (_mouseDownCount == 1)
+                    if (_mouseDownCount == 1 )
                     {
                         if (_dataSelection == DataSelection.MEASURELENGTH || _dataSelection == DataSelection.ROTATE)
                         {                        
@@ -1518,6 +1544,7 @@ namespace BarrelInspectionProcessorForm
                         {
                             DrawWindow(_mouseDownLocation, _mouseLocation, _dataSelection);
                         }
+
                     }                  
                 }
             }
@@ -1538,7 +1565,7 @@ namespace BarrelInspectionProcessorForm
                     _mouseDown = false;
                     _mouseUpLocation = e.Location;
                     _mouseUpPart = _screenTransform.GetModelCoords(_mouseUpLocation);
-
+                    
                 }
             }
             catch (Exception ex)
@@ -1577,14 +1604,15 @@ namespace BarrelInspectionProcessorForm
                                 RotateDataToLine(_prevMouseDownPartXY,_mouseDownPartXY);
                                 _dataSelection = DataSelection.NONE;
                             }
-                            if(_dataSelection == DataSelection.WINDOWDATA)
-                            {
-                                WindowData(_prevMouseDownPartXY, _mouseDownPartXY);
-                                _dataSelection = DataSelection.NONE;
-                            }
+                            
                             if(_dataSelection == DataSelection.FITCIRCLE)
                             {
                                 FitToCircle(_prevMouseDownPartXY, _mouseDownPartXY);
+                                _dataSelection = DataSelection.NONE;
+                            }
+                            if(_dataSelection == DataSelection.WINDOWDATA)
+                            {
+                                WindowData(_prevMouseDownPartXY, _mouseDownPartXY);
                                 _dataSelection = DataSelection.NONE;
                             }
                         }
@@ -1667,29 +1695,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                Bitmap memoryImage;
-                memoryImage = new Bitmap(elementHost1.Width, elementHost1.Height);
-                Size s = new Size(memoryImage.Width, memoryImage.Height);
-
-                // Create graphics 
-
-                Graphics memoryGraphics = Graphics.FromImage(memoryImage);
-
-                // Copy data from screen 
-                var origin = elementHost1.PointToScreen(elementHost1.Location);
-                memoryGraphics.CopyFromScreen(origin.X, origin.Y, 0, 0, s);
-
-                //That's it! Save the image in the directory and this will work like charm. 
-
-                var sfd = new SaveFileDialog();
-
-                string filename = string.Format(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Screenshot.png");
-                sfd.FileName = filename;
-                sfd.Filter = "(*.png)|*.png";
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    memoryImage.Save(sfd.FileName);
-                }
+                PictureBoxUtilities.SaveScreenShotasPicture(elementHost1);               
             }
             catch (Exception)
             {
@@ -1748,7 +1754,7 @@ namespace BarrelInspectionProcessorForm
                         
                     }
                    
-                   // DisplayData();
+                    DisplayData();
                 }
                 else
                 {
@@ -2830,26 +2836,16 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                var pt1 = new Vector3(pt2PartXYCoords.X, pt2PartXYCoords.Y,0);
-                var pt2 = new Vector3(pt1PartXYCoords.X, pt1PartXYCoords.Y,0);
-                var r = _barrel.DimensionData.ActualLandDiam;
-                var centers = DataUtilities.FindCirclesofKnownR(pt1, pt2, r);
-                var center = new Vector3();
-                if(centers[0].Y>centers[1].Y)
+                if (_inspDataSetList[0].DataFormat != ScanFormat.FLATPLATE)
                 {
-                    center = centers[0];
-                }
-                else
-                {
-                    center = centers[1];
-                }
-                if(_inspDataSetList[0].DataFormat!= ScanFormat.FLATPLATE)
-                {
-                    if(_inspDataSetList[0] is CartDataSet cartDataSet)
+                    if (_inspDataSetList[0] is CartDataSet cartDataSet)
                     {
-                        cartDataSet.ModCartData.RotateDataToLine(pt1, pt2);
-                        cartDataSet.ModCartData.Translate(new Vector3(-1.0 * center.X, -1.0 * center.Y, 0));
-
+                        
+                        var pt1 = new Vector3(pt2PartXYCoords.X, pt2PartXYCoords.Y, 0);
+                        var pt2 = new Vector3(pt1PartXYCoords.X, pt1PartXYCoords.Y, 0);
+                         
+                        cartDataSet.FitToCircleKnownR(pt1, pt2, _barrel.DimensionData.ActualLandDiam);                       
+                        DisplayData();
                     }
                 }
             }
@@ -2866,12 +2862,52 @@ namespace BarrelInspectionProcessorForm
             {
                 _dataSelection = DataSelection.FITCIRCLE;
             }
+            catch (Exception ex)
+            {
+
+                _logFile.SaveMessage(ex);
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+
+        }
+        void OpenDxfFile()
+        {
+            try
+            {
+                var ofd = new OpenFileDialog();
+                double segLength = .0008;
+                if(ofd.ShowDialog() == DialogResult.OK)
+                {
+                    var stringList = FileIOLib.FileIO.ReadDataTextFile(ofd.FileName);
+                    var entityList = DwgConverterLib.DxfFileParser.Parse(stringList);
+                    var pointList = DwgConverterLib.DxfFileParser.BuildPointList(entityList,segLength);
+                    _barrel = new Barrel(BarrelType.M284_155mm);
+                    var cartDataSet = new CartDataSet(_barrel);
+                    cartDataSet.CartData.AddRange(pointList);
+                    cartDataSet.ModCartData.AddRange(pointList);
+                    _inspDataSetList = new List<InspDataSet>();
+                    _inspDataSetList.Add(cartDataSet);
+                    DisplayData();
+                }
+            }
             catch (Exception)
             {
 
                 throw;
             }
+        }
+        private void OpenDXFFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenDxfFile();
+            }
+            catch (Exception ex)
+            {
 
+                _logFile.SaveMessage(ex);
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
         }
         private void MainInspectionForm_FormClosing(object sender, FormClosingEventArgs e)
         {

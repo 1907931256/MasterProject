@@ -98,7 +98,7 @@ namespace ToolpathLib
                 {
                     isFiveAxis = true;
                 }
-                double pathsegF = p2.Feedrate.Value / parseCount;
+                double pathsegF = p2.Feedrate.Value ;
 
                 for (int j = 0; j < parseCount; j++)
                 {

@@ -56,19 +56,26 @@ namespace DwgConverterLib
         }
         public DXFCircle(List<string> fileSection, int entityNumber)
         {
-            Center.X = Convert.ToDouble(fileSection[4]);
-            Center.Y = Convert.ToDouble(fileSection[6]);
-            Center.Z = Convert.ToDouble(fileSection[8]);
-            Radius = Convert.ToDouble(fileSection[10]);
-            StartAngleRad = GeometryLib.Geometry.ToRadians(Convert.ToDouble(fileSection[20]));
-            EndAngleRad = Geometry.ToRadians(Convert.ToDouble(fileSection[22]));
+            double x = 0;
+            double.TryParse(fileSection[2], out x);
+                Center.X = x;
+            double y = 0;
+            double.TryParse(fileSection[4], out y);
+                Center.Y = y;
+            double z = 0;
+            double.TryParse(fileSection[6], out z);
+                Center.Z = z;
+            double r = 0;
+            double.TryParse(fileSection[8], out r);
+                Radius = r;
+          
+            StartAngleRad = 0;
+            EndAngleRad = Math.PI * 2; 
+            ClosedArc = true;
             int c = 7;
-            int.TryParse(fileSection[0], out c);
+           // int.TryParse(fileSection[0], out c);
             Col = ColorConverter.ToColor(c);
-            if (Math.Abs(StartAngleRad - EndAngleRad) == 2 * Math.PI)
-                ClosedArc = true;
-            else
-                closedArc = false;
+           
             ID = entityNumber;
         }
        

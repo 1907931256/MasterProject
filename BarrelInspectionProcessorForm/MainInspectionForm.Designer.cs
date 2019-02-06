@@ -128,6 +128,7 @@
             this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonWinData = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonFitToCircle = new System.Windows.Forms.ToolStripButton();
             this.tabControlParams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.labelCalStatus = new System.Windows.Forms.Label();
@@ -162,11 +163,11 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
-            this.toolStripButtonFitToCircle = new System.Windows.Forms.ToolStripButton();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
+            this.OpenDXFFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -634,7 +635,8 @@
             // 
             this.openRawDataFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rawFileToolStripMenuItem,
-            this.processedCSVFileToolStripMenuItem});
+            this.processedCSVFileToolStripMenuItem,
+            this.OpenDXFFileToolStripMenuItem});
             this.openRawDataFileToolStripMenuItem.Name = "openRawDataFileToolStripMenuItem";
             this.openRawDataFileToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.openRawDataFileToolStripMenuItem.Text = "Open ";
@@ -994,6 +996,17 @@
             this.toolStripButtonWinData.Size = new System.Drawing.Size(30, 30);
             this.toolStripButtonWinData.Text = "Window Data";
             this.toolStripButtonWinData.Click += new System.EventHandler(this.toolStripButtonWinData_Click);
+            // 
+            // toolStripButtonFitToCircle
+            // 
+            this.toolStripButtonFitToCircle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonFitToCircle.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonFitToCircle.Image")));
+            this.toolStripButtonFitToCircle.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonFitToCircle.Name = "toolStripButtonFitToCircle";
+            this.toolStripButtonFitToCircle.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonFitToCircle.Text = "Fit to Circle";
+            this.toolStripButtonFitToCircle.ToolTipText = "Fit to Circle";
+            this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.toolStripButtonFitToCircle_Click);
             // 
             // tabControlParams
             // 
@@ -1411,13 +1424,6 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
-            // progressBarProcessing
-            // 
-            this.progressBarProcessing.Location = new System.Drawing.Point(9, 532);
-            this.progressBarProcessing.Name = "progressBarProcessing";
-            this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
-            this.progressBarProcessing.TabIndex = 26;
-            // 
             // elementHost1
             // 
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1428,16 +1434,19 @@
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.userControl11;
             // 
-            // toolStripButtonFitToCircle
+            // progressBarProcessing
             // 
-            this.toolStripButtonFitToCircle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonFitToCircle.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonFitToCircle.Image")));
-            this.toolStripButtonFitToCircle.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonFitToCircle.Name = "toolStripButtonFitToCircle";
-            this.toolStripButtonFitToCircle.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonFitToCircle.Text = "Fit to Circle";
-            this.toolStripButtonFitToCircle.ToolTipText = "Fit to Circle";
-            this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.toolStripButtonFitToCircle_Click);
+            this.progressBarProcessing.Location = new System.Drawing.Point(9, 532);
+            this.progressBarProcessing.Name = "progressBarProcessing";
+            this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
+            this.progressBarProcessing.TabIndex = 26;
+            // 
+            // OpenDXFFileToolStripMenuItem
+            // 
+            this.OpenDXFFileToolStripMenuItem.Name = "OpenDXFFileToolStripMenuItem";
+            this.OpenDXFFileToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.OpenDXFFileToolStripMenuItem.Text = "DXF File ";
+            this.OpenDXFFileToolStripMenuItem.Click += new System.EventHandler(this.OpenDXFFileToolStripMenuItem_Click);
             // 
             // MainInspectionForm
             // 
@@ -1609,6 +1618,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonWinData;
         private System.Windows.Forms.Button buttonMeasureDepths;
         private System.Windows.Forms.ToolStripButton toolStripButtonFitToCircle;
+        private System.Windows.Forms.ToolStripMenuItem OpenDXFFileToolStripMenuItem;
     }
 }
 

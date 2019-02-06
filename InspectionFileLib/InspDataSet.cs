@@ -77,6 +77,23 @@ namespace InspectionLib
     {
         public CartData CartData { get; set; }      
         public CartData ModCartData { get; set; }
+        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2,double radius)
+        {           
+            var centers = DataUtilities.FindCirclesofKnownR(pt1, pt2, radius);
+            var center = new Vector3();
+            if (centers[0].Y > centers[1].Y)
+            {
+                center = centers[0];
+            }
+            else
+            {
+                center = centers[1];
+            }
+            ModCartData.RotateDataToLine(pt1, pt2);
+            ModCartData.Translate(new Vector3(-1.0 * center.X, -1.0 * center.Y, 0));
+            double scaling = 1.0;
+            ModCartData = DataConverter.UnrollCylinderRing( ModCartData, scaling, radius);
+        }
         public CartDataSet(Barrel barrel) : base(barrel)
         {
             CartData = new CartData();

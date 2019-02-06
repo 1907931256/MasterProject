@@ -80,25 +80,27 @@ namespace DwgConverterLib
         }
         public DXFArc(List<string> fileSection, int entityNumber)
         {
-            Center.X = Convert.ToDouble(fileSection[0]);
-            Center.Y = Convert.ToDouble(fileSection[2]);
-            Center.Z = Convert.ToDouble(fileSection[4]);
-            Radius = Convert.ToDouble(fileSection[6]);
-            double startAngle = Geometry.ToRadians(Convert.ToDouble(fileSection[10]));
-            double endAngle = Geometry.ToRadians(Convert.ToDouble(fileSection[12]));
-            if (startAngle < 0)
-            {
-                startAngle += 2 * Math.PI;
-            }
-            if (endAngle < 0)
-            {
-                endAngle += 2 * Math.PI;
-            }
-            StartAngleRad = startAngle;
-            EndAngleRad = endAngle;
+            double x = 0;
+            double.TryParse(fileSection[2], out x);
+            Center.X = x;
+            double y = 0;
+            double.TryParse(fileSection[4], out y);
+            Center.Y = y;
+            double z = 0;
+            double.TryParse(fileSection[6], out z);
+            Center.Z = z;
+            double r = 0;
+            double.TryParse(fileSection[8], out r);
+            Radius = r;
+            double sa = 0;
+            double.TryParse(fileSection[12], out sa);
+            StartAngleRad = Geometry.ToRadians(sa);
+            double ea = 0;
+            double.TryParse(fileSection[14], out ea);
+            EndAngleRad = Geometry.ToRadians(ea);
             ClosedArc = false;
             int c = 7;
-            int.TryParse(fileSection[6], out c);
+            //int.TryParse(fileSection[6], out c);
             Col = ColorConverter.ToColor(c);
             ID = entityNumber;
           

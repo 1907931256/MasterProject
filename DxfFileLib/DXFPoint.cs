@@ -26,9 +26,9 @@ namespace DwgConverterLib
         }
         public DXFPoint(List<string> fileSection, int entityNumber)
         {
-            X = Convert.ToDouble(fileSection[4]);
-            Y = Convert.ToDouble(fileSection[6]);
-            Z = Convert.ToDouble(fileSection[8]);
+            X = Convert.ToDouble(fileSection[2]);
+            Y = Convert.ToDouble(fileSection[4]);
+            Z = Convert.ToDouble(fileSection[6]);
             ID = entityNumber++;
             int c = 4;
             int.TryParse(fileSection[0], out c);

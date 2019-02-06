@@ -235,11 +235,11 @@ namespace DataLib
     }
     public class DataConverter
     { 
-        static Vector3 UnrollCylPt(PointCyl pt, double startTheta, Vector3 scaling, double unrollingRadius)
+        static Vector3 UnrollCylPt(PointCyl pt, double startTheta,double scaling,  double unrollingRadius)
         {
             try
             {
-                var result = new Vector3((pt.ThetaRad - startTheta) * unrollingRadius * scaling.X, pt.Z * scaling.Y, pt.R * scaling.Z, pt.Col);
+                var result = new Vector3((pt.ThetaRad - startTheta) * unrollingRadius , pt.Z , pt.R*scaling , pt.Col);
                 return result;
             }
 
@@ -249,14 +249,34 @@ namespace DataLib
                 throw;
             }
         }
-        static public CartData UnrollCylinderRing(CylData correctedRing, Vector3 scaling, double unrollRadius)
+        static public CartData UnrollCylinderRing(CartData cartData,double scaling,  double unrollRadius)
+        {
+            try
+            {
+                var strip = new CartData();
+                var thetaStart = new PointCyl(cartData[0]).ThetaRad;
+                foreach (var pt in cartData)
+                {
+                    var ptCyl = new PointCyl(pt);
+                    strip.Add(UnrollCylPt(ptCyl, thetaStart,scaling, unrollRadius));
+                }
+                return strip;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        static public CartData UnrollCylinderRing(CylData correctedRing, double scaling, double unrollRadius)
         {
             try
             {
                 var strip = new CartData();
                 foreach (var ptCyl in correctedRing)
                 {
-                    strip.Add(UnrollCylPt(ptCyl, correctedRing[0].ThetaRad, scaling, unrollRadius));
+                    strip.Add(UnrollCylPt(ptCyl, correctedRing[0].ThetaRad, scaling, unrollRadius));                   
                 }
                 return strip;
             }
@@ -274,7 +294,7 @@ namespace DataLib
             /// <param name="scaling"></param>
             /// <param name="unrollRadius"></param>
             /// <returns></returns>
-        static public CartGridData UnrollCylinder( CylGridData correctedRingList, Vector3 scaling, double unrollRadius)
+        static public CartGridData UnrollCylinder( CylGridData correctedRingList, double scaling, double unrollRadius)
         {
             try
             {

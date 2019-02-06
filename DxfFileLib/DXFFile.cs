@@ -64,9 +64,8 @@ namespace DwgConverterLib
        
         private void initFile(List<string> file,string fileNameIn)
         {
-            fileName = fileNameIn;
-            var parser = new DxfFileParser();
-            entities = parser.Parse(file);
+            fileName = fileNameIn;            
+            entities = DxfFileParser.Parse(file);
             boundingBox = new BoundingBox();
             getBoundingBox();
         }

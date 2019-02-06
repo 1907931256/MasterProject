@@ -102,6 +102,12 @@
     <Compile Include="MainInspectionForm.Designer.cs">
       <DependentUpon>MainInspectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="OpenFileAsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OpenFileAsControl.Designer.cs">
+      <DependentUpon>OpenFileAsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="OptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +126,9 @@
     <EmbeddedResource Include="MainInspectionForm.resx">
       <DependentUpon>MainInspectionForm.cs</DependentUpon>
       <LastGenOutput>MainInspectionForm1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenFileAsControl.resx">
+      <DependentUpon>OpenFileAsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionsForm.resx">
       <DependentUpon>OptionsForm.cs</DependentUpon>

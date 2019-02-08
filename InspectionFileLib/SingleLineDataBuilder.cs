@@ -18,8 +18,7 @@ namespace InspectionLib
             try
             {
                 var dataSet = new CartDataSet(_barrel);               
-                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartLocation.X);
-                dataSet.ModCartData = dataSet.CartData;
+                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet.GetData(),script.StartLocation.X);                
                 return dataSet;
             }
             catch (Exception)

@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="BOT-profile-toolpath-depthmeasure-test-nick.csv" />
+    <None Include="BOT-profile-toolpath-depthmeasure.csv" />
     <None Include="profile-toolpath.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

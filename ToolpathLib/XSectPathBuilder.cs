@@ -10,7 +10,7 @@ namespace ToolpathLib
     {
         Plane _xSectPlane;
 
-        public ModelPath Build(ToolPath inputPath, double increment, Plane xsectionPlane)
+        public XSecPathList Build(ToolPath inputPath, double increment, Plane xsectionPlane)
         {
             try
             {
@@ -28,15 +28,26 @@ namespace ToolpathLib
                 throw;
             }
         }
-        private ModelPath parsePath(ToolPath inputPath, double increment)
+        private XSecPathList parsePath(ToolPath inputPath, double increment)
         {
-            BoundingBox ext = getBoundingBox(inputPath);
-            BoundingBox jetOnBox = getJetOnBoundingBox(inputPath);
-
-            ModelPath mp = new ModelPath(ext, jetOnBox);
+            
+            var mp = new XSecPathList();
+            int j = 0;
             for (int i = 1; i < inputPath.Count; i++)
             {
-                
+               if( inputPath[i].JetOn)
+               {
+                    if(inputPath[i-1].Feedrate != inputPath[i].Feedrate)
+                    {
+                        var xpe = new XSectionPathEntity()
+                        {
+                            Feedrate = inputPath[i - 1].Feedrate.Value,                        
+                            CrossLoc = inputPath[i - 1].PositionAsVector.Y,
+                            PassExecOrder = j++
+                        };
+                        mp.Add(xpe);
+                    }
+               }
             }
             return mp;
         }

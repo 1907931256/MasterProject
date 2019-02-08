@@ -3,13 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GeometryLib;
-
+using DataLib;
 namespace ToolpathLib
 {
    
     public class XSecPathList : List<XSectionPathEntity>
     {
-        public double AlongLoc { get; set; }        
+        public double AlongLoc { get; set; }
+        public void AdjustFeedrates(CartData depthData)
+        {
+            MeasureDepthsAtJetLocations(depthData);
+            foreach (XSectionPathEntity xpe in this)
+            {
+                if (xpe.TargetDepth != 0)
+                {
+                    var newFeedrate = xpe.Feedrate * xpe.CurrentDepth / xpe.TargetDepth;
+                    xpe.Feedrate = newFeedrate;
+                }
+            }
+
+        }
+        public void MeasureDepthsAtJetLocations(CartData depthData)
+        {
+            foreach (XSectionPathEntity xpe in this)
+            {
+                double xMeasure = xpe.CrossLoc;  
+                for (int i = 1; i < depthData.Count; i++)
+                {
+                    if ((xpe.CrossLoc >= depthData[i - 1].X && xpe.CrossLoc <= depthData[i].X) ||
+                        (xpe.CrossLoc <= depthData[i - 1].X && xpe.CrossLoc >= depthData[i].X))
+                    {
+                        double denom = (depthData[i].X - depthData[i - 1].X);
+                        double m = 0;
+                        if (denom != 0)
+                        {
+                            m = (depthData[i].Y - depthData[i - 1].Y) / denom;
+                            xpe.CurrentDepth = m * (xpe.CrossLoc - depthData[i - 1].X) + depthData[i - 1].Y;
+                        }
+                        else
+                        {
+                            xpe.CurrentDepth = (depthData[i].Y + depthData[i - 1].Y) / 2.0;
+                        }
+                                                
+                        break;
+                    }
+                }
+            }
+        }
         void SortByPassExcOrder()
         {
             var order = new List<int>();
@@ -35,6 +75,10 @@ namespace ToolpathLib
             }
             return lines;
         }
+        public XSecPathList()
+        {
+
+        }
         public XSecPathList(string csvFilename,int headerRowCount)
         {
             var stringArr = FileIOLib.CSVFileParser.ParseFile(csvFilename);
@@ -44,18 +88,13 @@ namespace ToolpathLib
             int colCount = stringArr.GetLength(1);
             for(int i =headerRowCount;i<stringArr.GetLength(0);i++)
             {
-                int pathExOrder = 0;
-                double feed = 0.0;
-                double xlocation = 0;
-                double ylocation = 0;
-                int direction = 1;
                 double depth = 0;
                 double targetDepth = 0;
-                int.TryParse(stringArr[i,0], out pathExOrder);
-                double.TryParse(stringArr[i, 1], out xlocation);
-                double.TryParse(stringArr[i, 2], out ylocation);
-                double.TryParse(stringArr[i, 3], out feed);
-                int.TryParse(stringArr[i, 4], out direction);
+                int.TryParse(stringArr[i,0], out int pathExOrder);
+                double.TryParse(stringArr[i, 1], out double xlocation);
+                double.TryParse(stringArr[i, 2], out double ylocation);
+                double.TryParse(stringArr[i, 3], out double feed);
+                int.TryParse(stringArr[i, 4], out int direction);
                 if(colCount==7)
                 {
                     double.TryParse(stringArr[i, 5], out depth);
@@ -73,7 +112,7 @@ namespace ToolpathLib
                         CurrentDepth = depth,
                         TargetDepth = targetDepth
                     };
-                    this.Add(xpe);
+                    Add(xpe);
                 }
                
             }
@@ -90,6 +129,14 @@ namespace ToolpathLib
         public int Direction { get; set; }
         public double TargetDepth { get; set; }
         public double CurrentDepth { get; set; }
+        public Vector2 SurfNormal { get; set; }
+        public int CurrentRun { get; set; }
+        public int TargetRunTotal { get; set; }
+        public XSectionPathEntity()
+        {
+            SurfNormal = new Vector2(0,  1);
+            JetVector = new Vector2(0, 1);
+        }
     }
     public  class PathEntity
     {

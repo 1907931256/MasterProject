@@ -19,7 +19,7 @@ namespace DataLib
         LAND,
         GROOVE,
         CAL,
-        FLATPLATE
+        LINE
     }
 
 }

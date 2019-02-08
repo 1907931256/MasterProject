@@ -94,22 +94,19 @@ namespace BarrelLib
     /// </summary>
     public class Barrel
     {
-        public BarrelType Type {get{ return _type;} set{ _type = value; }}
-        BarrelType _type;
-        BoreDiameterType _diameterType;
-        public BoreDiameterType BoreDiameterType { get { return _diameterType; } set { _diameterType = value; } }
-        LifetimeData _lifedata;
-        MachiningData _machData;
-        public MachiningData MachiningData { get { return _machData; }set { _machData = value; } }
-        public ManufacturingData ManufactureData { get { return _manData; } set { _manData = value; } }
-        public LifetimeData LifetimeData { get { return _lifedata; } set { _lifedata = value; }}
-        public DimensionData DimensionData{ get{ return _dimensionData; } set{ _dimensionData = value; }}
-        public BoreProfile BoreProfile { get { return _boreProfile; } set { _boreProfile = value; } }      
-        public TwistProfile TwistProfile{get{return _twistProfile;} set{ _twistProfile = value;}}
-        public XSectionProfile MinProfile{get {return _minProfile; }  set { _minProfile = value; } }
-        public XSectionProfile NomProfile { get  {return _nomProfile;} set { _nomProfile = value; } }
-        public XSectionProfile MaxProfile { get{ return _maxProfile; } set { _maxProfile = value; } }
+        public BarrelType Type { get; private set; }
+        public BoreDiameterType BoreDiameterType { get; set; }
+        public MachiningData MachiningData { get; set; }
+        public ManufacturingData ManufactureData { get; set; }
+        public LifetimeData LifetimeData { get; set; } 
+        public DimensionData DimensionData{ get; set; }
+        public BoreProfile BoreProfile { get; set; }      
+        public TwistProfile TwistProfile{ get; set; }
+        public XSectionProfile MinProfile{ get; set; }
+        public XSectionProfile NomProfile { get; set; }
+        public XSectionProfile MaxProfile { get; set; }
         //public BoundingBox BoundingBox {get { return _boundingBox; }      }
+
         public List<DwgEntity> MinEntitiesAt(double thetaRad)
         {
                 return _minProfile.rotateEntities(thetaRad);
@@ -158,7 +155,7 @@ namespace BarrelLib
        
         public double TwistRad(double z)
         {
-            return _twistProfile.ThetaRadAt(z);
+            return TwistProfile.ThetaRadAt(z);
         }
 
        
@@ -167,9 +164,9 @@ namespace BarrelLib
         XSectionProfile _maxProfile;
         XSectionProfile _nomProfile;
         DimensionData _dimensionData;
-        TwistProfile _twistProfile;
-        BoreProfile _boreProfile;
-        ManufacturingData _manData;
+        
+         
+        
         //BoundingBox _boundingBox;
         //List<BoundingBox> _boundingBoxList;
         //bool _containsProfiles;
@@ -189,23 +186,23 @@ namespace BarrelLib
                 bt = BarrelType.M240_762mm;
             return bt;
         }
+        void initialize( )
+        {
+            ManufactureData = new ManufacturingData();
+            LifetimeData = new LifetimeData();
+            DimensionData = new DimensionData(Type);
+            TwistProfile = new TwistProfile(Type);
+            BoreProfile = new BoreProfile(Type);
+        }
         public Barrel()
         {
-            _manData = new ManufacturingData();
-            _lifedata = new LifetimeData();
-            _dimensionData = new DimensionData(BarrelType.M2_50_Cal);
-            _twistProfile = new TwistProfile(BarrelType.M2_50_Cal);           
-            _boreProfile = new BoreProfile(BarrelType.M2_50_Cal);
+            Type = BarrelType.M2_50_Cal;
+            initialize();
         }
         public Barrel(BarrelType type)
         {
-            _manData = new ManufacturingData();
-            _machData = new MachiningData();
-            _lifedata = new LifetimeData();
-            _dimensionData = new DimensionData(type);            
-            _twistProfile = new TwistProfile(type);
-            _boreProfile = new BoreProfile(type);
-            
+            Type = type;
+            initialize();
         }
     }
 }

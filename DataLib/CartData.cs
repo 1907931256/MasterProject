@@ -13,16 +13,47 @@ namespace DataLib
   
     public class CartData : List<Vector3>
     {
+          
+        public double GetDataRotation(Vector3 pt1, Vector3 pt2)
+        {
+            return Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.X);
+        }
+        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double radius)
+        {
+            var centers = DataUtilities.FindCirclesofKnownR(pt1, pt2, radius);
+            var center = new Vector3();
+            if (centers[0].Y > centers[1].Y)
+            {
+                center = centers[0];
+            }
+            else
+            {
+                center = centers[1];
+            }
+            var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y, 0);
+            Translate(translation);
+            var pt1Trans = pt1.Translate(translation);
+            var pt2Trans = pt2.Translate(translation);
+            double scaling = 1.0;
+            var pt1Unr = DataConverter.UnrollCylPt(new PointCyl(pt1Trans),Math.PI/2.0, scaling, radius);
+            var pt2Unr = DataConverter.UnrollCylPt(new PointCyl(pt2Trans),Math.PI/2.0, scaling, radius);
+
+            var unrolledData = DataConverter.UnrollCylinderRing(this, scaling, radius);
+            
+            Clear();
+            AddRange(unrolledData);
+            RotateDataToLine(pt1Unr, pt2Unr);
+            CenterToXMidpoint();
+            
+        }
         public void RotateDataToLine(Vector3 pt1, Vector3 pt2)
         {
             try
             {
-                var _dataRotationRad = Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.X);
-                var origin = new Vector3(0, 0, 0);
-                var start = new Vector3(pt1.X, pt1.Y, 0);
-                var rotStart = start.RotateZ(origin, -1 * _dataRotationRad);
-                var end = new Vector3(pt2.X, pt2.Y, 0);
-                var rotEnd = end.RotateZ(origin, -1 * _dataRotationRad);
+                var _dataRotationRad = GetDataRotation(pt1, pt2);
+                var origin = new Vector3(0, 0, 0);                
+                var rotStart = pt1.RotateZ(origin, -1 * _dataRotationRad);                
+                var rotEnd = pt2.RotateZ(origin, -1 * _dataRotationRad);
                 var vTrans = new Vector3(0, -1 * rotEnd.Y, 0);
                 var rotData = new List<Vector3>();
                 foreach (Vector3 pt in this)
@@ -57,6 +88,20 @@ namespace DataLib
                 }
             }
             return new Tuple<double, double>(minYData, maxYData);
+        }
+        public void MirrorYAxis()
+        {          
+            foreach (Vector3 pt in this)
+            {
+                pt.X *= -1;
+            }           
+        }
+        public void MirrorXAxis()
+        {           
+            foreach (Vector3 pt in this)
+            {
+                pt.Y *= -1;
+            }           
         }
         public void CenterToXMidpoint()
         {

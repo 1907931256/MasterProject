@@ -18,36 +18,37 @@ namespace GridTest
             {
 
                 ModelRunType modelRunType = ModelRunType.NewMRR;
-                var gridOrigin = new Vector2(-.1, 0);
-                double width = .2;
-                double depth = .25;
+                var gridOrigin = new Vector2(-.4, 0);
+                double gridWidth = .8;
+                double gridDepth = .25;
                 double meshSize = .0005;
                 byte startValue = 255;
                 double alongLocation = 0.0;
-                double jetCenterX = width / 2.0;
-                double jetR = .041;
+                double jetCenterX = gridWidth / 2.0;
+                double jetR = .021;
                 int eqIndex = 1;
                 double nominalFeedrate = 40;
                 double baseMrr = .00709;
-                double averagingWindow = .0005;
+                double averagingWindow = .002;
                 double critAngle = Math.PI * 75.0 / 180.0;
                 double angExpEffect = .5;
                 double inspectionLoc = 0;
                 double targetDepth = .05;
-                int runCount = 10;
+                int runCount = 4;
                 int iterCount = 1;
-
+                string directory = "C:/Users/nickc_000/OneDrive/Documents/#729 155mm/Nick test files/";
                 Console.WriteLine("building grid");
                 
-                var grid = new XSectionGrid(gridOrigin,width, depth, meshSize, startValue, alongLocation);
-                var profile = new XSectionProfile(gridOrigin, width, meshSize);
-                var tempProfile = new XSectionProfile(gridOrigin, width, meshSize);
+                var grid = new XSectionGrid(gridOrigin, gridWidth, gridDepth, meshSize, startValue, alongLocation);
+                var profile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                var tempProfile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
                 var jetRayList = new List<Ray2>();
 
 
 
                 var jet = new XSecJet(eqIndex, jetR * 2, meshSize);
-                string pathCsvFilename = "singlepath-profile-toolpath.csv";
+                string pathCsvFilename = "BOT-profile-toolpath-depthmeasure-test-nick.csv";// "singlepath-profile-toolpath.csv";
+                
 
                 //build path from path entities 
                 //path is list of path entities 
@@ -79,6 +80,7 @@ namespace GridTest
                 var angleEffectList = new List<string>();
                 var normalsList = new List<string>();
                 double[] inspectionDepthArr = new double[runCount];
+                string timeCode=  DateTime.Now.ToFileTimeUtc().ToString();
                 for (int iter = 0; iter < iterCount; iter++)
                 {
                     for (int i = 0; i < runCount; i++)
@@ -102,6 +104,8 @@ namespace GridTest
                             }
                             tempProfile.Smooth(averagingWindow);
                             profile = new XSectionProfile(tempProfile);
+                            
+                            profile.SaveBitmap(directory +"testgrid" + timeCode +"-iter"+iter.ToString()+ "-run" + i.ToString()+ ".bmp");
                         }
                         double inspectionDepth = profile.GetValue(inspectionLoc);
                         Console.WriteLine("Run: " + i.ToString() + " Depth: " + inspectionDepth.ToString());
@@ -129,17 +133,17 @@ namespace GridTest
 
                     }
                 }
-
+                
                 Console.WriteLine("saving model");
-                string timeCode = System.DateTime.Now.ToFileTimeUtc().ToString();
-                FileIOLib.FileIO.Save(normalsList, "normalList"+timeCode +".csv");
-                FileIOLib.FileIO.Save(angleEffectList, "angleEffectList"+timeCode +".csv");
-                profile.SaveBitmap("testgrid"+timeCode +".bmp");
-                string csvFilename = "testprofile-" + timeCode+".csv";
+                timeCode = System.DateTime.Now.ToFileTimeUtc().ToString();
+                FileIOLib.FileIO.Save(normalsList, directory+"normalList"+timeCode +".csv");
+                FileIOLib.FileIO.Save(angleEffectList, directory+"angleEffectList"+timeCode +".csv");
+                profile.SaveBitmap(directory+"testgrid"+timeCode +".bmp");
+                string csvFilename = directory+"testprofile-" + timeCode+".csv";
                 profile.SaveCSV(csvFilename);
                 Console.WriteLine("program complete");
                 Console.ReadKey();
-               
+                
             }
             catch (Exception ex)
             {

@@ -14,7 +14,7 @@ namespace BarrelLib
         public double LandMinDiam{get{ return _landMinDiam;}}
         public double LandMaxDiam { get { return _landMaxDiam; } }
         public int GrooveCount{ get{ return _grooveCount;}}        
-        public double ActualLandDiam {get { return _actualLandDiam; }  set  {  _actualLandDiam = value;  }   }
+        public double ActualLandDiam {get { return _landActualDiam; }  set  {  _landActualDiam = value;  }   }
         public double LandMinWidth { get { return _landMinWidth; } }
         public double LandMaxWidth { get { return _landMaxWidth; } }       
         public double GrooveMinDiam { get { return _grooveMinDiam ; }}
@@ -30,7 +30,7 @@ namespace BarrelLib
         public double MinCircumference {  get { return _minCircumference; } }
         public double NomCircumference { get { return _nomCircumference; } }
 
-        double _actualLandDiam;
+        double _landActualDiam;
         double pi2;
         double _grooveMaxWidth;
         double _grooveMinWidth;
@@ -241,7 +241,9 @@ namespace BarrelLib
         {
             _length = 48;
             _landMaxDiam = .501;
-            _landMinDiam = .4985;           
+            _landMinDiam = .4985;
+            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
+            _landActualDiam = _landNomDiam;
             _grooveCount = 8;
             _grooveMinDiam = .509;
             _grooveMaxDiam = .513;            
@@ -254,6 +256,8 @@ namespace BarrelLib
             _length = 240;
             _landMaxDiam = 6.103;
             _landMinDiam = 6.100;
+            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
+            _landActualDiam = _landNomDiam;
             _grooveCount = 48;
             _grooveMinDiam = 6.206;
             _grooveMaxDiam = 6.200;
@@ -265,7 +269,9 @@ namespace BarrelLib
         {
             _length = 48;
             _landMaxDiam = .3022;
-            _landMinDiam = .2996;           
+            _landMinDiam = .2996;
+            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
+            _landActualDiam = _landNomDiam;
             _grooveCount = 4;
             _grooveMinDiam = .3065;
             _grooveMaxDiam = .3095;           
@@ -279,7 +285,9 @@ namespace BarrelLib
         {           
             _length = 78;
             _landMaxDiam = .9882;
-            _landMinDiam = .985;            
+            _landMinDiam = .985;
+            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
+            _landActualDiam = _landNomDiam;
             _grooveCount = 18;
             _grooveMinDiam = 1.0236;
             _grooveMaxDiam = 1.0315;           

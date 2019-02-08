@@ -235,11 +235,30 @@ namespace DataLib
     }
     public class DataConverter
     { 
-        static Vector3 UnrollCylPt(PointCyl pt, double startTheta,double scaling,  double unrollingRadius)
+        public static CylData AsCylData(CartData cartData)
         {
             try
             {
-                var result = new Vector3((pt.ThetaRad - startTheta) * unrollingRadius , pt.Z , pt.R*scaling , pt.Col);
+                var strip = new CylData();
+                var thetaStart = new PointCyl(cartData[0]).ThetaRad;
+                foreach (var pt in cartData)
+                {
+                    var ptCyl = new PointCyl(pt);
+                    strip.Add(ptCyl);
+                }
+                return strip;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static public Vector3 UnrollCylPt(PointCyl pt, double scaling,  double unrollingRadius)
+        {
+            try
+            {
+                var result = new Vector3(pt.ThetaRad  * unrollingRadius , pt.R * scaling , pt.Z  , pt.Col);
                 return result;
             }
 
@@ -249,16 +268,32 @@ namespace DataLib
                 throw;
             }
         }
+        static public Vector3 UnrollCylPt(PointCyl pt,double thetaOffsetRad, double scaling, double unrollingRadius)
+        {
+            try
+            {
+                var result = new Vector3((pt.ThetaRad+thetaOffsetRad )* unrollingRadius, pt.R * scaling, pt.Z, pt.Col);
+                return result;
+            }
+
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         static public CartData UnrollCylinderRing(CartData cartData,double scaling,  double unrollRadius)
         {
             try
             {
                 var strip = new CartData();
                 var thetaStart = new PointCyl(cartData[0]).ThetaRad;
+                double thetaoffset = Math.PI / 2.0;
                 foreach (var pt in cartData)
                 {
                     var ptCyl = new PointCyl(pt);
-                    strip.Add(UnrollCylPt(ptCyl, thetaStart,scaling, unrollRadius));
+                    
+                    strip.Add(UnrollCylPt(ptCyl, thetaoffset, scaling, unrollRadius));
                 }
                 return strip;
             }
@@ -276,7 +311,7 @@ namespace DataLib
                 var strip = new CartData();
                 foreach (var ptCyl in correctedRing)
                 {
-                    strip.Add(UnrollCylPt(ptCyl, correctedRing[0].ThetaRad, scaling, unrollRadius));                   
+                    strip.Add(UnrollCylPt(ptCyl,  scaling, unrollRadius));                   
                 }
                 return strip;
             }

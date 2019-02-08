@@ -272,8 +272,8 @@
             "LAND",
             "GROOVE",
             "CAL",
-            "FLATPLATELINE",
-            "FLATPLATEGRID"});
+            "LINELINE",
+            "LINEGRID"});
             this.comboBoxMethod.Location = new System.Drawing.Point(101, 35);
             this.comboBoxMethod.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMethod.Name = "comboBoxMethod";

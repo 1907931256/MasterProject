@@ -119,6 +119,10 @@
       <Project>{e0b421b3-c2b0-4132-893e-c66376132be7}</Project>
       <Name>CNCLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataLib\DataLib.csproj">
+      <Project>{0c6fa665-a531-4163-a318-5fa4f5a65e0f}</Project>
+      <Name>DataLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\File IO Library\FileIO\FileIOLib.csproj">
       <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>
       <Name>FileIOLib</Name>

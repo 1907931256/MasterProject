@@ -14,13 +14,12 @@ using DwgConverterLib;
 using System.Drawing;
 namespace AbMachModel
 {
-    public class XSectionProfile
-    {
-        double[] profile;
+    public class XSectionProfile:List<Vector2>
+    {       
         
         public double MeshSize { get; private set; }
         public Vector2 Origin { get; private set; }
-        public int XLength { get; private set; }
+        public double Width { get; private set; }
 
         private int GetIndex(double xLocation)
         {
@@ -29,71 +28,63 @@ namespace AbMachModel
         }
         private int GetIndex(int index)
         {
-            int i = Math.Min(Math.Max(index, 0), XLength - 1);
+            int i = Math.Min(Math.Max(index, 0), Count - 1);
             return i;
         }
-        public double GetNormalAngle(double xLocation)
+        public double GetNormalAngle(double xLocation,double aveWindow)
         {
-            int windowHalfW = 5;
-            int i0 = GetIndex(xLocation);
-            double m1 = 0;
-            double y0 = profile[i0];
-            int count = 0;
-            for(int i=i0-windowHalfW;i<i0;i++)
+            int windowHalfW = (int)(.5 * aveWindow / MeshSize);
+            int i0 = GetIndex(xLocation);            
+            var x = new List<double>();
+            var y = new List<double>();
+            for(int i=i0-windowHalfW;i<=i0+windowHalfW;i++)
             {
-                count++;
-                m1 += (y0 - profile[GetIndex(i)])/(MeshSize*(i0-i));
+                x.Add(this[GetIndex(i)].X);
+                y.Add(this[GetIndex(i)].Y);
             }
-            m1 /= count;
-            count = 0;
-            double m2 = 0;
-            for(int i=i0+1;i<i0+windowHalfW;i++)
-            {
-                count++;
-                m2 += (profile[GetIndex(i)] - y0) / (MeshSize * (i - i0));
-            }
-            m2 /= count;
-
-            double m = (m1 + m2 ) / 2.0;
-            double angle = Math.Atan(m) ;
-            return angle;
+            var mb = MathNet.Numerics.Fit.Line(x.ToArray(), y.ToArray());
+            double a = Math.Atan(mb.Item2);
+            return a;
         }
-        double GetMaxValue()
+        Tuple<double,double> GetMinMax()
         {
             double max = double.MinValue;
-            for (int i = 0; i < profile.Length; i++)
+            double min = double.MaxValue;
+            for (int i = 0; i < Count; i++)
             {
-                var absVal = Math.Abs(profile[i]);
-                if (absVal > max)
+               if(this[i].Y>max)
                 {
-                    max = absVal;
+                    max = this[i].Y;
+                }
+               if(this[i].Y<min)
+                {
+                    min = this[i].Y;
                 }
             }
-            return max;
+            return new Tuple<double, double>(min, max);
         }
         public void SaveBitmap(string filename)
         {
             try
             {
                 Bitmap bitmap;
-                int yLength = (int)Math.Ceiling(GetMaxValue() / MeshSize);
-                int xLength = profile.Length;
+                var minmax = GetMinMax(); 
+                int yLength = (int)Math.Ceiling(Math.Abs(minmax.Item2-minmax.Item1) / MeshSize);
+                int xLength = Count;
                 bitmap = new Bitmap(xLength, yLength);
                 Size s = new Size(bitmap.Width, bitmap.Height);
 
                 // Create graphics 
                 for (int i = 0; i < xLength; i++)
                 {
-                    int j = (int)Math.Floor(profile[i] / MeshSize);
-                    if (j >= yLength)
-                    {
-                        j = yLength - 1;
-                    }
+                    int j = Math.Min(yLength-1,Math.Max(0,(int)Math.Floor((this[i].Y-minmax.Item1)/ MeshSize)));                  
                     Color c = Color.FromArgb(10, 10, 10);
                     bitmap.SetPixel(i, j, c);
+                    
                 }
 
                 Graphics memoryGraphics = Graphics.FromImage(bitmap);
+                
                 bitmap.Save(filename);
 
             }
@@ -123,37 +114,15 @@ namespace AbMachModel
             }
             return vectorList;
         }
-        //public List<Vector2> TranslateScan(List<Vector2> scan, Vector2 translation)
-        //{
-
-        //}
-        //public List<Vector2> MirrorScan(List<Vector2> scan, Vector2 mirrorLine)
-        //{
-
-        //}
-
-        //public List<double> GetDifferenceProfile(List<Vector2> scan1, List<Vector2> scan2)
-        //{
-        //    double error = 0;
-        //    var vectorList = ParseFile(targetCsvProfile,minY,maxY);
-            
-           
-        //    for(int j= 0;j<XLength;j++)
-        //    {
-        //        double xprof = Origin.X + (j * MeshSize);
-
-        //    }
-        //    return error;
-        //}
         public void SaveCSV(string filename)
         {
             try
             {
                 var pointList = new List<string>();
-                for(int i=0;i<profile.Length;i++)
+                for(int i=0;i<Count;i++)
                 {
-                    double x = i * MeshSize + Origin.X;
-                    string pointStr = x.ToString() + "," + (-1.0*profile[i]).ToString();
+                   
+                    string pointStr = this[i].X.ToString() + "," + (-1.0*this[i].Y).ToString();
                     pointList.Add(pointStr);
                 }
                 FileIO.Save(pointList, filename);
@@ -168,66 +137,81 @@ namespace AbMachModel
         public void Smooth(double rollingAveWidth)
         {
             int aveWindow = (int)Math.Round(rollingAveWidth / MeshSize);
-            double[] smoothProfile = new double[XLength];
-            smoothProfile[0] = profile[0];
-            smoothProfile[XLength - 1] = profile[XLength - 1];
+            var smoothProfile = new List<Vector2>();
+           
 
-            for (int i = 0; i < profile.Length - aveWindow-1; i+=aveWindow)
+
+
+            for (int i = 0; i <= Count - aveWindow; i+= aveWindow)
             {
-                double sum = 0;
-                for(int j= i;j<i+ aveWindow;j++)
-                {
-                    sum += profile[j];
-                }
-                sum /= aveWindow;
+                var x = new List<double>();
+                var y = new List<double>();
                 for (int j = i; j < i + aveWindow; j++)
                 {
-                    smoothProfile[j] =sum;
+                    x.Add(this[j].X);
+                    y.Add(this[j].Y);
+                   
                 }
+              //  var fitFunc = MathNet.Numerics.Fit.LineFunc(x.ToArray(), y.ToArray());
+               var fitFunc =  MathNet.Numerics.Fit.PolynomialFunc(x.ToArray(), y.ToArray(),4);
+                
+               for (int j = 0; j < x.Count; j++)
+               {
+                    var yFit = fitFunc(x[j]);
+                    smoothProfile.Add(new Vector2(x[j],yFit ));
+               }
             }
-            for (int i = 1; i < profile.Length - 1; i++)
-            {
-                profile[i] = smoothProfile[i];
-            }
-
+            Clear();
+            AddRange(smoothProfile);
         }
         public void Smooth()
         {
-            double[] smoothProfile = new double[XLength];
-            smoothProfile[0] = profile[0];
-            smoothProfile[XLength-1] = profile[XLength-1];
-
-            for (int i=1;i<profile.Length-1;i++)
+            var smoothProfile = new List<Vector2>();
+            smoothProfile[0] = this[0];
+           
+            for (int i=1;i<Count-1;i++)
             {
-                if(((profile[i]>profile[i-1])&&(profile[i]>profile[i+1]))|| ((profile[i] > profile[i - 1]) && (profile[i] > profile[i + 1])))
+                if(((this[i].Y>this[i-1].Y)&&(this[i].Y>this[i+1].Y))
+                    || ((this[i].Y > this[i - 1].Y) && (this[i].Y > this[i + 1].Y)))
                 {
-                    smoothProfile[i] = (profile[i - 1] + profile[i + 1]) / 2.0;
+                    var ySmoothed = (this[i - 1].Y + this[i + 1].Y) / 2.0;
+                    smoothProfile.Add(new Vector2(this[i].X, ySmoothed));
                 }
                 else
                 {
-                    smoothProfile[i] = profile[i];
+                    smoothProfile.Add(this[i]);
                 }
             }
-            for (int i = 1; i < profile.Length - 1; i++)
-            {
-                profile[i] = smoothProfile[i];
-            }
-
+            var temp = this[Count - 1];
+            Clear();
+            AddRange(smoothProfile);
+            smoothProfile.Add(temp);
         }
         public void SetValue (double value, double location)
         {
-            profile[GetIndex(location)] = value;
+            this[GetIndex(location)].Y = value;
         }
         public double GetValue(double location)
         {
-            return profile[GetIndex(location)];
+            return this[GetIndex(location)].Y;
         }
+
+        void BuildProfile()
+        {
+            double x = Origin.X;
+            while(x<Origin.X+Width)
+            {
+                Add(new Vector2(x, Origin.Y));
+                x += MeshSize;
+            }
+        }
+       
         public XSectionProfile(Vector2 origin, double width, double meshSize)
         {
             Origin = origin;
             MeshSize = meshSize;
-            XLength = (int)Math.Ceiling(width / meshSize);
-            profile = new double[XLength];
+            Width = width;
+            BuildProfile();
 
         }
         public XSectionProfile(string XsectionCsvFile)
@@ -245,26 +229,18 @@ namespace AbMachModel
 
             for (int i=0;i<pointArr.GetLength(0);i++)
             {               
-                if(double.TryParse(pointArr[i, 1], out y))
+                if(double.TryParse(pointArr[i, 0], out x) && double.TryParse(pointArr[i, 1], out y))
                 {
-                    pointList.Add(y);
+                    Add(new Vector2(x, y));
                 }                
             }
-            profile = pointList.ToArray();
-            XLength = profile.Length;
         }
         public XSectionProfile(XSectionProfile startingProfile)
         {
             Origin = startingProfile.Origin;
-            XLength = startingProfile.XLength;
-            
+               
             MeshSize = startingProfile.MeshSize;
-            profile = new double[XLength];
-            for (int i=0;i<profile.Length;i++)
-            {
-                double xLocation = (i * MeshSize) + Origin.X;
-                profile[i] = startingProfile.GetValue(xLocation);
-            }
+            AddRange(startingProfile);
         }
     }
     public class GridIntersect
@@ -571,27 +547,111 @@ namespace AbMachModel
     }
     public class ChannelModel
     {
-        XSecJet _xSecJet;
-        XSecPathList _path;
+        XSecJet jet;
+        XSecPathList pathList;
         RunInfo _runInfo;
         AbMachParameters _abMachParams;
-        
-
-        public ChannelModel(XSecJet xSecJet, XSecPathList path,RunInfo runInfo,AbMachParameters abMachParameters)
+        XSectionProfile profile;
+        double meshSize;
+        double jetR;
+        double nominalFeedrate;
+        public ChannelModel(XSectionProfile profile, XSecJet xSecJet, XSecPathList path,RunInfo runInfo,AbMachParameters abMachParameters)
         {
-            _xSecJet = xSecJet;
-            _path = path;
+            jet = xSecJet;
+            pathList = path;
             _runInfo = runInfo;
             _abMachParams = abMachParameters;
-           
+            this.profile = profile;
+        }
+        Ray2[,]GetJetArray()
+        {
+            int jetW = (int)(Math.Ceiling(jetR * 2 / meshSize));
+            Ray2[,] jetArr = new Ray2[pathList.Count, jetW];
+            for (int pathIndex = 0; pathIndex < pathList.Count; pathIndex++)
+            {
+                double endX = pathList[pathIndex].CrossLoc + jetR;
+                for (int jetLocIndex = 0; jetLocIndex < jetW; jetLocIndex++)
+                {
+                    double x = (pathList[pathIndex].CrossLoc - jetR) + (meshSize * jetLocIndex);
+                    var origin = new Vector2(x, 0);
+                    double angleDeg = 90;
+                    double angRad = Math.PI * (angleDeg / 180.0);
+                    var direction = new Vector2(Math.Cos(angRad), Math.Sin(angRad));
+                    double jetX = x - pathList[pathIndex].CrossLoc;
+                    double mrr = jet.GetMrr(jetX) * nominalFeedrate / pathList[pathIndex].Feedrate;
+                    var jetRay = new Ray2(origin, direction, mrr);
+                    jetArr[pathIndex, jetLocIndex] = jetRay;
+                }
+            }
+            return jetArr;
         }
         public void Run(CancellationToken ct, IProgress<int> progress)
         {
             try
             {
-                foreach(XSectionPathEntity cspath in _path)
+
+                var meshSize = _abMachParams.MeshSize;
+                var gridOrigin = profile.Origin;
+                var gridWidth = profile.Width;
+                var jetArr = GetJetArray();
+                var tempProfile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                var jetRayList = new List<Ray2>();
+                var baseMrr = _abMachParams.RemovalRate.DepthPerPass;
+                var averagingWindow = _abMachParams.SmoothingWindowWidth;
+                var critAngle = _abMachParams.Material.CriticalRemovalAngle;
+                for (int iter = 0; iter < _runInfo.Iterations; iter++)
                 {
-                   
+                    profile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                    for (int i = 0; i < _runInfo.Runs; i++)
+                    {
+
+                        for (int pathIndex = 0; pathIndex < jetArr.GetLength(0); pathIndex++)
+                        {
+                            tempProfile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                            for (int jetLocIndex = 0; jetLocIndex < jetArr.GetLength(1); jetLocIndex++)
+                            {
+                                var jetRay = jetArr[pathIndex, jetLocIndex];
+                                var profileNormal = profile.GetNormalAngle(jetRay.Origin.X, averagingWindow);
+                                var angleEffect = AngleEffect( profileNormal, critAngle);
+                                //if (i == _runInfo.Runs - 1)
+                                //{
+                                //    angleEffectList.Add(jetRay.Origin.X.ToString() + "," + angleEffect.ToString());
+                                //}
+                                double materialRemoved = baseMrr * jetRay.Length * angleEffect;
+                                double currentDepth = profile.GetValue(jetRay.Origin.X);
+                                double newDepth = currentDepth + materialRemoved;
+                                tempProfile.SetValue(newDepth, jetRay.Origin.X);
+                            }
+                            tempProfile.Smooth();
+                            profile = new XSectionProfile(tempProfile);
+
+                            // profile.SaveBitmap(directory +"testgrid" + timeCode +"-iter"+iter.ToString()+ "-run" + i.ToString()+ ".bmp");
+                        }
+                        double inspectionDepth = profile.GetValue(_abMachParams.DepthInfo.LocationOfDepthMeasure.X);                     Console.WriteLine("Run: " + i.ToString() + " Depth: " + inspectionDepth.ToString());
+                        double targetDepthAtRun = _abMachParams.DepthInfo.TargetDepth * (i + 1) / _runInfo.Runs;
+                        Console.WriteLine("targetDepthAtRun: " + targetDepthAtRun.ToString());
+                        double mrrAdjustFactor = targetDepthAtRun / inspectionDepth;
+                        Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());
+                        if (_abMachParams.RunInfo.RunType == ModelRunType.NewMRR)
+                        {
+                            baseMrr *= mrrAdjustFactor;
+                            Console.WriteLine("new Mrr: " + baseMrr.ToString());
+                        }
+                        Console.WriteLine("");
+                        var angleEffectList = new List<string>();
+                        var normalsList = new List<string>();
+                        if (i == _abMachParams.RunInfo.Runs - 1)
+                        {
+                            for (int profIndex = 0; profIndex < profile.Count; profIndex++)
+                            {
+                                double x = profIndex * profile.MeshSize + profile.Origin.X;
+                                var n = profile.GetNormalAngle(x, averagingWindow);
+                                normalsList.Add(x.ToString() + "," + n.ToString());
+
+                            }
+                        }
+
+                    }
                 }
             }
             catch
@@ -603,6 +663,17 @@ namespace AbMachModel
         {
             double result = 1;// Math.Cos(angle - _abMachParams.Material.CriticalRemovalAngle);
             return result;
+        }
+        double AngleEffect( double normalAngle, double critAngle)
+        {
+
+            double a = 1.5 - Math.Abs(Math.Cos(Math.Abs(normalAngle) - critAngle));
+            double angleEffect = a;
+            //angleEffect = Math.Pow(Math.Abs(a),.5);
+            //angleEffect = Math.Exp(-1.0 * expF* Math.Pow(a, 2.0));
+            // angleEffect = .32 - .0729 * a + 1.826 * Math.Pow(a, 2.0)-4.9745 * Math.Pow(a, 3.0) + 5.8245 * Math.Pow(a, 4.0) -2.2085 * Math.Pow(a, 5.0);
+
+            return angleEffect;
         }
     }
 }

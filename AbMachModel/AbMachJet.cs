@@ -12,68 +12,66 @@ namespace AbMachModel
     /// </summary>
     public class XSecJet
     {
-        int GetIndex(double x)
-        {
-          return  Math.Min(_mrrX.Count - 1, (int)Math.Round(_mrrX.Count * (Math.Abs(x) / _jetR)));
-        }
+        //linear interpolate between scan points to get mrr
         public double GetMrr(double xJet)
-        {                       
-           return _mrrX[GetIndex(xJet)];
+        {
+            double xnorm = Math.Min(1,Math.Abs(xJet / _jetR));
+            double mrr = 0;
+            for(int i=0;i<mrrList.Count-1;i++)
+            {
+                double x1 = mrrList[i].Item1;
+                double x2 = mrrList[i + 1].Item1;
+                double mrr1 = mrrList[i].Item2;
+                double mrr2 = mrrList[i + 1].Item2;
+                if(xnorm>=x1 && xnorm<x2)
+                {
+                    double m = (mrr2 - mrr1) / (x2 - x1);
+                    mrr = ((xnorm - x1) * m) + mrr1;
+                    break;
+                }
+            }
+            return mrr;
         }        
-        List<double> _mrrX;
-        private void BuildJet(int equationIndex,double dx)
+       
+        List<Tuple<double, double>> mrrList;
+        //build jet from normalized csv scan of jet. x and r normalized to 1
+        private void BuildJet(string csvFilename)
         {
-            double x = 0;
-            double y = 0;
-            var mrr = new MRRFunction(equationIndex);
-            var f = mrr.GetFunc();
-            _mrrX = new List<double>();
-            var maxSum = double.MinValue;
-            while (y <= 1)
+            var stringArr = CSVFileParser.ParseFile(csvFilename);
+            //x,mrr csvfilename 
+            int headerRowCount = 1;
+            int rowCount = stringArr.GetLength(0);
+            int colCount = stringArr.GetLength(1);
+            mrrList = new List<Tuple<double, double>>();
+            for(int i=headerRowCount;i<rowCount;i++)
             {
-                double sum = 0;
-                x = 0;
-                while(x<=1)
+                double x = 0;
+                
+                double mrr = 0;
+                if(double.TryParse(stringArr[i, 0], out x) && double.TryParse(stringArr[i, 1], out mrr))
                 {
-                    double r = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-                    double m = f(r);
-                    if(m>0)
-                    {
-                        sum += m;
-                    }
-                    x += dx;
-                }
-                if(sum>maxSum)
-                {
-                    maxSum = sum;
-                }
-                _mrrX.Add(sum);
-                y += dx;
+                    mrrList.Add(new Tuple<double, double>(x, mrr));
+                }               
             }
-            var lines = new List<string>();
-            var line = "";
-            for(int i=0;i<_mrrX.Count;i++)
-            {
-                _mrrX[i] /= maxSum;
-                line = _mrrX[i].ToString();
-                lines.Add(line);
-            }
-           
-           
-            FileIO.Save(lines, "mrrGridTest.csv");
+            
         }
-        public List<Ray2> JetRays;
-        double _jetR;
-        double _dx;
-        double _meshSize;
-
-        public XSecJet( int equationIndex,double jetDiameter,double pointSpacing)
+        void BuildJet()
         {
-            _jetR = jetDiameter/2;
-            _dx = .001;
-            BuildJet(equationIndex, _dx);
-            _meshSize = pointSpacing;
-            JetRays = new List<Ray2>();
+            mrrList = new List<Tuple<double, double>>();
+            mrrList.Add(new Tuple<double, double>(0,1));
+            mrrList.Add(new Tuple<double, double>(1, 1));
+        }
+        double _jetR;
+        //build jet from csv file scan profile normalized 
+        public XSecJet(string csvJetProfile, double jetDiameter)
+        {
+            _jetR = jetDiameter / 2.0;
+            BuildJet(csvJetProfile);
+        }
+        public XSecJet(double jetDiameter)
+        {
+            _jetR = jetDiameter / 2.0;
+            BuildJet();
         }
       
     }

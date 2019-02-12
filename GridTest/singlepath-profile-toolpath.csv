@@ -1,2 +1,2 @@
-pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction(+,-)
-1,0,0,50,1,
+pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction(+-)
+1,0,0,50,1,1,0,.05

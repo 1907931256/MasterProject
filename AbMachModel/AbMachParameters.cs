@@ -10,10 +10,11 @@ namespace AbMachModel
     {
          public AbMachOperation Operation { get;  set; }
          public RunInfo RunInfo { get;  set;}
-         public RemovalRate RemovalRate { get; set;}
+         public RemovalRate RemovalRate { get; set;} 
          public Material Material { get;  set;}
          public AbMachJet AbMachJet { get;  set;}
          public DepthInfo DepthInfo { get;  set;}
+         public double SmoothingWindowWidth { get; set; }
          public double MeshSize { get { return _meshSize; } set { _meshSize = value; } }
          public double MrrNormalizeCoeff { get { return _mrrNormalizeCoeff; } }
         

@@ -13,7 +13,7 @@ namespace AbMachModel
         RunAsIs,
         NewFeedrates,
         NewMRR,
-
+        AdjustCritAngle
 
     }
 }

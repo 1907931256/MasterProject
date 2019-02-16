@@ -88,11 +88,12 @@
     <Compile Include="AbMachParameters.cs" />
     <Compile Include="AbMachParametersFile.cs" />
     <Compile Include="AbmachPoint.cs" />
-    <Compile Include="AbmachSimModel25D.cs" />
+    <Compile Include="ChannelModel.cs" />
     <Compile Include="AbmachSimModel2D.cs" />
     <Compile Include="AbmachSimModel3D.cs" />
     <Compile Include="AbmachVal.cs" />
     <Compile Include="DepthInfo.cs" />
+    <Compile Include="GridIntersect.cs" />
     <Compile Include="IAbmachModel.cs" />
     <Compile Include="MRREquation.cs" />
     <Compile Include="ModelRunTypeEnum.cs" />
@@ -106,6 +107,9 @@
     <Compile Include="RemovalRate.cs" />
     <Compile Include="RunInfo.cs" />
     <Compile Include="SurfaceInputType.cs" />
+    <Compile Include="XSecJet.cs" />
+    <Compile Include="XSectionGrid.cs" />
+    <Compile Include="XSectionProfile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

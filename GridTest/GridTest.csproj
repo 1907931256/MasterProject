@@ -47,6 +47,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="155_FLAT_TOP_33.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="190201-04 - TOP-33-BOT-10-COR-04 - 60deg_out.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="190201_03 _TOP_33_60deg_out.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="190207-11 - 0.040Dm-60deg-Xpos-16pass_out-target.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="App.config" />
     <None Include="BOT-profile-toolpath-depthmeasure-test-nick.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -56,6 +68,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dn005-dm040-60deg.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="gaussJet.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="halfcirclejet.csv">
@@ -73,11 +88,18 @@
     <None Include="top35.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="top_channel_model_profile.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AbMachModel\AbMachModelLib.csproj">
       <Project>{d5990262-cb79-4d17-ba92-1f0b0940d5a7}</Project>
       <Name>AbMachModelLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataLib\DataLib.csproj">
+      <Project>{0c6fa665-a531-4163-a318-5fa4f5a65e0f}</Project>
+      <Name>DataLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\File IO Library\FileIO\FileIOLib.csproj">
       <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>

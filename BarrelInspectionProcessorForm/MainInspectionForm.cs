@@ -2811,11 +2811,12 @@ namespace BarrelInspectionProcessorForm
                     var ofd = new OpenFileDialog();
                     ofd.Filter = "(*.csv)|*.csv";
                     ofd.Title = "Open Measurement Locations CSV file";
-                    int headerrowCount = 1;
+                    int firstDataRow = 1;
+                    int firstDataCol = 0;
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         depthLocationsFilename = ofd.FileName;
-                        var xsecToolpath = new ToolpathLib.XSecPathList(depthLocationsFilename, headerrowCount);
+                        var xsecToolpath = new ToolpathLib.XSecPathList(depthLocationsFilename, firstDataRow,firstDataCol);
                         MeasureDepths(ref xsecToolpath);
                         var lines = new List<string>();
                         lines.Add("input file: " + _inputFileName);

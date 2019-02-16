@@ -23,6 +23,23 @@ namespace ToolpathLib
             }
 
         }
+        public void AdjustFeedrates(CartData depthData,CartData targetData, double averagingWindow)
+        {
+            MeasureDepthsAtJetLocations(depthData, targetData, averagingWindow);
+            foreach (XSectionPathEntity xpe in this)
+            {
+                if (xpe.TargetDepth != 0)
+                {
+                    double feedRatio = (xpe.CurrentDepth / xpe.TargetDepth);
+                    double currentF = xpe.Feedrate;
+                    xpe.Feedrate = currentF * feedRatio;
+                }
+                else
+                {
+                    xpe.Feedrate = xpe.Feedrate;
+                }
+            }
+        }
         public void MeasureDepthsAtJetLocations(CartData depthData)
         {
             foreach (XSectionPathEntity xpe in this)
@@ -48,6 +65,67 @@ namespace ToolpathLib
                         break;
                     }
                 }
+            }
+        }
+        public void MeasureDepthsAtJetLocations(CartData depthData,CartData targetData, double averagingWindow)
+        {
+            foreach (XSectionPathEntity xpe in this)
+            {
+                double xStart = xpe.CrossLoc - averagingWindow / 2;
+                double xEnd = xpe.CrossLoc + averagingWindow / 2;
+                double xSum = 0;
+                int count = 0;
+                for (int i = 1; i < depthData.Count; i++)
+                {
+                    if ((depthData[i].X > xStart && depthData[i].X <= xEnd) || (depthData[i].X <= xStart && depthData[i].X > xEnd))
+                    {
+                        count++;
+                        xSum += depthData[i].Y;
+                    }
+                }
+                if (count > 0)
+                {
+                    xSum /= count;
+                }
+                xpe.CurrentDepth = xSum;
+                count = 0;
+                xSum = 0;
+                for (int i = 1; i < targetData.Count; i++)
+                {
+                    if ((targetData[i].X > xStart && targetData[i].X <= xEnd) || (targetData[i].X <= xStart && targetData[i].X > xEnd))
+                    {
+                        count++;
+                        xSum += targetData[i].Y;
+                    }
+                }
+                if (count > 0)
+                {
+                    xSum /= count;
+                }
+                xpe.TargetDepth = xSum;
+            }
+        }
+        public void MeasureDepthsAtJetLocations(CartData depthData,double averagingWindow)
+        {
+            foreach (XSectionPathEntity xpe in this)
+            {
+                double xStart = xpe.CrossLoc-averagingWindow/2;
+                double xEnd = xpe.CrossLoc + averagingWindow / 2;
+                double xSum = 0;
+                int count = 0;
+                for (int i = 1; i < depthData.Count; i++)
+                {
+                    if((depthData[i].X>xStart && depthData[i].X<=xEnd )||(depthData[i].X <= xStart && depthData[i].X > xEnd))
+                    {
+                        count++;
+                        xSum += depthData[i].Y;
+                    }
+                }
+                if(count>0)
+                {
+                    xSum /= count;
+                }
+                xpe.CurrentDepth = xSum;
             }
         }
         void SortByPassExcOrder()
@@ -79,26 +157,25 @@ namespace ToolpathLib
         {
 
         }
-        public XSecPathList(string csvFilename,int headerRowCount)
+        public XSecPathList(string csvFilename,int firstDataRowZerobase, int firstDataColZerobase)
         {
             var stringArr = FileIOLib.CSVFileParser.ParseFile(csvFilename);
             //pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction(+,-),Depth,TargetDepth
-            if (headerRowCount < 0)
-                headerRowCount = 0;
+             
             int colCount = stringArr.GetLength(1);
-            for(int i =headerRowCount;i<stringArr.GetLength(0);i++)
+            for(int i = firstDataRowZerobase; i<stringArr.GetLength(0);i++)
             {
                 double depth = 0;
                 double targetDepth = 0;
-                int.TryParse(stringArr[i,0], out int pathExOrder);
-                double.TryParse(stringArr[i, 1], out double xlocation);
-                double.TryParse(stringArr[i, 2], out double ylocation);
-                double.TryParse(stringArr[i, 3], out double feed);
-                int.TryParse(stringArr[i, 4], out int direction);
+                int.TryParse(stringArr[i, firstDataColZerobase], out int pathExOrder);
+                double.TryParse(stringArr[i, firstDataColZerobase+1], out double xlocation);
+                double.TryParse(stringArr[i, firstDataColZerobase+2], out double ylocation);
+                double.TryParse(stringArr[i, firstDataColZerobase+3], out double feed);
+                int.TryParse(stringArr[i, firstDataColZerobase+4], out int direction);
                 if(colCount==7)
                 {
-                    double.TryParse(stringArr[i, 5], out depth);
-                    double.TryParse(stringArr[i, 6], out targetDepth);
+                    double.TryParse(stringArr[i, firstDataColZerobase+5], out depth);
+                    double.TryParse(stringArr[i, firstDataColZerobase+6], out targetDepth);
                 }
                 if(pathExOrder>0)
                 {
@@ -124,7 +201,26 @@ namespace ToolpathLib
         public double AlongLocation { get; set; }
         public Vector2 JetVector { get; set; }
         public double CrossLoc { get; set; }       
-        public double Feedrate { get; set; }
+        public double Feedrate
+        {
+            get
+            {
+                if (FeedHistory.Count > 0)
+                {
+                    return FeedHistory[FeedHistory.Count - 1];
+                }
+                else
+                {
+                    return 0;
+                }
+
+            }
+            set
+            {
+                FeedHistory.Add(value);
+            }
+        }
+
         public int PassExecOrder { get; set; }
         public int Direction { get; set; }
         public double TargetDepth { get; set; }
@@ -132,10 +228,12 @@ namespace ToolpathLib
         public Vector2 SurfNormal { get; set; }
         public int CurrentRun { get; set; }
         public int TargetRunTotal { get; set; }
+        public List<double> FeedHistory { get; set; }
         public XSectionPathEntity()
         {
             SurfNormal = new Vector2(0,  1);
             JetVector = new Vector2(0, 1);
+            FeedHistory = new List<double>();
         }
     }
     public  class PathEntity

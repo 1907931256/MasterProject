@@ -18,6 +18,25 @@ namespace DataLib
         {
             return Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.X);
         }
+        public double AverageYValueInBox(BoundingBox boundingBox)
+        {
+            double average = 0;
+            int count = 0;
+            foreach(var point in this)
+            {
+                if(boundingBox.Contains(point))
+                {
+                    average += point.Y;
+                    count++;
+                }
+            }
+            if(count!=0)
+            {
+                average /= count;
+            }
+            return average;
+
+        }
         public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double radius)
         {
             var centers = DataUtilities.FindCirclesofKnownR(pt1, pt2, radius);

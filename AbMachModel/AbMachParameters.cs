@@ -16,40 +16,13 @@ namespace AbMachModel
          public DepthInfo DepthInfo { get;  set;}
          public double SmoothingWindowWidth { get; set; }
          public double MeshSize { get { return _meshSize; } set { _meshSize = value; } }
-         public double MrrNormalizeCoeff { get { return _mrrNormalizeCoeff; } }
+         
         
         public static string FileExt = ".prx";
         public static string FileFilter = "XML Param files (*.prx)|*.prx";
-        private double _mrrNormalizeCoeff;
+       
         double _meshSize;
-        public void calcNormalCoeff(double _meshSize)
-        {
-            double rmax = AbMachJet.Diameter/2;
-            double r = 0;
-
-            double dr;
-            if (_meshSize > 0)
-            {
-                dr = _meshSize;
-            }
-            else
-            {
-                dr = rmax / 50;
-            }
-            double mrrSum = 0;
-            
-            var mrrValues=new List<double>();
-            while(r<=rmax)
-            {
-                 mrrValues.Add (AbMachJet.RemovalRateAt(r));                
-                r += dr;               
-            }
-            for (int i = 0; i < mrrValues.Count; i++)
-            {
-                mrrSum += mrrValues[i];
-            }
-            _mrrNormalizeCoeff =  (mrrSum * 2);
-        }
+        
         internal AbMachParameters(AbMachOperation op, RunInfo runInfo, RemovalRate removalRate, Material mat, AbMachJet abmachJet,DepthInfo depthInfo,double meshSize)
         {
            
@@ -60,7 +33,7 @@ namespace AbMachModel
             AbMachJet = abmachJet;
             DepthInfo = depthInfo;
             _meshSize = meshSize;
-            calcNormalCoeff(_meshSize);
+            
         }
         internal AbMachParameters()
         {
@@ -72,7 +45,6 @@ namespace AbMachModel
             Operation = AbMachOperation.OTHER;
             DepthInfo = new DepthInfo();
             
-            calcNormalCoeff(_meshSize);
         }
 
     }

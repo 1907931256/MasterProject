@@ -11,11 +11,17 @@ namespace FileIOLib
         static public string[] Split(string line)
         {
             var seps = new string[2] { ",", ":" };
-            var words = line.Split(seps, StringSplitOptions.RemoveEmptyEntries);
+            var words = line.Split(seps, StringSplitOptions.None);
+            return words;
+        }
+        static public string[] Split(string line,string[] seperators)
+        {             
+            var words = line.Split(seperators, StringSplitOptions.None);
             return words;
         }
         static public List<string> ReadDataTextFile(string fileName)
         {
+           
             List<string> file = new List<string>();
             try{
                 if (fileName!= null && fileName != ""  && System.IO.File.Exists(fileName)) 
@@ -36,9 +42,8 @@ namespace FileIOLib
                 }
                 return file;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+            catch (Exception )
+            {                
                 throw;
             }
         }
@@ -79,9 +84,8 @@ namespace FileIOLib
                 }
                 return file;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+            catch (Exception )
+            {                
                 throw;
             }
            
@@ -106,7 +110,10 @@ namespace FileIOLib
             {
                 throw new System.IO.IOException("File in use. Please close File and try again.");
             }
-
+            catch(Exception)
+            {
+                throw;
+            }
         }
         static public void Save(List<String> file, string fileName)
         {
@@ -128,7 +135,10 @@ namespace FileIOLib
             {
                 throw new System.IO.IOException("File in use. Please close File and try again.");
             }
-           
+            catch (Exception)
+            {
+                throw;
+            }
         }
       
     }

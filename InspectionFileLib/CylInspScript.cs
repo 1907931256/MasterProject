@@ -10,37 +10,31 @@ namespace InspectionLib
 {
     public class CartInspScript:InspectionScript
     {
-       
+        public XYZBCMachPosition StartLocation { get; set; }
+        public XYZBCMachPosition EndLocation { get; set; }
         public CartInspScript(DataLib.ScanFormat scanFormat)
         {
             ScanFormat = scanFormat;
-            StartLocation = new MachinePosition(MachineGeometry.XYZ);
-            EndLocation = new MachinePosition(MachineGeometry.XYZ);
+            StartLocation = new XYZBCMachPosition(0,0,0,0,0);
+            EndLocation = new XYZBCMachPosition(0,0,0,0,0);
         }
     }
     public class CylInspScript : InspectionScript
     {
-        public double StartZ { get { return StartLocation.Z; } }
-        public double EndZ { get { return EndLocation.Z; } }
-        public double StartThetaRad { get { return Geometry.ToRadians(StartLocation.Adeg); } }
-        public double EndThetaRad { get { return Geometry.ToRadians(EndLocation.Adeg); } }
+        public XAMachPostion StartLocation { get; set; }
+        public XAMachPostion EndLocation { get; set; }
+       
         public double AngleIncrement { get; set; }
         public double AxialIncrement { get; set; }
         public int ZDir { get { return _zDir; } }
         public int[] Grooves;       
         public int PointsPerRevolution { get { return _pointsPerRev; } }
         public int ThetaDir { get { return _thDir; } }
-        public double[] ExtractLocations { get { return _extractX; } set { _extractX = value; } }
-
-        
-        
         protected int _zDir;
-        
-        
         int _pointsPerRev;
         int _thDir;
         double[] _extractX;
-        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double pitchInch, int pointsPerRevolution,CalDataSet calDataSet)
+        public CylInspScript(DataLib.ScanFormat scanformat, XAMachPostion start, XAMachPostion end, double pitchInch, int pointsPerRevolution,CalDataSet calDataSet)
         {
             init(scanformat, start, end);
             CalDataSet = calDataSet;
@@ -48,7 +42,7 @@ namespace InspectionLib
             CalcIncrement(pitchInch, pointsPerRevolution);
         }
         //spiral ring constructor
-        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double pitchInch, int pointsPerRevolution) 
+        public CylInspScript(DataLib.ScanFormat scanformat, XAMachPostion start, XAMachPostion end, double pitchInch, int pointsPerRevolution) 
         {
             init(scanformat, start, end);
             _pointsPerRev = pointsPerRevolution;
@@ -59,52 +53,52 @@ namespace InspectionLib
             
             AxialIncrement = pitchInch / _pointsPerRev;
             AngleIncrement = Math.PI * 2 / _pointsPerRev;
-            _thDir = Math.Sign(EndThetaRad - StartThetaRad);
+            _thDir = Math.Sign(EndLocation.Adeg - StartLocation.Adeg);
             if (_thDir == 0)
                 _thDir = 1;
-            _zDir = Math.Sign(EndZ - StartZ);
+            _zDir = Math.Sign(EndLocation.X - StartLocation.X);
             if (_zDir == 0)
                 _zDir = 1;
         }
         
 
        //groove land constructor
-        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double axialInc, int[] grooves) 
+        public CylInspScript(DataLib.ScanFormat scanformat, XAMachPostion start, XAMachPostion end, double axialInc, int[] grooves) 
         {
             init(scanformat, start, end);
             AxialIncrement = axialInc;
-            _zDir = Math.Sign(EndZ - StartZ);
+            _zDir = Math.Sign(EndLocation.X - StartLocation.X);
             if (_zDir == 0)
                 _zDir = 1;
             Grooves = grooves;
         }
         //axial constructor
-        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end, double axialInc) 
+        public CylInspScript(DataLib.ScanFormat scanformat, XAMachPostion start, XAMachPostion end, double axialInc) 
         {
             init(scanformat, start, end);
 
             AxialIncrement = axialInc;
-            _zDir = Math.Sign(EndZ - StartZ);
+            _zDir = Math.Sign(EndLocation.X - StartLocation.X);
             if (_zDir == 0)
                 _zDir = 1;
         }
-        public CylInspScript(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end)
+        public CylInspScript(DataLib.ScanFormat scanformat, XAMachPostion start, XAMachPostion end)
         {
             init(scanformat, start, end);
         }
         public CylInspScript(DataLib.ScanFormat scanFormat)
         {
             ScanFormat = scanFormat;
-            StartLocation = new MachinePosition(MachineGeometry.CYLINDER);
-            EndLocation = new MachinePosition(MachineGeometry.CYLINDER);
+            StartLocation = new XAMachPostion();
+            EndLocation = new XAMachPostion();
         }
-        void init(DataLib.ScanFormat scanformat, MachinePosition start, MachinePosition end)
+        void init(DataLib.ScanFormat scanformat, XAMachPostion start, XAMachPostion end)
         {
             ScanFormat = scanformat;
             StartLocation = start;
             EndLocation = end;            
             ProbeSetup = new ProbeController.ProbeSetup();
-            CalDataSet = new CalDataSet(0,0,0, ProbeController.ProbeDirection.ID);
+            CalDataSet = new CalDataSet(0,0, ProbeController.ProbeDirection.ID);
         }
     }
 }

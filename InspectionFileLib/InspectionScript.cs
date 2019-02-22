@@ -27,17 +27,15 @@ namespace InspectionLib
        
         public ProbeSetup ProbeSetup { get; set; }
         public CalDataSet CalDataSet { get; set; }        
-        public MachinePosition StartLocation { get; set; }
-        public MachinePosition EndLocation { get; set; }
+        
         public InspectionScript()
         {
             FileName = InspectionScriptFile.TempFileName;
             ScanFormat = ScanFormat.RING;
-            OutputUnit = new MeasurementUnit(LengthUnitEnum.INCH);
+            OutputUnit = new MeasurementUnit(LengthUnit.INCH);
             CalDataSet = new CalDataSet();
             ProbeSetup = new ProbeSetup();
-            StartLocation = new MachinePosition(MachineGeometry.XYZBC);
-            EndLocation = new MachinePosition(MachineGeometry.XYZBC);
+            
         }
     }
 }

@@ -192,8 +192,8 @@ namespace AbMachModel
             ModelPathEntity mpeDepth = nearestPathEntity(path, depthInfo.LocationOfDepthMeasure);
             double currentDepth = getDepth(mpeDepth, depthInfo);
             double currentDepthPerRun = currentDepth/runInfo.CurrentRun;
-            double currentTargetDepthPerRun = depthInfo.TargetDepthAtLocation/runInfo.CurrentRun;
-            depthInfo.CurrentDepthAtLocation.Add(currentDepth);
+            double currentTargetDepthPerRun = depthInfo.TargetDepth/runInfo.CurrentRun;
+            depthInfo.CurrentDepth=currentDepth;
             
             if(currentDepth != 0)
             {

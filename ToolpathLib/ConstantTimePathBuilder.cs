@@ -89,7 +89,7 @@ namespace ToolpathLib
 
             return mpe;
         }
-        private CNCLib.MachinePosition interpolatePosition(PathEntity p1, PathEntity p2, double currentTime)
+        private CNCLib.XYZBCMachPosition interpolatePosition(PathEntity p1, PathEntity p2, double currentTime)
         {
             double dx = p2.Position.X - p1.Position.X;
             double dy = p2.Position.Y - p1.Position.Y;
@@ -97,7 +97,7 @@ namespace ToolpathLib
             double db = p2.Position.Bdeg - p1.Position.Bdeg;
             double dc = p2.Position.Cdeg - p1.Position.Cdeg;
             double t = interpolateTime(p1, currentTime);
-            var Position = new CNCLib.MachinePosition(CNCLib.MachineGeometry.XYZBC);
+            var Position = new CNCLib.XYZBCMachPosition();
             Position.X  = p1.Position.X + t * dx;
             Position.Y  = p1.Position.Y + t * dy;
             Position.Z = p1.Position.Z + t * dz;

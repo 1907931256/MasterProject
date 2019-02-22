@@ -91,6 +91,7 @@
             this.openRawDataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.processedCSVFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OpenDXFFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProcessedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProfileDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDepthDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -167,7 +168,6 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.OpenDXFFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -657,6 +657,13 @@
             this.processedCSVFileToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
             this.processedCSVFileToolStripMenuItem.Text = "Processed CSV file";
             this.processedCSVFileToolStripMenuItem.Click += new System.EventHandler(this.processedCSVFileToolStripMenuItem_Click);
+            // 
+            // OpenDXFFileToolStripMenuItem
+            // 
+            this.OpenDXFFileToolStripMenuItem.Name = "OpenDXFFileToolStripMenuItem";
+            this.OpenDXFFileToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.OpenDXFFileToolStripMenuItem.Text = "DXF File ";
+            this.OpenDXFFileToolStripMenuItem.Click += new System.EventHandler(this.OpenDXFFileToolStripMenuItem_Click);
             // 
             // saveProcessedFileToolStripMenuItem
             // 
@@ -1238,11 +1245,11 @@
             // 
             this.comboBoxProbeType.FormattingEnabled = true;
             this.comboBoxProbeType.Items.AddRange(new object[] {
-            "SI Distance",
-            "Line Scan"});
+            "SI",
+            "LJ"});
             this.comboBoxProbeType.Location = new System.Drawing.Point(99, 300);
             this.comboBoxProbeType.Name = "comboBoxProbeType";
-            this.comboBoxProbeType.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxProbeType.Size = new System.Drawing.Size(52, 21);
             this.comboBoxProbeType.TabIndex = 10;
             this.comboBoxProbeType.SelectedIndexChanged += new System.EventHandler(this.comboBoxProbeType_SelectedIndexChanged);
             // 
@@ -1440,13 +1447,6 @@
             this.progressBarProcessing.Name = "progressBarProcessing";
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
-            // 
-            // OpenDXFFileToolStripMenuItem
-            // 
-            this.OpenDXFFileToolStripMenuItem.Name = "OpenDXFFileToolStripMenuItem";
-            this.OpenDXFFileToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
-            this.OpenDXFFileToolStripMenuItem.Text = "DXF File ";
-            this.OpenDXFFileToolStripMenuItem.Click += new System.EventHandler(this.OpenDXFFileToolStripMenuItem_Click);
             // 
             // MainInspectionForm
             // 

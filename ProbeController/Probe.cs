@@ -12,38 +12,37 @@ namespace ProbeController
     
     public class Probe
     {
-        
-        public string Name { get; set; }
-        public string SerialNumber { get; set; }
         public double StartMeasuringRange { get; set; }        
         public double MeasuringRange { get; set; }
-         
+        public ProbeType Type { get; private set; } 
         public MeasurementUnit MeasurementUnit {get;set;}
         public static ProbeType GetProbeType(string probeType)
         {
-            var type = ProbeType.LINE_SCAN;
-            if (probeType == "SI_DISTANCE")
-                type = ProbeType.SI_DISTANCE;
-            if (probeType == "LINE_SCAN")
-                type = ProbeType.LINE_SCAN;
+            var pt = probeType.ToUpper();
+            var type = ProbeType.LJ;
+            if (probeType.Contains("SI"))
+                type = ProbeType.SI;
+            if (probeType.Contains("LJ"))
+                type = ProbeType.LJ;
             return type;
         }
         public Probe()
         {
-            Name = "Not Connected";
-            SerialNumber = "";
-            MeasurementUnit = new MeasurementUnit(LengthUnitEnum.MICRON);
+            this.Type = ProbeType.SI;
+            MeasurementUnit = new MeasurementUnit(LengthUnit.MICRON);
             StartMeasuringRange = 0;
             MeasuringRange = 0;
         }
-        public Probe(Probe probe)
+        public Probe(string probeType)
         {
-            Name = probe.Name;         
-            
-            StartMeasuringRange = probe.StartMeasuringRange;
-            MeasuringRange = probe.MeasuringRange;            
+            this.Type = GetProbeType(probeType);
+            //StartMeasuringRange = probe.StartMeasuringRange;
+            //MeasuringRange = probe.MeasuringRange;            
         }
-       
+        public Probe(ProbeType probeType)
+        {
+            this.Type = probeType;
+        }
         /// <summary>
         /// returns probe description as multiline string
         /// </summary>
@@ -51,9 +50,9 @@ namespace ProbeController
         public string Description()
         {
             StringBuilder description = new StringBuilder();
-            description.Append("Model:" + Name+'\r' +'\n');
+           // description.Append("Model:" + Name+'\r' +'\n');
            
-            description.Append("SerialNumber:" + SerialNumber + '\r' + '\n');
+           // description.Append("SerialNumber:" + SerialNumber + '\r' + '\n');
             description.Append("Start Measuring Range(in):" + StartMeasuringRange.ToString("f4") + '\r'+'\n');
             description.Append("Measuring Range(in):" + MeasuringRange.ToString("f4")+ '\r'+'\n');
             

@@ -16,42 +16,21 @@ namespace InspectionLib
         public PointCyl[] LandPoints { get; private set; }
 
         
-        public PointCyl GetMinRadiusDualProbe(CylInspScript script, double[] data,int windowHalfWidth)
-        {
-            double minDiam = double.MaxValue;
-
-            for(int i=windowHalfWidth;i<data.GetUpperBound(0)-windowHalfWidth;i++)
-            {
-                double sum = 0;
-                for(int j=i-windowHalfWidth;j<i+windowHalfWidth;j++)
-                {
-                    sum += (data[j]);
-                }
-                sum /= (windowHalfWidth * 2);
-                if(sum<minDiam)
-                {
-                    minDiam = sum;
-                }
-            }
-            minDiam += script.CalDataSet.ProbeSpacingInch;
-            return new PointCyl(minDiam / 2, 0, script.StartZ);
-        }
-
-        override protected CylData GetDualProbeData(CylInspScript script, double[] data)
+      
+        override protected CylData GetData(CylInspScript script, double[] data)
         {
             try
             {
 
                 var points = new CylData();
-
+                double probeSpacing = script.CalDataSet.ProbeSpacingInch;
                 int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
-                int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
+               
                 double minDiam = double.MaxValue;
                 for (int i = 0; i < pointCt; i++)
                 {
-                    var z = script.StartZ;
-                    var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
-                    int probe2Index = (i + indexShift) % script.PointsPerRevolution;
+                    var z = script.StartLocation.X;
+                    var theta = script.ThetaDir * i * script.AngleIncrement + Geometry.ToRadians(script.StartLocation.Adeg);                    
 
                     var diam = data[i];
                     var sum = data[i];
@@ -59,7 +38,7 @@ namespace InspectionLib
                     {
                         minDiam = sum;
                     }
-                    var pt1 = new PointCyl(sum / 2.0, theta, z, i);
+                    var pt1 = new PointCyl((probeSpacing+ sum) / 2.0, theta, z, i);
 
                     points.Add(pt1);
 
@@ -73,35 +52,14 @@ namespace InspectionLib
                 throw;
             }
         }
-        override protected CylData GetSingleProbeData(CylInspScript script, double[] data)
-        {
-            try
-            {
-                var points = new CylData();
-                for (int i = 0; i < data.Length; i++)
-                {
-                    var z = script.StartZ;
-                    var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
-                    var r = data[i];
-                    var pt = new PointCyl(r, theta, z, i);
-                    points.Add(pt);
-                }
-                points.NominalMinDiam = script.CalDataSet.NominalRadius * 2;
-                return points;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        
         
         /// <summary>
         /// build ring data from raw data and auto find lands
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildRingFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData)
+        InspDataSet BuildRingFromRadialData(CylInspScript script, double[] rawInputData)
         {
             try
             {
@@ -123,7 +81,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
         /// <param name="landPointArr"></param>
-        InspDataSet BuildRingFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData, PointCyl[] landPointArr)
+        InspDataSet BuildRingFromRadialData(CylInspScript script, double[] rawInputData, PointCyl[] landPointArr)
         {
             try
             {
@@ -148,11 +106,11 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, DataOutputOptions options)
         {
             try
             {
-                Init(options, rawDataSet.Filename);
+                Init(options);
                 var dataSet = BuildRingFromRadialData(script, rawDataSet);               
                 return dataSet;
             }
@@ -170,11 +128,11 @@ namespace InspectionLib
         /// <param name="rawDataSet"></param>
         /// <param name="landPointArr"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, PointCyl[] landPointArr, DataOutputOptions options)
+        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, PointCyl[] landPointArr, DataOutputOptions options)
         {
             try
             {
-                Init(options, rawDataSet.Filename);      
+                Init(options);      
                 var dataSet = BuildRingFromRadialData(script, rawDataSet, landPointArr);
                
                 return dataSet;

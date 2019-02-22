@@ -30,47 +30,22 @@ namespace InspectionLib
         long _id;
         protected BoundingBox _boundingBox;
 
-        protected virtual CylData GetDualProbeData(CylInspScript script, double[] data)
+        protected virtual CylData GetData(CylInspScript script, double[] data)
         {
            return new CylData();
-        }
-        protected virtual CylData GetSingleProbeData(CylInspScript script, double[] data)
+        }       
+        protected PointCyl GetPoint(int i, CylInspScript script, double r)
         {
-            return new CylData();
-        }
-       
-        protected CylData GetUncorrectedData(CylInspScript script, KeyenceLineScanDataSet rawInputData)
-        {
-            try
-            {
-                var probeData = new CylData();
-                
-
-                return probeData;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        protected CylData GetUncorrectedData(CylInspScript script, KeyenceSiDataSet rawInputData)
+            var z = script.ZDir * i * script.AxialIncrement + script.StartLocation.X;
+            var theta = script.ThetaDir * i * script.AngleIncrement + Geometry.ToRadians(script.StartLocation.Adeg);
+            var pt = new PointCyl(r, theta, z, i);
+            return pt;
+        }        
+        protected CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
         {
             try
-            {
-                var probeData = new CylData();
-
-
-                if (script.ProbeSetup.UseDualProbeAve)
-                {
-                    probeData = GetDualProbeData(script, rawInputData.GetData());
-                }
-                else
-                {
-                    probeData = GetSingleProbeData(script, rawInputData.GetData());
-                }
-
-                return probeData;
+            {               
+                return GetData(script, rawInputData);              
             }
             catch (Exception)
             {
@@ -440,14 +415,14 @@ namespace InspectionLib
         /// </summary>
         /// <param name="options"></param>
         /// <param name="fileName"></param>
-        protected void Init(DataOutputOptions options, string fileName)
+        protected void Init(DataOutputOptions options)
         {
             try
             {
                 _options = options;
-                _inputFileName = fileName;
+                //_inputFileName = fileName;
                 _nominalRadius = _barrel.DimensionData.ActualLandDiam / 2.0;
-                _fileNoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);                
+               // _fileNoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);                
                 _id = DateTime.Now.ToBinary();
             }
             catch (Exception)

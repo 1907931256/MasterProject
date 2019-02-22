@@ -31,7 +31,6 @@
             this.labelFileName = new System.Windows.Forms.Label();
             this.labelFirstColumn = new System.Windows.Forms.Label();
             this.labelFirstRow = new System.Windows.Forms.Label();
-            this.labelColCount = new System.Windows.Forms.Label();
             this.dataGridViewImport = new System.Windows.Forms.DataGridView();
             this.panelDataGrid = new System.Windows.Forms.Panel();
             this.comboBoxMethod = new System.Windows.Forms.ComboBox();
@@ -40,13 +39,10 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonBrowse = new System.Windows.Forms.Button();
             this.numericUpDownFirstRow = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownColCount = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownFirstCol = new System.Windows.Forms.NumericUpDown();
-            this.buttonClose = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewImport)).BeginInit();
             this.panelDataGrid.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstRow)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownColCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstCol)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,15 +72,6 @@
             this.labelFirstRow.Size = new System.Drawing.Size(51, 13);
             this.labelFirstRow.TabIndex = 4;
             this.labelFirstRow.Text = "First Row";
-            // 
-            // labelColCount
-            // 
-            this.labelColCount.AutoSize = true;
-            this.labelColCount.Location = new System.Drawing.Point(9, 84);
-            this.labelColCount.Name = "labelColCount";
-            this.labelColCount.Size = new System.Drawing.Size(73, 13);
-            this.labelColCount.TabIndex = 6;
-            this.labelColCount.Text = "Column Count";
             // 
             // dataGridViewImport
             // 
@@ -129,7 +116,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(286, 145);
+            this.buttonOK.Location = new System.Drawing.Point(368, 145);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 11;
@@ -149,7 +136,7 @@
             // 
             // buttonBrowse
             // 
-            this.buttonBrowse.Location = new System.Drawing.Point(205, 145);
+            this.buttonBrowse.Location = new System.Drawing.Point(287, 145);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
             this.buttonBrowse.TabIndex = 13;
@@ -159,76 +146,26 @@
             // 
             // numericUpDownFirstRow
             // 
-            this.numericUpDownFirstRow.Location = new System.Drawing.Point(98, 25);
-            this.numericUpDownFirstRow.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.numericUpDownFirstRow.Location = new System.Drawing.Point(98, 30);
             this.numericUpDownFirstRow.Name = "numericUpDownFirstRow";
             this.numericUpDownFirstRow.Size = new System.Drawing.Size(52, 20);
             this.numericUpDownFirstRow.TabIndex = 14;
-            this.numericUpDownFirstRow.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.numericUpDownFirstRow.ValueChanged += new System.EventHandler(this.numericUpDownFirstRow_ValueChanged);
-            // 
-            // numericUpDownColCount
-            // 
-            this.numericUpDownColCount.Location = new System.Drawing.Point(98, 77);
-            this.numericUpDownColCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownColCount.Name = "numericUpDownColCount";
-            this.numericUpDownColCount.Size = new System.Drawing.Size(52, 20);
-            this.numericUpDownColCount.TabIndex = 14;
-            this.numericUpDownColCount.Value = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            this.numericUpDownColCount.ValueChanged += new System.EventHandler(this.numericUpDownColCount_ValueChanged);
             // 
             // numericUpDownFirstCol
             // 
-            this.numericUpDownFirstCol.Location = new System.Drawing.Point(98, 51);
-            this.numericUpDownFirstCol.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.numericUpDownFirstCol.Location = new System.Drawing.Point(98, 56);
             this.numericUpDownFirstCol.Name = "numericUpDownFirstCol";
             this.numericUpDownFirstCol.Size = new System.Drawing.Size(52, 20);
             this.numericUpDownFirstCol.TabIndex = 14;
-            this.numericUpDownFirstCol.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.numericUpDownFirstCol.ValueChanged += new System.EventHandler(this.numericUpDownFirstCol_ValueChanged);
-            // 
-            // buttonClose
-            // 
-            this.buttonClose.Location = new System.Drawing.Point(368, 145);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 15;
-            this.buttonClose.Text = "Close";
-            this.buttonClose.UseVisualStyleBackColor = true;
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
             // ImportFileDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(536, 447);
-            this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.numericUpDownFirstCol);
-            this.Controls.Add(this.numericUpDownColCount);
             this.Controls.Add(this.numericUpDownFirstRow);
             this.Controls.Add(this.buttonBrowse);
             this.Controls.Add(this.buttonCancel);
@@ -236,7 +173,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBoxMethod);
             this.Controls.Add(this.panelDataGrid);
-            this.Controls.Add(this.labelColCount);
             this.Controls.Add(this.labelFirstRow);
             this.Controls.Add(this.labelFirstColumn);
             this.Controls.Add(this.labelFileName);
@@ -248,7 +184,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewImport)).EndInit();
             this.panelDataGrid.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstRow)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownColCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstCol)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -259,7 +194,6 @@
         private System.Windows.Forms.Label labelFileName;
         private System.Windows.Forms.Label labelFirstColumn;
         private System.Windows.Forms.Label labelFirstRow;
-        private System.Windows.Forms.Label labelColCount;
         private System.Windows.Forms.DataGridView dataGridViewImport;
         private System.Windows.Forms.Panel panelDataGrid;
         private System.Windows.Forms.ComboBox comboBoxMethod;
@@ -268,8 +202,6 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonBrowse;
         private System.Windows.Forms.NumericUpDown numericUpDownFirstRow;
-        private System.Windows.Forms.NumericUpDown numericUpDownColCount;
         private System.Windows.Forms.NumericUpDown numericUpDownFirstCol;
-        private System.Windows.Forms.Button buttonClose;
     }
 }

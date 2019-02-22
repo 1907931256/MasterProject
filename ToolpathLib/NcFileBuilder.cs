@@ -134,23 +134,7 @@ namespace ToolpathLib
         }
         void appendPositions(PathEntity pe,ref StringBuilder line)
         {
-           switch( pe.Position.MachineGeometry)
-            {
-                case CNCLib.MachineGeometry.CYLINDER:
-                    line.Append("X");
-                    line.Append(pe.Position.X.ToString(machine.PFormat)+ machine.Sp);
-                    line.Append("A");
-                    line.Append(pe.Position.Adeg.ToString(machine.PFormat) + machine.Sp);
-                    break;
-                case CNCLib.MachineGeometry.XYZ:
-                    line.Append("X");
-                    line.Append(pe.Position.X.ToString(machine.PFormat) + machine.Sp);
-                    line.Append("Y");
-                    line.Append(pe.Position.Y.ToString(machine.PFormat) + machine.Sp);
-                    line.Append("Z");
-                    line.Append(pe.Position.Z.ToString(machine.PFormat) + machine.Sp);
-                    break;
-                case CNCLib.MachineGeometry.XYZBC:
+           
                     line.Append("X");
                     line.Append(pe.Position.X.ToString(machine.PFormat) + machine.Sp);
                     line.Append("Y");
@@ -161,8 +145,8 @@ namespace ToolpathLib
                     line.Append(pe.Position.Bdeg.ToString(machine.PFormat) + machine.Sp);
                     line.Append("C");
                     line.Append(pe.Position.Cdeg.ToString(machine.PFormat) + machine.Sp);
-                    break;
-            }
+                   
+           
         }
         void appendFeedrate(Feedrate f, ref StringBuilder line)
         {

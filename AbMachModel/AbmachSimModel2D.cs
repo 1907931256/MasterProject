@@ -123,7 +123,7 @@ namespace AbMachModel
                     int pathLength = _path.Count;
                     int progressTotal = runInfo.Iterations * runInfo.Runs;
                     double spFactor = spacingFactor();
-                    abmachParams.DepthInfo.CurrentDepthAtLocation.Clear();
+                    abmachParams.DepthInfo.CurrentDepth=0;
                     bool prevJetonState = false;
                     for (int iteration = 1; iteration <= runInfo.Iterations; iteration++)
                     {
@@ -168,7 +168,7 @@ namespace AbMachModel
 
                             }
 
-                            abmachParams.DepthInfo.CurrentDepthAtLocation.Add(getDepth(abmachParams.DepthInfo));
+                            abmachParams.DepthInfo.CurrentDepth=getDepth(abmachParams.DepthInfo);
                             //adjust mrr after each run
                             if (abmachParams.RunInfo.RunType == ModelRunType.NewMRR)
                             {
@@ -179,9 +179,9 @@ namespace AbMachModel
                                 }
                                 else
                                 {
-                                    targetDepth = abmachParams.DepthInfo.TargetDepthAtLocation;
+                                    targetDepth = abmachParams.DepthInfo.TargetDepth ;
                                 }
-                                abmachParams.RemovalRate = adjustMRR(abmachParams.DepthInfo.CurrentDepthAtLocation.Last(),
+                                abmachParams.RemovalRate = adjustMRR(abmachParams.DepthInfo.CurrentDepth ,
                                     _currentRemovalRate, runInfo,targetDepth);
                                 _currentRemovalRate = abmachParams.RemovalRate;
                             }

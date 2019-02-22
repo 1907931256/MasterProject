@@ -288,7 +288,7 @@ namespace ToolpathLib
         /// <param name="blockT">block type</param>
         /// <returns>true if line is part of path</returns>
        
-        private void calcSweepAngle(ref ArcPathEntity arc, CNCLib.MachinePosition startPoint)
+        private void calcSweepAngle(ref ArcPathEntity arc, CNCLib.XYZBCMachPosition startPoint)
         {
             Vector3 vRadius = new Vector3();
             double startAngle = 0;

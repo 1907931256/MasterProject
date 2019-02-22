@@ -5,23 +5,45 @@ using System.Text;
 using System.Threading.Tasks;
 using ProbeController;
 using BarrelLib;
-
 namespace InspectionLib
 {
-    public class CalDataBuilder : DataBuilder
+    public class CalDataBuilder 
     {
-        public CalDataSet BuildCalData(DataLib.ScanFormat scanFormat,MeasurementUnit outputUnits, int probeCount, double ringCalSizeInch, string filename,ProbeController.ProbeDirection probeDirection)
+        public static CalDataSet BuildCalData(InspectionScript script,double ringGageDiamInch, string CsvFileName)
         {
+            try
+            {
+                if (script is CylInspScript cylScript)
+                {                    
+                    double data = 0;
+                    if (cylScript.ProbeSetup.ProbeCount == 1)
+                    {
+                        var singleData = new KeyenceSiDataSet(script, CsvFileName);
+                        data = singleData.GetData()[0];
+                    }
+                    else
+                    {
+                        var dualData = new KeyenceDualSiDataSet(script, CsvFileName);
+
+                        data = dualData.GetData(DataLib.ScanFormat.CAL)[0];
+                    }
+                    return new CalDataSet(ringGageDiamInch, data, cylScript.ProbeSetup.ProbeDirection);
+                }
+                else
+                {
+                    return new CalDataSet(script.CalDataSet.NominalRadius);
+                }
+            }       
+            catch (System.IO.FileNotFoundException )
+            {
+                throw new Exception("Cal file not found");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             
-            var rawData = new KeyenceSiDataSet(scanFormat, outputUnits, probeCount, filename);
-            var data = rawData.GetData();
-            var cal = new CalDataSet(ringCalSizeInch, data[0], data[ 1],probeDirection);
-
-            return cal;
-        }
-        public CalDataBuilder(Barrel barrel) : base(barrel)
-        {
-
-        }
+        }       
     }
 }

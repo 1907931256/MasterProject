@@ -33,11 +33,11 @@ namespace ToolpathLib
             return ext;
         }
         
-        public CNCLib.MachinePosition getNewArcEndpoint(ArcPathEntity arc, double newSweepAngle)
+        public CNCLib.XYZBCMachPosition getNewArcEndpoint(ArcPathEntity arc, double newSweepAngle)
         {
             double coord1 = 0;
             double coord2 = 0;
-            var mp = arc.Position.Clone() as CNCLib.MachinePosition;
+            var mp = new CNCLib.XYZBCMachPosition();
             switch (arc.Type)
             {
                 case BlockType.CCWArc:

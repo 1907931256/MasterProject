@@ -92,12 +92,11 @@ namespace Abmach3TestForm
                 buttonRun.Enabled = true;
                 List<string> depths = new List<string>();
                 int runIter = 1;
-                foreach (double d in parms.DepthInfo.CurrentDepthAtLocation)
-                {
-                    string dr = runIter.ToString() + "," + d.ToString("f5");
-                    depths.Add(dr);
-                    runIter++;
-                }
+               
+                string dr = runIter.ToString() + "," + parms.DepthInfo.CurrentDepth.ToString("f5");
+                depths.Add(dr);
+                runIter++;
+                
                 textBox1.Lines = depths.ToArray();
             }
             catch (Exception ex)
@@ -397,7 +396,7 @@ namespace Abmach3TestForm
                 for (int i = 0; i <= 100; i++)
                 {
                     double di = i;
-                    var pos = new CNCLib.MachinePosition(MachineGeometry.XYZBC);
+                    var pos = new XYZBCMachPosition();
                     pos.X = .1 + (di / 200);
                     pos.Y = .5;
                     pos.Z = 1;
@@ -415,7 +414,7 @@ namespace Abmach3TestForm
                 for (int i = 0; i <= 200; i++)
                 {
                     double di = i;
-                    var pos = new CNCLib.MachinePosition(MachineGeometry.XYZBC);
+                    var pos = new XYZBCMachPosition();
                     pos.X = .5 ;
                     pos.Y = .1+ (di / 200);
                     pos.Z = 1;

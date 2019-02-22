@@ -28,19 +28,15 @@ namespace InspectionLib
                 {
                     throw new Exception("Data file length cannot equal zero");
                 }
-                script.AxialIncrement = Math.Abs((script.EndZ - script.StartZ) / len);
+                script.AxialIncrement = Math.Abs((script.EndLocation.X - script.StartLocation.X) / len);
                 if (script.AxialIncrement == 0)
                 {
                     throw new Exception("Axial increment cannot equal zero.");
                 }
 
                 for (int i = 0; i < len; i++)
-                {
-                    var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
-                    var theta = script.StartThetaRad;
-                    var r = (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0;
-                    var pt = new PointCyl(r, theta, z, i);
-                    points.Add(pt);
+                {                   
+                    points.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
                 }
                 var dataSet = new AxialDataSet(_barrel);
                 dataSet.CorrectedCylData = points;
@@ -52,12 +48,12 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildFromAxial(CylInspScript script, KeyenceSiDataSet rawInputData)
+        InspDataSet BuildFromAxial(CylInspScript script, double[] rawInputData)
         {
             try
             {
                 Debug.WriteLine("building data from axial inspection");
-                var data = rawInputData.GetData();
+                var data = rawInputData;
                 return BuildAxialPoints(script, data);
 
             }
@@ -76,11 +72,11 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, DataOutputOptions options)
         {
             try
             {
-                Init(options, rawDataSet.Filename);                
+                Init(options);                
                 return BuildFromAxial(script, rawDataSet);
             }
             catch (Exception)

@@ -193,6 +193,10 @@ namespace BarrelLib
             DimensionData = new DimensionData(Type);
             TwistProfile = new TwistProfile(Type);
             BoreProfile = new BoreProfile(Type);
+            MachiningData = new MachiningData();
+            MinProfile = new XSectionProfile();
+            NomProfile = new XSectionProfile();
+            MaxProfile = new XSectionProfile();
         }
         public Barrel()
         {

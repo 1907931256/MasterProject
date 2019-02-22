@@ -10,12 +10,12 @@ using DataLib;
 namespace InspectionLib
 {
    
-    public abstract class RawDataFile<T>:List<T>
+    public abstract class RawDataFile
     {
         public string Filename { get; protected set; }
         public MeasurementUnit InputUnits { get; protected set; }
-        public MeasurementUnit OutputUnits { get; protected set; }
-        public int ProbeCount { get; protected set; }
+        public MeasurementUnit OutputUnits { get;  set; }
+        
         public RawDataFormat DataFormat { get; protected set; }
         public ScanFormat ScanFormat { get; protected set; }
         protected int _headerRowCount;
@@ -27,12 +27,19 @@ namespace InspectionLib
 
         }
     }
-    public class KeyenceLineScanDataSet : RawDataFile<GeometryLib.Vector2>
+    public class KeyenceLJDataSet : RawDataFile
     {
-        public GeometryLib.PointCyl ScanCenterLine { get; private set; }
+        List<GeometryLib.Vector2> data;
+        public int Count
+        {
+            get
+            {
+                return data.Count;
+            }
+        }
         public GeometryLib.Vector2[] GetData()
         {
-            return this.ToArray();
+            return data.ToArray();
         }
         void ProcessFile()
         {
@@ -45,7 +52,7 @@ namespace InspectionLib
                 {
                     throw new Exception("File does not contain data.");
                 }
-                this.AddRange(ExtractData(words));
+                data.AddRange(ExtractData(words));
             }
             catch (Exception)
             {
@@ -95,21 +102,20 @@ namespace InspectionLib
         }
         double _minValue;
         double _maxValue;
-        public KeyenceLineScanDataSet(ScanFormat format, MeasurementUnit outputUnit,
-           GeometryLib.PointCyl scanCenterline,double minValue,double maxValue, string CsvFileName)
+        public KeyenceLJDataSet(InspectionScript script, string CsvFileName)
         {
             try
             {
                 DataFormat = RawDataFormat.XY;
                 _firstDataRow = 0;
-                ScanFormat = format;
-                ScanCenterLine = scanCenterline;
+                ScanFormat = script.ScanFormat;
+                
                 _headerRowCount = 0;
-                _minValue = minValue;
-                _maxValue = maxValue;
+                _minValue = script.ProbeSetup.MinValue;
+                _maxValue = script.ProbeSetup.MaxValue;
                 Filename = CsvFileName;
-                OutputUnits = outputUnit;
-                InputUnits = new MeasurementUnit(LengthUnitEnum.INCH);
+                OutputUnits = script.OutputUnit;
+                InputUnits = new MeasurementUnit(LengthUnit.INCH);
                 ProcessFile();
             }
             catch (Exception)
@@ -119,17 +125,105 @@ namespace InspectionLib
             }
            
         }
+        public KeyenceLJDataSet()
+        {
+            DataFormat = RawDataFormat.XY;
+            _firstDataRow = 0;
+            ScanFormat = ScanFormat.LINE;
+            OutputUnits = new MeasurementUnit(LengthUnit.NANOX10);
+            InputUnits = new MeasurementUnit(LengthUnit.INCH);
+            data = new List<GeometryLib.Vector2>();
+        }
+    }
+    public class KeyenceDualSiDataSet
+    {
+        KeyenceSiDataSet probe1Data;
+        KeyenceSiDataSet probe2Data;
+        int probeIndexOffset;
+        double[] GetValues(bool getSum)
+        {
+            try
+            {
+                var count = Math.Min(probe1Data.Count, probe2Data.Count);
+                var values = new List<double>();
+                var data1 = probe1Data.GetData();
+                var data2 = probe2Data.GetData();
+                for (int i=0;i<count;i++)
+                {
+
+                    int probe2Index = (i + probeIndexOffset) % count;      
+                    
+                    if(getSum)
+                    {
+                        values.Add(data1[i] + data2[i]);
+                    }
+                    else
+                    {
+                        values.Add(data1[i] + data2[probe2Index]);
+                    }
+                    
+                }
+                return values.ToArray();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+      
+        public double[] GetData(ScanFormat format)
+        {
+            bool getSumValues = true;
+            switch(format)
+            {
+                case ScanFormat.AXIAL:
+                case ScanFormat.LAND:
+                case ScanFormat.GROOVE:
+                case ScanFormat.CAL:
+                    getSumValues = true;
+                    break;
+                case ScanFormat.RING:               
+                case ScanFormat.SPIRAL:
+                default:
+                    getSumValues = false;
+                    break;
+            }
+            return GetValues(getSumValues);
+        }
+        public KeyenceDualSiDataSet(InspectionScript inspScript, string CsvFileName)
+        {
+            if (inspScript is CylInspScript cylScript)
+            {
+                probeIndexOffset = (int)Math.Round(cylScript.PointsPerRevolution * (cylScript.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
+
+                probe1Data = new KeyenceSiDataSet(cylScript, CsvFileName, 1);
+                probe2Data = new KeyenceSiDataSet(cylScript, CsvFileName, 2);
+            }
+        }
+        public KeyenceDualSiDataSet()
+        {
+            probe1Data = new KeyenceSiDataSet();
+            probe2Data = new KeyenceSiDataSet();
+        }
     }
     /// <summary>
     /// holds raw sensor data 
     /// </summary>
-    public class KeyenceSiDataSet: RawDataFile<double>
+    public class KeyenceSiDataSet:RawDataFile
     {
-       
-       
+        List<double> data;
+        public int Count
+        {
+            get
+            {
+                return data.Count;
+            }
+        }
         public double[] GetData()
         {
-            return this.ToArray();
+            return data.ToArray();
         }
         void ScaleData(double scalingFactor)
         {
@@ -137,7 +231,7 @@ namespace InspectionLib
             {
                 for (int i = 0; i < this.Count; i++)
                 {
-                    this[i]*=scalingFactor;
+                    data[i]*=scalingFactor;
                 }
             }
             catch (Exception)
@@ -146,37 +240,8 @@ namespace InspectionLib
                 throw;
             }
         }
-        List<double> ExtractDualProbeData(string[,]words)
-        {
-            try
-            {
-                
-                var colList = new List<int>();
-                var pointList = new List<double>();
-                if (words.GetLength(0) < _firstDataRow)
-                {
-                    throw new Exception("Data rows not found");
-                }
-                int columnCount = words.GetUpperBound(1);
-                for (int i = _headerRowCount; i < _rowCount; i++)
-                {
-                    double result1 = 0;
-                    double result2 = 0;
-                    if (double.TryParse(words[i, 2], out result1) && double.TryParse(words[i, 3], out result2))
-                    {
-                        pointList.Add(result1 + result2);
-                    }
-                }
-                return pointList;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            
-        }
-        List<double> ExtractSingleProbeData(string[,] words)
+        
+        List<double> ExtractProbeData(string[,] words,int column)
         {
             try
             {
@@ -190,15 +255,13 @@ namespace InspectionLib
                 }
                 int columnCount = words.GetUpperBound(1);
                 for (int i = _headerRowCount; i < _rowCount; i++)
-                {                    
-                    foreach (int col in colList)
-                    {
-                        double result = 0;
-                        if (double.TryParse(words[i, col], out result))
-                        {
-                            pointList.Add(result);
-                        }
-                    }
+                {
+                     double result = 0;
+                     if (double.TryParse(words[i, column], out result))
+                     {
+                         pointList.Add(result);
+                     }
+                   
                 }
                 return pointList;
             }
@@ -208,37 +271,9 @@ namespace InspectionLib
             }
 
         }
-        MeasurementUnit GetMeasurementUnit(string[,] words)
-        {
-            try
-            {                               
-                var unitList = MeasurementUnitDictionary.MeasurementUnitNames();
-                var inputUnit = new MeasurementUnit(LengthUnitEnum.MICRON);
-                foreach (string unitStr in unitList)
-                {
-                    for (int i = 0; i < 6 ; i++)
-                    {
-                        for (int j = 0; j < words.GetLength(1); j++)
-                        {
-                            string upperw = words[i, j].ToUpper();
-                            if (upperw.Contains(unitStr))
-                            {                               
-                                inputUnit=  new MeasurementUnit(MeasurementUnitDictionary.GetUnits(unitStr));
-                                break;
-                            }                            
-                        }                       
-                    }                   
-                }
-                return inputUnit;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        
        
-        void ProcessFile()
+        void ProcessFile(int probeNumber)
         {
             try
             {
@@ -253,20 +288,15 @@ namespace InspectionLib
                 }
                
 
-                InputUnits = GetMeasurementUnit(words);
+                InputUnits = MeasurementUnit.GetMeasurementUnit(words);
 
                 if (InputUnits == null)
                 {
-                    InputUnits = new MeasurementUnit(LengthUnitEnum.MICRON);
-                }
-                if(ProbeCount ==1)
-                {
-                    this.AddRange(ExtractSingleProbeData(words));
-                }
-                if(ProbeCount == 2)
-                {
-                    this.AddRange(ExtractDualProbeData(words));
-                }
+                    InputUnits = new MeasurementUnit(LengthUnit.MICRON);
+                }                
+                data.AddRange(ExtractProbeData(words,probeNumber));
+                
+               
                 double scalingFactor = InputUnits.ConversionFactor / OutputUnits.ConversionFactor;
                 ScaleData(scalingFactor);
                 
@@ -278,19 +308,26 @@ namespace InspectionLib
             }
 
         }
-       
-        public KeyenceSiDataSet(ScanFormat format,MeasurementUnit outputUnits, int probeCount, string CsvFileName)
+        void initialize(InspectionScript script, string CsvFileName)
+        {
+            OutputUnits = script.OutputUnit;
+            ScanFormat = script.ScanFormat;
+            DataFormat = RawDataFormat.RADIAL;
+            Filename = CsvFileName;
+            _headerRowCount = 0;
+            _firstDataRow = 4;
+            _firstDataCol = 2;
+            data = new List<double>();
+
+        }
+        int _firstDataCol;
+        public KeyenceSiDataSet(InspectionScript script, string CsvFileName)
         {
             try
             {
-                ScanFormat = format;
-                DataFormat = RawDataFormat.RADIAL;              
-                ProbeCount = probeCount;
-                Filename = CsvFileName;
-                _headerRowCount = 0;
-                _firstDataRow = 4;
-                OutputUnits = outputUnits;               
-                ProcessFile();
+                initialize(script, CsvFileName);
+                            
+                ProcessFile(_firstDataCol);
             }
             catch (Exception)
             {
@@ -299,8 +336,24 @@ namespace InspectionLib
             }
              
         }
+        public KeyenceSiDataSet(InspectionScript script, string CsvFileName,int probeNumber)
+        {
+            try
+            {
+                initialize(script, CsvFileName);
+                ProcessFile(_firstDataCol+probeNumber-1);
+            }
+            catch (Exception)
+            {
 
-           
+                throw;
+            }
+
+        }
+        public KeyenceSiDataSet()
+        {
+            
+        }
     }   
 }
        

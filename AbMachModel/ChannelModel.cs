@@ -110,24 +110,21 @@ namespace AbMachModel
             var depthInfo = new DepthInfo();
             double inspectionLoc = parameters.DepthInfo.LocationOfDepthMeasure.X;
 
-            //Console.WriteLine("Run: " + run.ToString());
-            double startDepth = startProf.GetValue(inspectionLoc);
-            parameters.DepthInfo.StartDepth = startDepth;
-            double targetDepth = targetProf.GetValue(inspectionLoc);
-            //Console.WriteLine("StartDepth: " + parameters.DepthInfo.StartDepth.ToString());
-            var currentDepth = profile.GetValue(inspectionLoc);
-            parameters.DepthInfo.CurrentDepthAtLocation.Add(currentDepth);
+            //Console.WriteLine("Run: " + run.ToString());             
+            depthInfo.StartDepth = startProf.GetValue(inspectionLoc);
+            depthInfo.TargetDepth = targetProf.GetValue(inspectionLoc);
+            //Console.WriteLine("StartDepth: " + parameters.DepthInfo.StartDepth.ToString());             
+            depthInfo.CurrentDepth = profile.GetValue(inspectionLoc);
             //Console.WriteLine("Total Depth: " + currentDepth.ToString());
-            double targetDepthAtRun = (targetDepth - startDepth) * (run + 1) / runInfo.Runs;
-            double depthAtRun = currentDepth - startDepth;
-            double targetTotalDepth = startDepth + targetDepthAtRun;
             //Console.WriteLine("TargetDepthAtRun: " + targetDepthAtRun.ToString());
             //Console.WriteLine("TargetTotalDepthAtRun: " + targetTotalDepth.ToString());
             return depthInfo;
         }
         double AdjustMrr(double baseMrr,DepthInfo depthInfo)
         {
-          double  mrrAdjustFactor = targetDepthAtRun / depthInfo.CurrentDepthAtLocation[depthInfo.CurrentDepthAtLocation.Count-1];
+            double  mrrAdjustFactor = Math.Abs(depthInfo.TargetDepth / depthInfo.CurrentDepth);
+            double newMrr = baseMrr * mrrAdjustFactor;
+            return newMrr;
         }
         void RunPath(Ray2[,] jetArr, Vector2 gridOrigin, double gridWidth, double averagingWindow,double curvatureSearchWindow, double baseMrr, double critAngle)
         {
@@ -144,7 +141,7 @@ namespace AbMachModel
                         double x = jetRay.Origin.X;
                         var profileNormal = profile.GetNormalAngle(x, averagingWindow);
                         var angleEffect = AngleEffect(profileNormal, critAngle);
-                        var curvature = CurvatureEffect(profile.GetCurvature(x, curvatureSearchWindow), posScalingFactor, negScalingFactor);
+                        var curvature =parameters.CurvatureEffect.Factor(profile.GetCurvature(x, curvatureSearchWindow));
                         double materialRemoved = baseMrr * jetRay.Length * angleEffect * curvature;
                         tempProf.SetValue(materialRemoved, x);
                     }
@@ -157,15 +154,12 @@ namespace AbMachModel
                     
 
                 }
-                
-                Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());
-                Console.WriteLine("");
                 run++;
             }
 
             double inspectionDepth = profile.GetValue(parameters.DepthInfo.LocationOfDepthMeasure.X);
             Console.WriteLine("Run: " + run.ToString() + " Depth: " + inspectionDepth.ToString());
-            double targetDepthAtRun = parameters.DepthInfo.TargetDepth * (i + 1) / runInfo.Runs;
+            double targetDepthAtRun = parameters.DepthInfo.TargetDepth * (run) / runInfo.Runs;
             Console.WriteLine("targetDepthAtRun: " + targetDepthAtRun.ToString());
             double mrrAdjustFactor = targetDepthAtRun / inspectionDepth;
             Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());
@@ -189,25 +183,13 @@ namespace AbMachModel
             }
         }
     
-         double CurvatureEffect(double curvature, double negScalingFactor, double posScalingFactor)
-            {
-                double ce = 1;
-                if (curvature < 0)
-                {
-                    ce += negScalingFactor * curvature;
-                }
-                else
-                {
-                    ce += posScalingFactor * curvature;
-                }
-                return ce;
-            }
-         double AngleEffect(double normalAngle, double critAngle)
-            {
-                return Math.Abs(Math.Cos(Math.Abs(normalAngle) - critAngle));
-            }
-            double FeedrateEffect(double feedrate, double nominalFeedrate){
-                return nominalFeedrate / feedrate;
-            }
+        double AngleEffect(double normalAngle, double critAngle)
+        {
+            return Math.Abs(Math.Cos(Math.Abs(normalAngle) - critAngle));
+        }
+        double FeedrateEffect(double feedrate, double nominalFeedrate)
+        {
+            return nominalFeedrate / feedrate;
+        }
     }
 }

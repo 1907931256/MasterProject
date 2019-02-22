@@ -35,7 +35,7 @@ namespace GridTest
                 double gridWidth = .64;
                 double gridDepth = .5;
                 double meshSize = .001;
-                byte startValue = 255;
+                 
                 double alongLocation = 0.0;
                 double jetCenterX = gridWidth / 2.0;
                 double jetDiameter = .0558;
@@ -43,16 +43,21 @@ namespace GridTest
                 
                 double nominalFeedrate = 40;
                 double baseMrr = .00234211;
+                double mrr = baseMrr;
                 double maxMrr = .0025;
                 double averagingWindow = .01;
                 double critAngle = Math.PI * 0.0 / 180.0;
-                double angExpEffect = .5;
+                 
                 double inspectionLoc = 0;
                 double targetDepth = .049;
                 double particleRadius = .014;
                 int runCount = 11;
-                
-                double feedrateEffectScaling =.4;
+                bool findNewFeedrates = false;
+                bool adjustMrr = true;
+                bool adjustCritAngle = true;
+                bool adjustCurvParams = false;
+
+                 
                 //laptop
                 string directory =" C:/Users/nickc/OneDrive/Documents/#729 155mm/Nick test files/";
                 //work desktop
@@ -104,12 +109,12 @@ namespace GridTest
                 Error profileError = new Error();
                 double maxError = .0005;
                 int innerIterator = 0;
-                int innerIterations = 4;
-                int outerIterations = 1;
+                int innerIterations = 3;
+                int outerIterations = 4;
                 double critAngleMax = 85;
                 double critAngleMin = 0;
-                double critAngleChange = 1;
-                double critAngDeg = 19;
+                double critAngleChange = 5;
+                double critAngDeg = 15;
                 string timeCode=  DateTime.Now.ToFileTimeUtc().ToString();
                 double startPosScaling = .008;
                 double startNegScaling = .001;
@@ -120,11 +125,15 @@ namespace GridTest
                 double mrrAdjustFactor = 1;
                 while (outerIterator < outerIterations)//pos scaling iteration
                 {
-                    negScalingFactor = startNegScaling;
+                     
+                    Console.WriteLine("Outer Iteration: " + outerIterator .ToString());
+                    Console.WriteLine("Critangle: " + critAngDeg.ToString());
+                    mrr = baseMrr;
                     innerIterator = 0;
                     while (innerIterator < innerIterations)//neg scaling iteration
                     {
-                        Console.WriteLine("Iteration: " + (outerIterator+innerIterator).ToString());
+                        Console.WriteLine("Inner Iteration: " + innerIterator.ToString());
+                        Console.WriteLine("MRR: " + baseMrr.ToString());
                         critAngle = Math.PI * critAngDeg / 180.0;
                         profile = new XSectionProfile(startProfile);
                         int run = 0;
@@ -142,38 +151,25 @@ namespace GridTest
                                     var profileNormal = profile.GetNormalAngle(x, averagingWindow);
                                     var angleEffect = AngleEffect(profileNormal, critAngle);
                                     var curvature = CurvatureEffect(profile.GetCurvature(x, particleRadius), posScalingFactor, negScalingFactor);
-                                    double materialRemoved = baseMrr * jetRay.Length * angleEffect * curvature;
+                                    double materialRemoved = mrr * jetRay.Length * angleEffect * curvature;
                                     tempProfile.SetValue(materialRemoved, x);                                    
                                 }
                                 tempProfile.Smooth(jetR);
                                 profile.AddProfile(tempProfile);
                                 profile.Smooth(jetR);
                             }
-                            if (run == runCount - 1)
-                            {
-                                angleEffectList.Clear();
-
-                                angleEffectList.Add("X,D,TD,AE,N,feed,curvature");
-                                foreach (var pt in profile)
-                                {
-                                    var n = profile.GetNormalAngle(pt.X, jetDiameter);
-                                    var c = profile.GetCurvature(pt.X, averagingWindow);
-                                    var td = targetProfile.GetValue(pt.X);
-                                   // var f = feedProfile.GetValue(pt.X);
-                                    angleEffectList.Add(pt.X.ToString() + "," + pt.Y.ToString() + "," + td.ToString() + ","
-                                        + AngleEffect(n, critAngle).ToString() + "," + n.ToString() + "," + c.ToString());
-
-                                }
-
-                            }
+                           
                             Console.WriteLine("Run: " + run.ToString());
                             startDepth = startProfile.GetValue(inspectionLoc);
-                            Console.WriteLine("StartDepth: " + startDepth.ToString());
+                           
                             inspectionDepth = profile.GetValue(inspectionLoc);
-                            Console.WriteLine("Total Depth: " + inspectionDepth.ToString());
+                           
                             double targetDepthAtRun = (targetDepth - startDepth) * (run + 1) / runCount;
                             double depthAtRun = inspectionDepth - startDepth;
                             double targetTotalDepth = startDepth + targetDepthAtRun;
+
+                            Console.WriteLine("StartDepth: " + startDepth.ToString());
+                            Console.WriteLine("Total Depth: " + inspectionDepth.ToString());
                             Console.WriteLine("TargetDepthAtRun: " + targetDepthAtRun.ToString());
                             Console.WriteLine("TargetTotalDepthAtRun: " + targetTotalDepth.ToString());                           
                             Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());                            
@@ -182,35 +178,38 @@ namespace GridTest
                         }
 
                         profileError = CalcError(profile, targetProfile, runCount, runCount);
+                        string paramString = critAngDeg.ToString() + "," + baseMrr.ToString() + "," + profileError.Ave.ToString() + "," + profileError.Max.ToString();
+                        errorHistoryStr.Add(paramString);                         
+                        angleEffectList.Add("X,D,TD,AE,N,Curvature," + paramString);
+                        foreach (var pt in profile)
+                        {
+                            var n = profile.GetNormalAngle(pt.X, jetDiameter);
+                            var c = profile.GetCurvature(pt.X, averagingWindow);
+                            var td = targetProfile.GetValue(pt.X);
+                            // var f = feedProfile.GetValue(pt.X);
+                            angleEffectList.Add(pt.X.ToString() + "," + pt.Y.ToString() + "," + td.ToString() + ","
+                                + AngleEffect(n, critAngle).ToString() + "," + n.ToString() + "," + c.ToString());
 
-                        Console.WriteLine("CritAngle: " + critAngDeg + " baseMrr: " + baseMrr + " Error: " + profileError.ToString());
-                        string paramString = critAngDeg.ToString() + "," + baseMrr.ToString() + "," +  profileError.ToString();
-                        errorHistoryStr.Add(paramString);
-                        var e = new ErrorHistory();
-                        e.CritAngleDeg = critAngDeg;
-                        e.NegScaling = negScalingFactor;
-                        e.PosScaling = posScalingFactor;
-                        e.Error = profileError;
-                        errorHistoryList.Add(e);
+                        }
+                        Console.WriteLine("CritAngle: " + critAngDeg + " baseMrr: " + mrr + " Error:ave: " + profileError.Ave.ToString() +" max: "+ profileError.Max.ToString());
+                        
+                       
                         Console.WriteLine("");
                         Console.WriteLine("saving model");
                         timeCode = System.DateTime.Now.ToFileTimeUtc().ToString();
-                        angleEffectList.Add(paramString);
+                        
                         FileIOLib.FileIO.Save(angleEffectList, directory + "ProfileEffectList" + timeCode + ".csv");
                         string bitmapFilename = directory + "testgrid" + timeCode + ".bmp";
                         profile.SaveBitmap(bitmapFilename);
                         //critAngDeg += critAngleChange;
-                        if (modelRunType == ModelRunType.NewMRR)
+                        if (adjustMrr)
                         {
                             mrrAdjustFactor = Math.Abs(targetDepth / inspectionDepth);
-                            baseMrr *= mrrAdjustFactor;
-                            Console.WriteLine("new Mrr: " + baseMrr.ToString());
+                            mrr *= mrrAdjustFactor;
+                            Console.WriteLine("new Mrr: " + mrr.ToString());
                         }
-                        if(modelRunType==ModelRunType.AdjustCritAngle)
-                        {
-                            negScalingFactor += .001;
-                        }
-                        if(modelRunType == ModelRunType.NewFeedrates)
+                        
+                        if(findNewFeedrates)
                         {
                             double MeasureWidth = .002;
                             DataLib.CartData depthData = new DataLib.CartData();
@@ -230,9 +229,9 @@ namespace GridTest
                         }
                         innerIterator++;
                     }
-                    if (modelRunType == ModelRunType.AdjustCritAngle)
+                    if (adjustCritAngle)
                     {
-                        posScalingFactor += .001;
+                        critAngDeg += critAngleChange;
                     }
                     outerIterator++;
                 }

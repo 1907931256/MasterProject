@@ -17,7 +17,7 @@ namespace ToolpathLib
             ControlFlag = pEnt.ControlFlag;
             Depth = pEnt.Depth;
             DirVector = new Vector3(pEnt.DirVector);
-            Position = pEnt.Position.Clone();
+            Position = new CNCLib.XYZBCMachPosition(pEnt.Position);
             Feedrate = new ToolpathLib.Feedrate( pEnt.Feedrate);
             JetOn = pEnt.JetOn;
             JetVector = new Vector3( pEnt.JetVector);
@@ -50,7 +50,7 @@ namespace ToolpathLib
             m.Length = Length;
             m.PathNumber = PathNumber;
             m.LineNumber = LineNumber;
-            m.Position = new CNCLib.MachinePosition(CNCLib.MachineGeometry.XYZBC);
+            m.Position = new CNCLib.XYZBCMachPosition();
             m.SurfNormal = new Vector3(SurfNormal);
             m.TargetDepth = TargetDepth;
             m.TravelTime = TravelTime;
@@ -65,7 +65,7 @@ namespace ToolpathLib
             ControlFlag = new CtrlFlag();
             Depth = 0;
             DirVector = new Vector3();
-            Position = new CNCLib.MachinePosition(CNCLib.MachineGeometry.XYZBC);
+            Position = new CNCLib.XYZBCMachPosition();
             Feedrate = new ToolpathLib.Feedrate();
             JetOn = false;
             JetVector = new Vector3();

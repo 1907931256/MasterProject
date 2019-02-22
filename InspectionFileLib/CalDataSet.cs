@@ -21,18 +21,18 @@ namespace InspectionLib
         {
             NominalRadius = nominalRadius;
         }
-        public CalDataSet(double ringGageInch, double probe1Value, double probe2Value,ProbeController.ProbeDirection probeDirection)
+        public CalDataSet(double ringGageInch, double probeValue, ProbeController.ProbeDirection probeDirection)
         {
             
             NominalRadius = ringGageInch / 2;
           
             if(probeDirection == ProbeController.ProbeDirection.ID)
             {
-                ProbeSpacingInch = ringGageInch - probe1Value - probe2Value;
+                ProbeSpacingInch = ringGageInch -  probeValue;
             }
             else
             {
-                ProbeSpacingInch = ringGageInch + probe1Value + probe2Value;
+                ProbeSpacingInch = ringGageInch +  probeValue;
             }
         }
     }

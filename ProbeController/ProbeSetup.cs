@@ -8,8 +8,8 @@ namespace ProbeController
 {
     public enum ProbeType
     {
-        SI_DISTANCE,
-        LINE_SCAN
+        SI,
+        LJ
     }
     public enum ProbeDirection
     {
@@ -30,7 +30,7 @@ namespace ProbeController
         {
             ProbeList = new List<Probe>();
             ProbeDirection = ProbeDirection.ID;
-            ProbeType = ProbeType.SI_DISTANCE;
+            ProbeType = ProbeType.SI;
         }
     }
 }

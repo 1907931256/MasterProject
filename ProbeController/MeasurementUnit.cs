@@ -6,24 +6,59 @@ using System.Threading.Tasks;
 
 namespace ProbeController
 {
-     
+    public enum LengthUnit
+    {
+        MICRON,
+        UM,
+        MM,
+        NANOX10,
+        NANO,
+        INCH        
+    }
     public class MeasurementUnit
     {
         public double ConversionFactor{ get; private set; }
         public string Name { get; private set; }
-        public LengthUnitEnum MeasurementUnitEnum { get; private set; }
-        //public MeasurementUnit(string name)
-        //{
-        //    ConversionFactor = 1;
-        //    Name = name.ToUpper();
-        //    ConversionFactor = MeasurementUnitDictionary.GetConversionFactor(Name);
-        //}
-        public MeasurementUnit(LengthUnitEnum measurementUnitEnum)
+        public LengthUnit LengthUnits { get; private set; }
+        static public MeasurementUnit GetMeasurementUnit(string[,] words)
         {
-            ConversionFactor = (int)measurementUnitEnum;
-            
-        }
+            try
+            {
+                var unitList = MeasurementUnitDictionary.MeasurementUnitNames();                
+                LengthUnit lengthUnit = LengthUnit.MICRON;
+                var inputUnit = new MeasurementUnit(lengthUnit);
+                foreach (string unitStr in unitList)
+                {
+                    for (int i = 0; i < words.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < words.GetLength(1); j++)
+                        {
+                            string upperw = words[i, j].ToUpper();
+                            if (upperw.Contains(unitStr))
+                            {
+                                
+                                Enum.TryParse(unitStr, out lengthUnit);
+                                inputUnit = new MeasurementUnit(lengthUnit);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return inputUnit;
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
+        public MeasurementUnit(LengthUnit lengthUnit)
+        {
+            ConversionFactor = MeasurementUnitDictionary.GetConversionFactor(lengthUnit);
+            Name = lengthUnit.ToString();
+            LengthUnits = lengthUnit;
+        }
+       
     }
    
 }

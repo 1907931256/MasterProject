@@ -11,20 +11,16 @@ namespace InspectionLib
 {
     public class SpiralDataBuilder : DataBuilder
     {
+       
 
-
-        override protected CylData GetSingleProbeData(CylInspScript script, double[] data)
+        override protected CylData GetData(CylInspScript script, double[] data)
         {
             try
             {
                 var points = new CylData();
                 for (int i = 0; i < data.Length; i++)
-                {
-                    var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
-                    var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
-                    var r = data[i];
-                    var pt = new PointCyl(r, theta, z, i);
-                    points.Add(pt);
+                {                   
+                    points.Add(GetPoint(i,script,data[i]));
                 }
                 return points;
             }
@@ -33,46 +29,7 @@ namespace InspectionLib
                 throw;
             }
         }
-        //override protected CylData GetDualProbeData(CylInspScript script, double[] data)
-        //{
-        //    try
-        //    {
-        //        try
-        //        {
-
-        //            var points = new CylData();
-
-        //            int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
-        //            int indexShift = (int)Math.Round(script.PointsPerRevolution * (script.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
-        //            double minSum = double.MaxValue;
-        //            for (int i = 0; i < pointCt; i++)
-        //            {
-        //                var z = script.ZDir * i * script.AxialIncrement + script.StartZ;
-        //                var theta = script.ThetaDir * i * script.AngleIncrement + script.StartThetaRad;
-        //                int probe2Index = (i + indexShift) % script.PointsPerRevolution;
-        //                var sum = data[i];
-        //                if (sum < minSum)
-        //                {
-        //                    minSum = sum;
-        //                }
-        //                var pt1 = new PointCyl(sum / 2.0, theta, z, i);
-        //                points.Add(pt1);
-        //            }
-        //            points.NominalMinDiam = minSum + script.CalDataSet.ProbeSpacingInch;
-        //            return points;
-        //        }
-        //        catch (Exception)
-        //        {
-
-        //            throw;
-        //        }
-               
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
+       
         /// <summary>
         /// separate point list into rings from spiral
         /// </summary>
@@ -120,7 +77,7 @@ namespace InspectionLib
             }
 
         }
-        SpiralDataSet BuildSpiralFromRadialData(CylInspScript script, KeyenceSiDataSet rawInputData, IProgress<int> progress)
+        SpiralDataSet BuildSpiralFromRadialData(CylInspScript script, double[] rawInputData, IProgress<int> progress)
         {
             try
             {
@@ -164,11 +121,11 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, KeyenceSiDataSet rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, DataOutputOptions options)
         {
             try
             {
-                Init(options, rawDataSet.Filename);
+                Init(options);
                 var sw = new Stopwatch();
                 progress.Report(sw.Elapsed.Seconds);              
                
@@ -183,45 +140,7 @@ namespace InspectionLib
             }
 
         }
-        //public List<CylData> ExtractRings(CylGridData data, CylInspScript script)
-        //{
-        //    try
-        //    {
-        //        var ringList = new List<CylData>();
-        //        if (script.ExtractLocations.Length != 0)
-        //        {
-        //            var tempList = new CylData();
-        //            foreach (var ring in data)
-        //            {
-        //                tempList.AddRange(ring);
-        //            }
-
-        //            double zMax = data.BoundingBox.Max.Z;
-        //            double zMin = data.BoundingBox.Min.Z;
-
-        //            var zList = new List<double>();
-        //            foreach (double z in script.ExtractLocations)
-        //            {
-        //                if (z >= zMin && z <= zMax)
-        //                {
-        //                    zList.Add(z);
-        //                }
-        //            }
-        //            foreach (double z in zList)
-        //            {
-        //                ringList.Add(DataParser.GetRingFromSpiralMap(z, tempList, script.PointsPerRevolution));
-        //            }
-        //        }
-        //        return ringList;
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-
-        //}
-
+       
         public SpiralDataBuilder(Barrel barrel) : base(barrel)
         {
 

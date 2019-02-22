@@ -7,7 +7,7 @@ namespace CNCLib
 {
    public enum MachineGeometry
     {
-        CYLINDER,
+        XA,
         XYZ,    
         XYZBC        
     }

@@ -6,6 +6,25 @@ using AWJModel;
 
 namespace AbMachModel
 {  
+    public class CurvatureEffect
+    {
+        public double PosScalingFactor { get; set;}
+        public double NegScalingFactor { get; set; }
+        public double Factor(double curvature)
+        {
+            double ce = 1;
+            if (curvature < 0)
+            {
+                ce += NegScalingFactor * curvature;
+            }
+            else
+            {
+                ce += PosScalingFactor * curvature;
+            }
+            return ce;
+        }
+    }
+
     public class AbMachParameters
     {
          public AbMachOperation Operation { get;  set; }
@@ -14,6 +33,7 @@ namespace AbMachModel
          public Material Material { get;  set;}
          public AbMachJet AbMachJet { get;  set;}
          public DepthInfo DepthInfo { get;  set;}
+         public CurvatureEffect CurvatureEffect { get; set; }
          public double SmoothingWindowWidth { get; set; }
          public double MeshSize { get { return _meshSize; } set { _meshSize = value; } }
          
@@ -44,7 +64,7 @@ namespace AbMachModel
             Material = new Material();
             Operation = AbMachOperation.OTHER;
             DepthInfo = new DepthInfo();
-            
+            CurvatureEffect = new CurvatureEffect();
         }
 
     }

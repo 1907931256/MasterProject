@@ -105,7 +105,7 @@ namespace ToolpathLib
                     ModelPathEntity pathSeg = new ModelPathEntity(p2);
 
                     //calc new position
-                    pathSeg.Position = new CNCLib.MachinePosition(CNCLib.MachineGeometry.XYZBC);
+                    pathSeg.Position = new CNCLib.XYZBCMachPosition();
                     pathSeg.Position.X = p1.Position.X + j * dx / parseCount;
                     pathSeg.Position.Y = p1.Position.Y + j * dy / parseCount;
                     pathSeg.Position.Z = p1.Position.Z + j * dz / parseCount;
@@ -147,7 +147,7 @@ namespace ToolpathLib
             }
            
         }
-        private List<ModelPathEntity> parseArc(double increment, PathEntity entity, CNCLib.MachinePosition startPoint)
+        private List<ModelPathEntity> parseArc(double increment, PathEntity entity, CNCLib.XYZBCMachPosition startPoint)
         {
             try
             {

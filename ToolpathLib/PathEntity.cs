@@ -239,7 +239,7 @@ namespace ToolpathLib
     public  class PathEntity
     {
         public BlockType Type {get; set;}        
-        public CNCLib.MachinePosition Position { get; set; }
+        public CNCLib.XYZBCMachPosition Position { get; set; }
         public Vector3 PositionAsVector
         {
             get
@@ -272,7 +272,7 @@ namespace ToolpathLib
         public PathEntity()
         {
             ActiveMcodes = new List<string>();
-            Position = new CNCLib.MachinePosition(CNCLib.MachineGeometry.XYZBC);
+            Position = new CNCLib.XYZBCMachPosition();
             Type = BlockType.Unknown;
             Ccomp = CComp.NoChange;
             ControlFlag = CtrlFlag.Unknown;

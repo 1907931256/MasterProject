@@ -43,7 +43,7 @@ namespace InspectionLib
             }
             return val;
         }
-        static MachinePosition FindStartPosition(string[] fileCodes, string axisName)
+        static XAMachPostion FindStartPosition(string[] fileCodes, string axisName)
         {
             int firstX = 0;
             for(int i=0;i<fileCodes.Length;i++)
@@ -61,11 +61,10 @@ namespace InspectionLib
             string pos = xword.Substring(xIndex+1);
             double xpos = 0;
             double.TryParse(pos, out xpos);
-            var mp = new MachinePosition(MachineGeometry.CYLINDER);
-            mp.X = xpos;
+            var mp = new XAMachPostion(xpos,0);           
             return mp;
         }
-        static MachinePosition FindEndPosition(string[] fileCodes, string axisName)
+        static XAMachPostion FindEndPosition(string[] fileCodes, string axisName)
         {
             int lastX = 0;
             for (int i = fileCodes.Length-1; i>=0; i--)
@@ -83,8 +82,7 @@ namespace InspectionLib
             string pos = xword.Substring(xIndex);
             double xpos = 0;
             double.TryParse(pos, out xpos);
-            var mp = new MachinePosition(MachineGeometry.CYLINDER);
-            mp.X = xpos;
+            var mp = new XAMachPostion(xpos,0);            
             return mp;
         }
         static string[] ParseFilename(string filename)
@@ -195,7 +193,7 @@ namespace InspectionLib
             return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
         }
         static public InspectionScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method,
-            MachinePosition start, MachinePosition end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
+            XAMachPostion start, XAMachPostion end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
         {
             InspectionScript script;
             switch (method)

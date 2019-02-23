@@ -26,7 +26,7 @@ namespace DataLib
             {
                 double startTh = ring[0].ThetaRad;
                 double endTh = startTh + (Math.PI * 2.0);
-                var result = new CylData();
+                var result = new CylData(ring.FileName);
                 foreach (PointCyl bp in ring)
                 {
                     if (bp.ThetaRad >= startTh && bp.ThetaRad <= endTh)
@@ -92,7 +92,7 @@ namespace DataLib
                 double z = (ring[0].Z + ring[ring.Count - 1].Z) / 2.0;
 
 
-                var groove = new CylData();
+                var groove = new CylData(ring.FileName);
                 foreach (PointCyl bp in ring)
                 {
                     if (bp.ID >= startIndex && bp.ID < endIndex)
@@ -239,7 +239,7 @@ namespace DataLib
         {
             try
             {
-                var strip = new CylData();
+                var strip = new CylData(cartData.FileName);
                 var thetaStart = new PointCyl(cartData[0]).ThetaRad;
                 foreach (var pt in cartData)
                 {
@@ -286,7 +286,7 @@ namespace DataLib
         {
             try
             {
-                var strip = new CartData();
+                var strip = new CartData(cartData.FileName);
                 var thetaStart = new PointCyl(cartData[0]).ThetaRad;
                 double thetaoffset = Math.PI / 2.0;
                 foreach (var pt in cartData)
@@ -308,7 +308,7 @@ namespace DataLib
         {
             try
             {
-                var strip = new CartData();
+                var strip = new CartData(correctedRing.FileName);
                 foreach (var ptCyl in correctedRing)
                 {
                     strip.Add(UnrollCylPt(ptCyl,  scaling, unrollRadius));                   

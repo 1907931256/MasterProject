@@ -18,7 +18,7 @@ namespace BarrelInspectionProcessorForm
         
         public ImportFileDialog(string filename,Barrel barrel)
         {
-            InspDataSet = new InspDataSet(barrel);
+            InspDataSet = new InspDataSet(barrel,filename);
             InitializeComponent();
             OpenFile(filename);
         }

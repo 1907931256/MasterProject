@@ -22,7 +22,7 @@ namespace InspectionLib
             try
             {
 
-                var points = new CylData();
+                var points = new CylData(script.InputDataFileName);
                 double probeSpacing = script.CalDataSet.ProbeSpacingInch;
                 int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
                
@@ -63,7 +63,7 @@ namespace InspectionLib
         {
             try
             {
-                var dataSet = new RingDataSet(_barrel);
+                var dataSet = new RingDataSet(_barrel,script.InputDataFileName);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution);
                 dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.ProbeDirection);
@@ -75,29 +75,7 @@ namespace InspectionLib
                 throw;
             }
         }
-        /// <summary>
-        /// build ring data from raw and user input lands after initial processing
-        /// </summary>
-        /// <param name="script"></param>
-        /// <param name="rawInputData"></param>
-        /// <param name="landPointArr"></param>
-        InspDataSet BuildRingFromRadialData(CylInspScript script, double[] rawInputData, PointCyl[] landPointArr)
-        {
-            try
-            {
-                var dataSet = new RingDataSet(_barrel);
-                
-                dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
-                dataSet.RawLandPoints = landPointArr;
-                dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.ProbeDirection);
-                dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CorrectedCylData, script.PointsPerRevolution);
-                return dataSet;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+       
         /// <summary>
         /// build ring data from raw and auto find lands
         /// </summary>
@@ -111,6 +89,7 @@ namespace InspectionLib
             try
             {
                 Init(options);
+                _inputFileName = script.InputDataFileName;
                 var dataSet = BuildRingFromRadialData(script, rawDataSet);               
                 return dataSet;
             }
@@ -119,29 +98,7 @@ namespace InspectionLib
                 throw;
             }
         }
-        /// <summary>
-        /// build ring from raw data and user input lands
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <param name="progress"></param>
-        /// <param name="script"></param>
-        /// <param name="rawDataSet"></param>
-        /// <param name="landPointArr"></param>
-        /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, PointCyl[] landPointArr, DataOutputOptions options)
-        {
-            try
-            {
-                Init(options);      
-                var dataSet = BuildRingFromRadialData(script, rawDataSet, landPointArr);
-               
-                return dataSet;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+      
         public RingDataBuilder(Barrel barrel) : base(barrel)
         {
 

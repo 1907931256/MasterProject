@@ -212,12 +212,12 @@ namespace GridTest
                         if(findNewFeedrates)
                         {
                             double MeasureWidth = .002;
-                            DataLib.CartData depthData = new DataLib.CartData();
+                            DataLib.CartData depthData = new DataLib.CartData(path);
                             foreach(var pt in profile)
                             {
                                 depthData.Add(new Vector3(pt.X,pt.Y,0));
                             }
-                            DataLib.CartData targetData = new DataLib.CartData();
+                            DataLib.CartData targetData = new DataLib.CartData(targetProfileFilename);
                             foreach(var pt in targetProfile)
                             {
                                 targetData.Add(new Vector3(pt.X, pt.Y, 0));

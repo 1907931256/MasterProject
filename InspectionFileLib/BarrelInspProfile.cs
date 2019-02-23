@@ -15,9 +15,9 @@ namespace InspectionLib
         public Barrel Barrel { get; set; }
         public BarrelInspProfile()
         {
-            MinLandProfile = new CylData();
-            AveLandProfile = new CylData();
-            AveGrooveProfile = new CylData();
+            MinLandProfile = new CylData("");
+            AveLandProfile = new CylData("");
+            AveGrooveProfile = new CylData("");
             Barrel = new Barrel();
         }
     }

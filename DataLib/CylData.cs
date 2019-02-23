@@ -10,11 +10,11 @@ namespace DataLib
    
     public class CylData : List<PointCyl>
     {
-       
+        public string FileName { get; private set; }
         public double NominalMinDiam { get; set; }
-        public DisplayData AsScreenData( ViewPlane viewplane)
+        public DisplayData AsDisplayData( ViewPlane viewplane)
         {
-            var pts = new DisplayData();
+            var pts = new DisplayData(FileName);
             foreach (PointCyl v in this)
             {
                 switch (viewplane)
@@ -63,7 +63,7 @@ namespace DataLib
         {
             try
             {
-                var cartData = new CartData();
+                var cartData = new CartData(FileName);
                 var pts = new List<Vector3>();
                 foreach (var pt in this)
                 {
@@ -145,11 +145,14 @@ namespace DataLib
             this.AddRange(arr);
         }
         BoundingBox _boundingBox;
-      
 
-        public CylData()
+        //public CylData()
+        //{
+        //    FileName = "";
+        //}
+        public CylData(string filename)
         {
-           
+            FileName = filename;
         }
     }
 }

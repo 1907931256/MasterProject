@@ -147,7 +147,7 @@ namespace InspectionLib
         {
             CylInspScript script;
             var fileCodes = ParseFilename(filename);
-
+            
             int len = fileCodes.Length;
 
             // var start = new MachinePosition(MachineGeometry.CYLINDER);
@@ -182,8 +182,10 @@ namespace InspectionLib
                     script = new CylInspScript(method, start, end);
                     break;
             }
+            script.InputDataFileName = filename;
             return script;
         }
+
         static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev)
         {
             var fileCodes = ParseFilename(filename);
@@ -192,7 +194,7 @@ namespace InspectionLib
             method = ScanFormat.RING;            
             return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
         }
-        static public InspectionScript BuildScript(ProbeController.ProbeType probeType, ScanFormat method,
+        static public InspectionScript BuildScript(string filename,ProbeController.ProbeType probeType, ScanFormat method,
             XAMachPostion start, XAMachPostion end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
         {
             InspectionScript script;
@@ -220,6 +222,7 @@ namespace InspectionLib
                     script = new CylInspScript(method, start, end);
                     break;
             }
+            script.InputDataFileName = filename;
             return script;
         }
     }

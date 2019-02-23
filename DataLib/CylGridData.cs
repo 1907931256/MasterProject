@@ -9,6 +9,7 @@ namespace DataLib
 {
     public class CylGridData : List<CylData>
     {
+        
         public BoundingBox BoundingBox
         {
             get
@@ -33,7 +34,7 @@ namespace DataLib
                 var stripList = new CartGridData();
                 foreach (var cylstrip in this)
                 {
-                    var strip = new CartData();
+                    var strip = new CartData(cylstrip.FileName);
                     foreach (var ptCyl in cylstrip)
                     {
                         strip.Add(new Vector3(ptCyl));
@@ -52,7 +53,7 @@ namespace DataLib
         public CylData AsCylData()
         {
             
-            var stripd = new CylData();
+            var stripd = new CylData(this[0].FileName);
             foreach (var strip in this)
             {
                 foreach (var pt in strip)

@@ -24,15 +24,21 @@ namespace InspectionLib
                
         protected Barrel _barrel;
 
-
-
+        public string InputFileName
+        {
+            get
+            {
+                return _inputFileName;
+            }
+        }
+        
         protected string _inputFileName;
         long _id;
         protected BoundingBox _boundingBox;
 
         protected virtual CylData GetData(CylInspScript script, double[] data)
         {
-           return new CylData();
+           return new CylData(script.InputDataFileName);
         }       
         protected PointCyl GetPoint(int i, CylInspScript script, double r)
         {
@@ -60,7 +66,7 @@ namespace InspectionLib
             {
                 var pointDictionary = new Dictionary<int, PointCyl>();
                 
-                var foundPoints = new CylData();
+                var foundPoints = new CylData(singleRing.FileName);
 
                 
                 foreach (PointCyl pt in singleRing)
@@ -112,7 +118,7 @@ namespace InspectionLib
         {
             try
             {                
-                var result = new CylData();
+                var result = new CylData(singleRing.FileName);
                 double rCorrection = knownRadius - setPt.R;
                 
                 foreach (var pt in singleRing)
@@ -150,7 +156,7 @@ namespace InspectionLib
             {
                 
                
-                var result = new CylData();
+                var result = new CylData(singleRing.FileName);
                 
                 foreach (var pt in singleRing)
                 {
@@ -257,12 +263,12 @@ namespace InspectionLib
         /// </summary>
         /// <param name="rawSingleRing"></param>
         /// <returns></returns>
-        protected PointCyl[] GetLandPoints(CylData ring,int pointsPerRevolution)
+        protected CylData GetLandPoints(CylData ring,int pointsPerRevolution)
         {
             try
             {
 
-                var outputList = new CylData();
+                var outputList = new CylData(ring.FileName);
                 double thMax = Math.Max(ring[0].ThetaRad, ring[ring.Count - 1].ThetaRad);
                 double thMin = Math.Min(ring[0].ThetaRad, ring[ring.Count - 1].ThetaRad);
                
@@ -348,7 +354,7 @@ namespace InspectionLib
                    
                 }
                 outputList.SortByIndex();
-                return outputList.ToArray(); 
+                return outputList ; 
                
             }
             catch (Exception)
@@ -358,12 +364,12 @@ namespace InspectionLib
             }
            
         }
-        protected void AddSelfPoints(ref CylData lands, PointCyl[] pointArr)
+        protected void AddSelfPoints(ref CylData lands, CylData pointArr)
         {
             try
             {
-                double th = pointArr[pointArr.Length - 1].ThetaRad - pi2;
-                lands.Add(new PointCyl(pointArr[pointArr.Length - 1].R, th, pointArr[pointArr.Length - 1].Z, pointArr[pointArr.Length - 1].ID));
+                double th = pointArr[pointArr.Count - 1].ThetaRad - pi2;
+                lands.Add(new PointCyl(pointArr[pointArr.Count - 1].R, th, pointArr[pointArr.Count - 1].Z, pointArr[pointArr.Count - 1].ID));
 
                 th = pointArr[0].ThetaRad + pi2;
                 lands.Add(new PointCyl(pointArr[0].R, th, pointArr[0].Z, pointArr[0].ID));
@@ -374,7 +380,7 @@ namespace InspectionLib
                 throw;
             } 
         }
-        protected CylData CorrectRing(CylData singleRing, PointCyl[] landPointArr, ProbeDirection probeDirection)
+        protected CylData CorrectRing(CylData singleRing, CylData landPointArr, ProbeDirection probeDirection)
         {
             try
             {
@@ -382,7 +388,7 @@ namespace InspectionLib
                 bool segmentFit = true;
 
                 var coeffList = new List<double[]>();
-                var landPointList = new CylData();
+                var landPointList = new CylData(singleRing.FileName);
 
                 landPointList.AddRange(landPointArr);
 

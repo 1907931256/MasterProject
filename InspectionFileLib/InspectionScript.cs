@@ -21,16 +21,16 @@ namespace InspectionLib
   
     public  class InspectionScript
     {        
-        public string FileName { get; set; }       
+        //public string FileName { get; set; }       
         public ScanFormat ScanFormat { get; protected set; }
         public MeasurementUnit OutputUnit { get; protected set; }
-       
+        public string InputDataFileName { get; set; }
         public ProbeSetup ProbeSetup { get; set; }
         public CalDataSet CalDataSet { get; set; }        
         
         public InspectionScript()
         {
-            FileName = InspectionScriptFile.TempFileName;
+            //FileName = InspectionScriptFile.TempFileName;
             ScanFormat = ScanFormat.RING;
             OutputUnit = new MeasurementUnit(LengthUnit.INCH);
             CalDataSet = new CalDataSet();

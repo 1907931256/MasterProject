@@ -15,10 +15,10 @@ namespace InspectionLib
     {
         public CylData CorrectedCylData { get; set; }
         public CylData UncorrectedCylData { get; set; }
-        public AxialDataSet(Barrel barrel):base(barrel)
+        public AxialDataSet(Barrel barrel, string filename) : base(barrel, filename)
         {
-            CorrectedCylData = new CylData();
-            UncorrectedCylData = new CylData();
+            CorrectedCylData = new CylData(Filename);
+            UncorrectedCylData = new CylData(Filename);
         }
     }
    
@@ -26,7 +26,7 @@ namespace InspectionLib
     {
         public CylGridData CorrectedSpiralData { get; set; }
         public CylGridData UncorrectedSpiralData { get; set; }
-        public SpiralDataSet(Barrel barrel) : base(barrel)
+        public SpiralDataSet(Barrel barrel, string filename) : base(barrel, filename)
         {
             CorrectedSpiralData = new CylGridData();
             UncorrectedSpiralData = new CylGridData();
@@ -37,9 +37,9 @@ namespace InspectionLib
         public double NominalMinDiam { get; set; }
         public CylData CorrectedCylData { get; set; }
         public CylData UncorrectedCylData { get; set; }
-        public PointCyl[] RawLandPoints { get; set; }
-        public PointCyl[] CorrectedLandPoints { get; set; }
-        double getRVariation(PointCyl[] pts)
+        public CylData RawLandPoints { get; set; }
+        public CylData CorrectedLandPoints { get; set; }
+        double getRVariation(CylData pts)
         {
             double maxR = double.MinValue;
             double minR = double.MaxValue;
@@ -65,28 +65,28 @@ namespace InspectionLib
         {
             return getRVariation(RawLandPoints);
         }
-        public RingDataSet(Barrel barrel) : base(barrel)
+        public RingDataSet(Barrel barrel, string filename) : base(barrel, filename)
         {
-            CorrectedCylData = new CylData();
-            UncorrectedCylData = new CylData();
-            RawLandPoints = new PointCyl[Barrel.DimensionData.GrooveCount];
-            CorrectedLandPoints = new PointCyl[Barrel.DimensionData.GrooveCount];
+            CorrectedCylData = new CylData(Filename);
+            UncorrectedCylData = new CylData(Filename);
+            RawLandPoints = new CylData(filename);
+            CorrectedLandPoints = new CylData(filename);
         }
     }
     public class CartDataSet:InspDataSet
     {
         public CartData CartData { get; set; }      
         
-        public CartDataSet(Barrel barrel) : base(barrel)
+        public CartDataSet(Barrel barrel, string filename) : base(barrel, filename)
         {
-            CartData = new CartData();
+            CartData = new CartData(filename);
            
         }
     }
     public class CartGridDataSet : InspDataSet
     {
         public CartGridData CartGridData { get; set; }
-        public CartGridDataSet(Barrel barrel):base (barrel)
+        public CartGridDataSet(Barrel barrel,string filename):base (barrel,filename)
         {
             CartGridData = new CartGridData();
         }
@@ -96,10 +96,11 @@ namespace InspectionLib
     {
         public Barrel Barrel { get; protected set; }
         public ScanFormat DataFormat { get; protected set; }
-        public string Filename { get;  set; }
-        public InspDataSet(Barrel barrel)
+        public string Filename { get; protected set; }
+        public InspDataSet(Barrel barrel,string filename)
         {           
             Barrel = barrel;
+            Filename = filename;
         }
     }
 }

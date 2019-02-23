@@ -60,7 +60,6 @@
             this.labelPitch = new System.Windows.Forms.Label();
             this.labelEndPos = new System.Windows.Forms.Label();
             this.labelMethod = new System.Windows.Forms.Label();
-            this.textBoxProbeCount = new System.Windows.Forms.TextBox();
             this.textBoxRingRevs = new System.Windows.Forms.TextBox();
             this.textBoxPitch = new System.Windows.Forms.TextBox();
             this.textBoxAngleInc = new System.Windows.Forms.TextBox();
@@ -72,6 +71,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.labelNearestFilename = new System.Windows.Forms.Label();
             this.labelDxMeasured = new System.Windows.Forms.Label();
             this.labelDyMeasured = new System.Windows.Forms.Label();
             this.labelRadiusMeasured = new System.Windows.Forms.Label();
@@ -110,8 +110,6 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelStatus = new System.Windows.Forms.Label();
-            this.buttonGetAveAngle = new System.Windows.Forms.Button();
-            this.checkBoxAngleCorrect = new System.Windows.Forms.CheckBox();
             this.textBoxSerialN = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxCurrentPasses = new System.Windows.Forms.TextBox();
@@ -125,7 +123,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButtonLength = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonSetKnownRadius = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonGrooveMidpoint = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonWinData = new System.Windows.Forms.ToolStripButton();
@@ -146,18 +143,18 @@
             this.label9 = new System.Windows.Forms.Label();
             this.comboBoxManStep = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.panelProbeInfo = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
-            this.comboBoxProbeType = new System.Windows.Forms.ComboBox();
-            this.textBoxGrooveList = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBoxProbeSpacing = new System.Windows.Forms.TextBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.buttonMeasureDepths = new System.Windows.Forms.Button();
-            this.buttonCorrectMidpoint = new System.Windows.Forms.Button();
-            this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxProbePhaseDeg = new System.Windows.Forms.TextBox();
+            this.comboBoxProbeType = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBoxProbeSpacing = new System.Windows.Forms.TextBox();
+            this.textBoxGrooveList = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.buttonMeasureDepths = new System.Windows.Forms.Button();
+            this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.checkBoxUseFilename = new System.Windows.Forms.CheckBox();
             this.tabControlOutput = new System.Windows.Forms.TabControl();
             this.tabPageGraph = new System.Windows.Forms.TabPage();
@@ -168,6 +165,12 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.shiftDataXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButtonShiftData = new System.Windows.Forms.ToolStripButton();
+            this.numericUpDownProbeCount = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -176,11 +179,14 @@
             this.tabControlParams.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.panelProbeInfo.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabControlOutput.SuspendLayout();
             this.tabPageGraph.SuspendLayout();
             this.tabPageData.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).BeginInit();
             this.SuspendLayout();
             // 
             // labelInputFIlename
@@ -196,10 +202,10 @@
             // buttonProcessFile
             // 
             this.buttonProcessFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonProcessFile.Location = new System.Drawing.Point(7, 534);
+            this.buttonProcessFile.Location = new System.Drawing.Point(7, 37);
             this.buttonProcessFile.Margin = new System.Windows.Forms.Padding(2);
             this.buttonProcessFile.Name = "buttonProcessFile";
-            this.buttonProcessFile.Size = new System.Drawing.Size(112, 40);
+            this.buttonProcessFile.Size = new System.Drawing.Size(95, 32);
             this.buttonProcessFile.TabIndex = 3;
             this.buttonProcessFile.Text = "Process File";
             this.buttonProcessFile.UseVisualStyleBackColor = true;
@@ -230,7 +236,7 @@
             this.comboBoxProbeDirection.Items.AddRange(new object[] {
             "BORE I.D.",
             "ROD O.D."});
-            this.comboBoxProbeDirection.Location = new System.Drawing.Point(100, 249);
+            this.comboBoxProbeDirection.Location = new System.Drawing.Point(90, 79);
             this.comboBoxProbeDirection.Name = "comboBoxProbeDirection";
             this.comboBoxProbeDirection.Size = new System.Drawing.Size(82, 21);
             this.comboBoxProbeDirection.TabIndex = 7;
@@ -284,7 +290,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(16, 253);
+            this.label7.Location = new System.Drawing.Point(3, 82);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(80, 13);
@@ -294,7 +300,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(29, 208);
+            this.label3.Location = new System.Drawing.Point(19, 33);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(66, 13);
@@ -341,15 +347,6 @@
             this.labelMethod.TabIndex = 1;
             this.labelMethod.Text = "Scan Format";
             this.labelMethod.Click += new System.EventHandler(this.labelMethod_Click);
-            // 
-            // textBoxProbeCount
-            // 
-            this.textBoxProbeCount.Location = new System.Drawing.Point(99, 204);
-            this.textBoxProbeCount.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxProbeCount.Name = "textBoxProbeCount";
-            this.textBoxProbeCount.Size = new System.Drawing.Size(39, 20);
-            this.textBoxProbeCount.TabIndex = 0;
-            this.textBoxProbeCount.Text = "2";
             // 
             // textBoxRingRevs
             // 
@@ -440,6 +437,7 @@
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.pictureBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(2, 2);
@@ -455,6 +453,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.labelNearestFilename);
             this.panel2.Controls.Add(this.labelDxMeasured);
             this.panel2.Controls.Add(this.labelDyMeasured);
             this.panel2.Controls.Add(this.labelRadiusMeasured);
@@ -467,10 +466,20 @@
             this.panel2.Size = new System.Drawing.Size(173, 310);
             this.panel2.TabIndex = 11;
             // 
+            // labelNearestFilename
+            // 
+            this.labelNearestFilename.AutoSize = true;
+            this.labelNearestFilename.Location = new System.Drawing.Point(4, 8);
+            this.labelNearestFilename.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelNearestFilename.Name = "labelNearestFilename";
+            this.labelNearestFilename.Size = new System.Drawing.Size(26, 13);
+            this.labelNearestFilename.TabIndex = 3;
+            this.labelNearestFilename.Text = "File:";
+            // 
             // labelDxMeasured
             // 
             this.labelDxMeasured.AutoSize = true;
-            this.labelDxMeasured.Location = new System.Drawing.Point(7, 85);
+            this.labelDxMeasured.Location = new System.Drawing.Point(4, 104);
             this.labelDxMeasured.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelDxMeasured.Name = "labelDxMeasured";
             this.labelDxMeasured.Size = new System.Drawing.Size(105, 13);
@@ -480,7 +489,7 @@
             // labelDyMeasured
             // 
             this.labelDyMeasured.AutoSize = true;
-            this.labelDyMeasured.Location = new System.Drawing.Point(7, 110);
+            this.labelDyMeasured.Location = new System.Drawing.Point(4, 129);
             this.labelDyMeasured.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelDyMeasured.Name = "labelDyMeasured";
             this.labelDyMeasured.Size = new System.Drawing.Size(105, 13);
@@ -490,7 +499,7 @@
             // labelRadiusMeasured
             // 
             this.labelRadiusMeasured.AutoSize = true;
-            this.labelRadiusMeasured.Location = new System.Drawing.Point(7, 135);
+            this.labelRadiusMeasured.Location = new System.Drawing.Point(4, 154);
             this.labelRadiusMeasured.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelRadiusMeasured.Name = "labelRadiusMeasured";
             this.labelRadiusMeasured.Size = new System.Drawing.Size(125, 13);
@@ -500,7 +509,7 @@
             // labelZPosition
             // 
             this.labelZPosition.AutoSize = true;
-            this.labelZPosition.Location = new System.Drawing.Point(7, 60);
+            this.labelZPosition.Location = new System.Drawing.Point(4, 79);
             this.labelZPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelZPosition.Name = "labelZPosition";
             this.labelZPosition.Size = new System.Drawing.Size(114, 13);
@@ -510,7 +519,7 @@
             // labelXPosition
             // 
             this.labelXPosition.AutoSize = true;
-            this.labelXPosition.Location = new System.Drawing.Point(7, 35);
+            this.labelXPosition.Location = new System.Drawing.Point(4, 54);
             this.labelXPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelXPosition.Name = "labelXPosition";
             this.labelXPosition.Size = new System.Drawing.Size(111, 13);
@@ -520,7 +529,7 @@
             // labelYPosition
             // 
             this.labelYPosition.AutoSize = true;
-            this.labelYPosition.Location = new System.Drawing.Point(7, 10);
+            this.labelYPosition.Location = new System.Drawing.Point(4, 29);
             this.labelYPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelYPosition.Name = "labelYPosition";
             this.labelYPosition.Size = new System.Drawing.Size(100, 13);
@@ -529,9 +538,9 @@
             // 
             // buttonSetRadius
             // 
-            this.buttonSetRadius.Location = new System.Drawing.Point(7, 213);
+            this.buttonSetRadius.Location = new System.Drawing.Point(7, 155);
             this.buttonSetRadius.Name = "buttonSetRadius";
-            this.buttonSetRadius.Size = new System.Drawing.Size(115, 45);
+            this.buttonSetRadius.Size = new System.Drawing.Size(95, 45);
             this.buttonSetRadius.TabIndex = 29;
             this.buttonSetRadius.Text = "Set Radius";
             this.buttonSetRadius.UseVisualStyleBackColor = true;
@@ -540,7 +549,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(165, 228);
+            this.label8.Location = new System.Drawing.Point(165, 170);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 28;
@@ -548,7 +557,7 @@
             // 
             // textBoxCurrentRadius
             // 
-            this.textBoxCurrentRadius.Location = new System.Drawing.Point(156, 244);
+            this.textBoxCurrentRadius.Location = new System.Drawing.Point(156, 186);
             this.textBoxCurrentRadius.Name = "textBoxCurrentRadius";
             this.textBoxCurrentRadius.ReadOnly = true;
             this.textBoxCurrentRadius.Size = new System.Drawing.Size(78, 20);
@@ -557,7 +566,7 @@
             // labelInputValue
             // 
             this.labelInputValue.AutoSize = true;
-            this.labelInputValue.Location = new System.Drawing.Point(166, 180);
+            this.labelInputValue.Location = new System.Drawing.Point(166, 122);
             this.labelInputValue.Name = "labelInputValue";
             this.labelInputValue.Size = new System.Drawing.Size(68, 13);
             this.labelInputValue.TabIndex = 26;
@@ -565,7 +574,7 @@
             // 
             // textBoxKnownRadius
             // 
-            this.textBoxKnownRadius.Location = new System.Drawing.Point(156, 196);
+            this.textBoxKnownRadius.Location = new System.Drawing.Point(156, 138);
             this.textBoxKnownRadius.Name = "textBoxKnownRadius";
             this.textBoxKnownRadius.Size = new System.Drawing.Size(78, 20);
             this.textBoxKnownRadius.TabIndex = 25;
@@ -810,27 +819,6 @@
             this.labelStatus.TabIndex = 15;
             this.labelStatus.Text = "Status:";
             // 
-            // buttonGetAveAngle
-            // 
-            this.buttonGetAveAngle.Location = new System.Drawing.Point(7, 324);
-            this.buttonGetAveAngle.Name = "buttonGetAveAngle";
-            this.buttonGetAveAngle.Size = new System.Drawing.Size(115, 30);
-            this.buttonGetAveAngle.TabIndex = 16;
-            this.buttonGetAveAngle.Text = "Correct Angle";
-            this.buttonGetAveAngle.UseVisualStyleBackColor = true;
-            this.buttonGetAveAngle.Click += new System.EventHandler(this.ButtonGetAveAngle_Click);
-            // 
-            // checkBoxAngleCorrect
-            // 
-            this.checkBoxAngleCorrect.AutoSize = true;
-            this.checkBoxAngleCorrect.Location = new System.Drawing.Point(7, 29);
-            this.checkBoxAngleCorrect.Name = "checkBoxAngleCorrect";
-            this.checkBoxAngleCorrect.Size = new System.Drawing.Size(115, 17);
-            this.checkBoxAngleCorrect.TabIndex = 24;
-            this.checkBoxAngleCorrect.Text = "Auto Angle Correct";
-            this.checkBoxAngleCorrect.UseVisualStyleBackColor = true;
-            this.checkBoxAngleCorrect.CheckedChanged += new System.EventHandler(this.CheckBoxAngleCorrect_CheckedChanged);
-            // 
             // textBoxSerialN
             // 
             this.textBoxSerialN.Location = new System.Drawing.Point(42, 43);
@@ -905,11 +893,11 @@
             this.toolStripButtonCursor,
             this.toolStripButtonLength,
             this.toolStripButtonSetKnownRadius,
-            this.toolStripButtonGrooveMidpoint,
             this.toolStripButtonRotate,
             this.toolStripButtonMirror,
             this.toolStripButtonWinData,
-            this.toolStripButtonFitToCircle});
+            this.toolStripButtonFitToCircle,
+            this.toolStripButtonShiftData});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1120, 33);
@@ -963,16 +951,6 @@
             this.toolStripButtonSetKnownRadius.Size = new System.Drawing.Size(30, 30);
             this.toolStripButtonSetKnownRadius.Text = "Set Known Radius";
             this.toolStripButtonSetKnownRadius.Click += new System.EventHandler(this.ToolStripButtonSetKnownRadius_Click);
-            // 
-            // toolStripButtonGrooveMidpoint
-            // 
-            this.toolStripButtonGrooveMidpoint.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonGrooveMidpoint.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonGrooveMidpoint.Image")));
-            this.toolStripButtonGrooveMidpoint.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonGrooveMidpoint.Name = "toolStripButtonGrooveMidpoint";
-            this.toolStripButtonGrooveMidpoint.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonGrooveMidpoint.Text = "Select Groove Vertical Midpoint";
-            this.toolStripButtonGrooveMidpoint.Click += new System.EventHandler(this.toolStripButtonGrooveMidpoint_Click);
             // 
             // toolStripButtonRotate
             // 
@@ -1196,18 +1174,13 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.label11);
-            this.tabPage2.Controls.Add(this.comboBoxProbeType);
+            this.tabPage2.Controls.Add(this.panelProbeInfo);
             this.tabPage2.Controls.Add(this.textBoxGrooveList);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.textBoxEndPosA);
             this.tabPage2.Controls.Add(this.textBoxStartPosA);
-            this.tabPage2.Controls.Add(this.comboBoxProbeDirection);
             this.tabPage2.Controls.Add(this.comboBoxMethod);
             this.tabPage2.Controls.Add(this.labelMethod);
-            this.tabPage2.Controls.Add(this.label4);
-            this.tabPage2.Controls.Add(this.label3);
-            this.tabPage2.Controls.Add(this.label7);
             this.tabPage2.Controls.Add(this.labelStartPos);
             this.tabPage2.Controls.Add(this.labelInputFIlename);
             this.tabPage2.Controls.Add(this.textBoxPitch);
@@ -1220,8 +1193,6 @@
             this.tabPage2.Controls.Add(this.textBoxPtsPerRev);
             this.tabPage2.Controls.Add(this.labelPitch);
             this.tabPage2.Controls.Add(this.radioButtonAngleInc);
-            this.tabPage2.Controls.Add(this.textBoxProbeSpacing);
-            this.tabPage2.Controls.Add(this.textBoxProbeCount);
             this.tabPage2.Controls.Add(this.radioButtonPtsperRev);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -1231,15 +1202,51 @@
             this.tabPage2.Text = "Inspection Params";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // panelProbeInfo
+            // 
+            this.panelProbeInfo.Controls.Add(this.numericUpDownProbeCount);
+            this.panelProbeInfo.Controls.Add(this.label11);
+            this.panelProbeInfo.Controls.Add(this.label5);
+            this.panelProbeInfo.Controls.Add(this.textBoxProbePhaseDeg);
+            this.panelProbeInfo.Controls.Add(this.comboBoxProbeType);
+            this.panelProbeInfo.Controls.Add(this.label3);
+            this.panelProbeInfo.Controls.Add(this.label4);
+            this.panelProbeInfo.Controls.Add(this.textBoxProbeSpacing);
+            this.panelProbeInfo.Controls.Add(this.comboBoxProbeDirection);
+            this.panelProbeInfo.Controls.Add(this.label7);
+            this.panelProbeInfo.Location = new System.Drawing.Point(12, 226);
+            this.panelProbeInfo.Name = "panelProbeInfo";
+            this.panelProbeInfo.Size = new System.Drawing.Size(222, 150);
+            this.panelProbeInfo.TabIndex = 41;
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(32, 303);
+            this.label11.Location = new System.Drawing.Point(23, 7);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(62, 13);
             this.label11.TabIndex = 11;
             this.label11.Text = "Probe Type";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 112);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(125, 13);
+            this.label5.TabIndex = 40;
+            this.label5.Text = "Probe Phase Angle (deg)";
+            // 
+            // textBoxProbePhaseDeg
+            // 
+            this.textBoxProbePhaseDeg.Location = new System.Drawing.Point(133, 105);
+            this.textBoxProbePhaseDeg.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxProbePhaseDeg.Name = "textBoxProbePhaseDeg";
+            this.textBoxProbePhaseDeg.Size = new System.Drawing.Size(39, 20);
+            this.textBoxProbePhaseDeg.TabIndex = 39;
+            this.textBoxProbePhaseDeg.Text = "179.5";
             // 
             // comboBoxProbeType
             // 
@@ -1247,34 +1254,16 @@
             this.comboBoxProbeType.Items.AddRange(new object[] {
             "SI",
             "LJ"});
-            this.comboBoxProbeType.Location = new System.Drawing.Point(99, 300);
+            this.comboBoxProbeType.Location = new System.Drawing.Point(90, 4);
             this.comboBoxProbeType.Name = "comboBoxProbeType";
             this.comboBoxProbeType.Size = new System.Drawing.Size(52, 21);
             this.comboBoxProbeType.TabIndex = 10;
             this.comboBoxProbeType.SelectedIndexChanged += new System.EventHandler(this.comboBoxProbeType_SelectedIndexChanged);
             // 
-            // textBoxGrooveList
-            // 
-            this.textBoxGrooveList.Location = new System.Drawing.Point(132, 275);
-            this.textBoxGrooveList.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxGrooveList.Name = "textBoxGrooveList";
-            this.textBoxGrooveList.Size = new System.Drawing.Size(82, 20);
-            this.textBoxGrooveList.TabIndex = 8;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(16, 278);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(111, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Grooves/Lands(1,5...)";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(20, 228);
+            this.label4.Location = new System.Drawing.Point(8, 57);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(77, 13);
@@ -1283,29 +1272,42 @@
             // 
             // textBoxProbeSpacing
             // 
-            this.textBoxProbeSpacing.Location = new System.Drawing.Point(100, 225);
+            this.textBoxProbeSpacing.Location = new System.Drawing.Point(90, 54);
             this.textBoxProbeSpacing.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxProbeSpacing.Name = "textBoxProbeSpacing";
             this.textBoxProbeSpacing.Size = new System.Drawing.Size(42, 20);
             this.textBoxProbeSpacing.TabIndex = 0;
             this.textBoxProbeSpacing.Text = "0";
             // 
+            // textBoxGrooveList
+            // 
+            this.textBoxGrooveList.Location = new System.Drawing.Point(126, 201);
+            this.textBoxGrooveList.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxGrooveList.Name = "textBoxGrooveList";
+            this.textBoxGrooveList.Size = new System.Drawing.Size(82, 20);
+            this.textBoxGrooveList.TabIndex = 8;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(10, 204);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(111, 13);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Grooves/Lands(1,5...)";
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.buttonMeasureDepths);
             this.tabPage3.Controls.Add(this.buttonSetRadius);
-            this.tabPage3.Controls.Add(this.buttonCorrectMidpoint);
             this.tabPage3.Controls.Add(this.label8);
             this.tabPage3.Controls.Add(this.buttonBuildProfile);
             this.tabPage3.Controls.Add(this.textBoxCurrentRadius);
-            this.tabPage3.Controls.Add(this.label5);
             this.tabPage3.Controls.Add(this.labelInputValue);
-            this.tabPage3.Controls.Add(this.textBoxProbePhaseDeg);
             this.tabPage3.Controls.Add(this.textBoxKnownRadius);
             this.tabPage3.Controls.Add(this.checkBoxUseFilename);
             this.tabPage3.Controls.Add(this.buttonProcessFile);
-            this.tabPage3.Controls.Add(this.buttonGetAveAngle);
-            this.tabPage3.Controls.Add(this.checkBoxAngleCorrect);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(315, 584);
@@ -1315,52 +1317,23 @@
             // 
             // buttonMeasureDepths
             // 
-            this.buttonMeasureDepths.Location = new System.Drawing.Point(7, 480);
+            this.buttonMeasureDepths.Location = new System.Drawing.Point(7, 110);
             this.buttonMeasureDepths.Name = "buttonMeasureDepths";
-            this.buttonMeasureDepths.Size = new System.Drawing.Size(115, 30);
+            this.buttonMeasureDepths.Size = new System.Drawing.Size(95, 30);
             this.buttonMeasureDepths.TabIndex = 46;
-            this.buttonMeasureDepths.Text = "MeasureDepths";
+            this.buttonMeasureDepths.Text = "Measure Depths";
             this.buttonMeasureDepths.UseVisualStyleBackColor = true;
             this.buttonMeasureDepths.Click += new System.EventHandler(this.buttonMeasureDepths_Click);
             // 
-            // buttonCorrectMidpoint
-            // 
-            this.buttonCorrectMidpoint.Location = new System.Drawing.Point(7, 426);
-            this.buttonCorrectMidpoint.Name = "buttonCorrectMidpoint";
-            this.buttonCorrectMidpoint.Size = new System.Drawing.Size(115, 30);
-            this.buttonCorrectMidpoint.TabIndex = 45;
-            this.buttonCorrectMidpoint.Text = "Correct To Midpoint";
-            this.buttonCorrectMidpoint.UseVisualStyleBackColor = true;
-            this.buttonCorrectMidpoint.Click += new System.EventHandler(this.buttonCorrectMidpoint_Click);
-            // 
             // buttonBuildProfile
             // 
-            this.buttonBuildProfile.Location = new System.Drawing.Point(7, 375);
+            this.buttonBuildProfile.Location = new System.Drawing.Point(7, 74);
             this.buttonBuildProfile.Name = "buttonBuildProfile";
-            this.buttonBuildProfile.Size = new System.Drawing.Size(115, 30);
+            this.buttonBuildProfile.Size = new System.Drawing.Size(95, 30);
             this.buttonBuildProfile.TabIndex = 44;
             this.buttonBuildProfile.Text = "Build profile ";
             this.buttonBuildProfile.UseVisualStyleBackColor = true;
             this.buttonBuildProfile.Click += new System.EventHandler(this.buttonBuildProfile_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(27, 74);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 13);
-            this.label5.TabIndex = 38;
-            this.label5.Text = "Probe Phase Angle (deg)";
-            // 
-            // textBoxProbePhaseDeg
-            // 
-            this.textBoxProbePhaseDeg.Location = new System.Drawing.Point(156, 71);
-            this.textBoxProbePhaseDeg.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxProbePhaseDeg.Name = "textBoxProbePhaseDeg";
-            this.textBoxProbePhaseDeg.Size = new System.Drawing.Size(36, 20);
-            this.textBoxProbePhaseDeg.TabIndex = 37;
-            this.textBoxProbePhaseDeg.Text = "179.5";
             // 
             // checkBoxUseFilename
             // 
@@ -1448,6 +1421,65 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.shiftDataXToolStripMenuItem,
+            this.removeDatasetToolStripMenuItem,
+            this.removeAllButThisToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 70);
+            // 
+            // shiftDataXToolStripMenuItem
+            // 
+            this.shiftDataXToolStripMenuItem.Name = "shiftDataXToolStripMenuItem";
+            this.shiftDataXToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.shiftDataXToolStripMenuItem.Text = "Shift Data ";
+            // 
+            // removeDatasetToolStripMenuItem
+            // 
+            this.removeDatasetToolStripMenuItem.Name = "removeDatasetToolStripMenuItem";
+            this.removeDatasetToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.removeDatasetToolStripMenuItem.Text = "Remove Dataset";
+            // 
+            // removeAllButThisToolStripMenuItem
+            // 
+            this.removeAllButThisToolStripMenuItem.Name = "removeAllButThisToolStripMenuItem";
+            this.removeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.removeAllButThisToolStripMenuItem.Text = "Remove All But This Set ";
+            // 
+            // toolStripButtonShiftData
+            // 
+            this.toolStripButtonShiftData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonShiftData.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonShiftData.Image")));
+            this.toolStripButtonShiftData.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonShiftData.Name = "toolStripButtonShiftData";
+            this.toolStripButtonShiftData.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonShiftData.Text = "toolStripButton1";
+            // 
+            // numericUpDownProbeCount
+            // 
+            this.numericUpDownProbeCount.Location = new System.Drawing.Point(89, 31);
+            this.numericUpDownProbeCount.Maximum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.numericUpDownProbeCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownProbeCount.Name = "numericUpDownProbeCount";
+            this.numericUpDownProbeCount.Size = new System.Drawing.Size(52, 20);
+            this.numericUpDownProbeCount.TabIndex = 41;
+            this.numericUpDownProbeCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownProbeCount.ValueChanged += new System.EventHandler(this.numericUpDownProbeCount_ValueChanged);
+            // 
             // MainInspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1483,6 +1515,8 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.panelProbeInfo.ResumeLayout(false);
+            this.panelProbeInfo.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabControlOutput.ResumeLayout(false);
@@ -1490,6 +1524,8 @@
             this.tabPageData.ResumeLayout(false);
             this.tabPageData.PerformLayout();
             this.tabPage4.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1518,7 +1554,6 @@
         private System.Windows.Forms.Label labelRingRevs;
         private System.Windows.Forms.TextBox textBoxRingRevs;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBoxProbeCount;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label labelRadiusMeasured;
@@ -1541,7 +1576,6 @@
         private System.Windows.Forms.ToolStripMenuItem connectToDAQToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem disconnectFromDAQToolStripMenuItem;
         private System.Windows.Forms.Label labelStatus;
-        private System.Windows.Forms.Button buttonGetAveAngle;
         private System.Windows.Forms.TextBox textBoxSerialN;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxCurrentPasses;
@@ -1569,7 +1603,6 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonFileOpen;
         private System.Windows.Forms.ToolStripButton toolStripButtonFileSave;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.CheckBox checkBoxAngleCorrect;
         private System.Windows.Forms.ToolStripMenuItem saveProfileDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveDepthDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveDXFProfileToolStripMenuItem;
@@ -1594,8 +1627,6 @@
         private System.Windows.Forms.ToolStripMenuItem viewLogFileToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.CheckBox checkBoxUseFilename;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBoxProbePhaseDeg;
         private System.Windows.Forms.TextBox textBoxGrooveList;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label10;
@@ -1604,8 +1635,6 @@
         private System.Windows.Forms.TextBox textBoxMiscManNotes;
         private System.Windows.Forms.Label labelCalStatus;
         private System.Windows.Forms.Button buttonBuildProfile;
-        private System.Windows.Forms.ToolStripButton toolStripButtonGrooveMidpoint;
-        private System.Windows.Forms.Button buttonCorrectMidpoint;
         private System.Windows.Forms.ToolStripMenuItem saveAxialProfileToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
@@ -1619,6 +1648,16 @@
         private System.Windows.Forms.Button buttonMeasureDepths;
         private System.Windows.Forms.ToolStripButton toolStripButtonFitToCircle;
         private System.Windows.Forms.ToolStripMenuItem OpenDXFFileToolStripMenuItem;
+        private System.Windows.Forms.Panel panelProbeInfo;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBoxProbePhaseDeg;
+        private System.Windows.Forms.Label labelNearestFilename;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem shiftDataXToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeDatasetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeAllButThisToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButtonShiftData;
+        private System.Windows.Forms.NumericUpDown numericUpDownProbeCount;
     }
 }
 

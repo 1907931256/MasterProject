@@ -23,5 +23,8 @@
     <Setting Name="manufStep" Type="System.String" Scope="User">
       <Value Profile="(Default)">unknown</Value>
     </Setting>
+    <Setting Name="_useFileNameData" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

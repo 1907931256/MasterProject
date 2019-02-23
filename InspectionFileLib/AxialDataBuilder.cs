@@ -22,7 +22,7 @@ namespace InspectionLib
         {
             try
             {
-                var points = new CylData();
+                var points = new CylData(script.InputDataFileName);
                 var len = data.GetLength(0);
                 if (len == 0)
                 {
@@ -38,7 +38,7 @@ namespace InspectionLib
                 {                   
                     points.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
                 }
-                var dataSet = new AxialDataSet(_barrel);
+                var dataSet = new AxialDataSet(_barrel,script.InputDataFileName);
                 dataSet.CorrectedCylData = points;
                 return dataSet;
             }

@@ -37,6 +37,7 @@ namespace WinFormsLib
                 throw;
             }
         }
+        
         public static PointF GetNearestPoint(Point mousePt, List<PointF> screenPoints)
         {
             try

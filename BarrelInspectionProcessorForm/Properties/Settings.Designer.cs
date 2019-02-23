@@ -106,5 +106,17 @@ namespace BarrelInspectionProcessorForm.Properties {
                 this["manufStep"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool _useFileNameData {
+            get {
+                return ((bool)(this["_useFileNameData"]));
+            }
+            set {
+                this["_useFileNameData"] = value;
+            }
+        }
     }
 }

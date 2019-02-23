@@ -18,7 +18,7 @@ namespace InspectionLib
                 var resultGrid = new CylGridData();
                 foreach (var cylstrip in correctedRingList)
                 {
-                    var resultStrip = new CylData();
+                    var resultStrip = new CylData(correctedRingList[0].FileName);
                     foreach (PointCyl pt in cylstrip)
                     {
                         var c = new RGBColor(1f, 1f, 1f);

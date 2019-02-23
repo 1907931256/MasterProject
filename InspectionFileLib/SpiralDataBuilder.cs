@@ -17,7 +17,7 @@ namespace InspectionLib
         {
             try
             {
-                var points = new CylData();
+                var points = new CylData(script.InputDataFileName);
                 for (int i = 0; i < data.Length; i++)
                 {                   
                     points.Add(GetPoint(i,script,data[i]));
@@ -43,7 +43,7 @@ namespace InspectionLib
                 int pointIndex = 0;
                 double thetaStart = Math.Abs(uncorrectedData[0].ThetaRad);
                 double thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
-                var pointList = new CylData();
+                var pointList = new CylData(uncorrectedData.FileName);
                 var uncorrectedGridData = new CylGridData();
 
                 while (pointIndex < uncorrectedData.Count)
@@ -64,7 +64,7 @@ namespace InspectionLib
 
                         pointCountPerRev = 0;
                         uncorrectedGridData.Add(pointList);
-                        pointList = new CylData();
+                        pointList = new CylData(uncorrectedData.FileName);
                         thetaStart = thetaEnd;
                         thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
                     }
@@ -84,8 +84,8 @@ namespace InspectionLib
                
 
                 var data = GetUncorrectedData(script, rawInputData);
-                var dataSet = new SpiralDataSet(_barrel);
-                var ringData = new RingDataSet(_barrel);
+                var dataSet = new SpiralDataSet(_barrel,script.InputDataFileName);
+                var ringData = new RingDataSet(_barrel,script.InputDataFileName);
                 ringData.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.UncorrectedSpiralData = BuildGridList(ringData.UncorrectedCylData, script.ThetaDir);
                 int totalrings = dataSet.UncorrectedSpiralData.Count;                

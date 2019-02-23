@@ -283,41 +283,12 @@ namespace InspectionLib
 
         }
 
-        public PointCyl[] CorrectForError(PointCyl[] points)
+        
+        public CylData CorrectForError(CylData points)
         {
             try
             {
-                var resultPts = new CylData();
-                foreach (var pt in points)
-                {
-                    var newPt = pt.Clone();
-                    var thetaRad = pt.ThetaRad - CorrectionAngle;
-                    if (thetaRad < 0)
-                    {
-                        thetaRad += Math.PI * 2.0;
-                    }
-                    if (thetaRad > Math.PI * 2.0)
-                    {
-                        thetaRad -= Math.PI * 2.0;
-                    }
-                    newPt.ThetaRad = thetaRad;
-                    resultPts.Add(newPt);
-                }
-                resultPts.SortByTheta();
-                
-                return resultPts.ToArray();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        CylData CorrectForError(CylData points)
-        {
-            try
-            {
-                var resultPts = new CylData();
+                var resultPts = new CylData(points.FileName);
                 foreach (var pt in points)
                 {
                     var newPt = pt.Clone();
@@ -384,7 +355,7 @@ namespace InspectionLib
         {
             try
             {
-                var resultPts = new CylData();
+                var resultPts = new CylData(points.FileName);
                 var indexList = GetIntersectionIndexList(points, intersections);
                 CalcAveAngleError(points, indexList);
                 return CorrectForError(points);

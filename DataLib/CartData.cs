@@ -13,7 +13,7 @@ namespace DataLib
   
     public class CartData : List<Vector3>
     {
-          
+        public string FileName { get; private set; }
         public double GetDataRotation(Vector3 pt1, Vector3 pt2)
         {
             return Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.X);
@@ -148,7 +148,7 @@ namespace DataLib
                 }
             }
             double midX = (x1 + x2) / 2.0;
-            CartData transData = new CartData();
+            CartData transData = new CartData(FileName);
             foreach (Vector3 pt in this)
             {
                 transData.Add(new Vector3(pt.X - midX, pt.Y, pt.Z));
@@ -158,7 +158,7 @@ namespace DataLib
         {
             try
             {
-                var cylData = new CylData();
+                var cylData = new CylData(FileName);
                 var pts = new List<PointCyl>();
                 foreach (var pt in this)
                 {
@@ -214,11 +214,12 @@ namespace DataLib
             }
           
         }
-        public DisplayData AsScreenData(ViewPlane viewPlane)
+        public DisplayData AsDisplayData(ViewPlane viewPlane)
         {
             try
             {
-                var pts = new DisplayData();
+                var pts = new DisplayData(FileName);
+
                 foreach (Vector3 v in this)
                 {
                     switch (viewPlane)
@@ -258,9 +259,13 @@ namespace DataLib
             }
         }
         BoundingBox _boundingBox;
-       
-        public CartData()
-        {          
+        //public CartData()
+        //{
+        //    FileName = "";
+        //}
+        public CartData(string filename)
+        {
+            FileName = filename;
         }
     }
 }

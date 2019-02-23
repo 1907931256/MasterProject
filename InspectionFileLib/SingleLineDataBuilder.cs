@@ -17,7 +17,7 @@ namespace InspectionLib
         {
             try
             {
-                var dataSet = new CartDataSet(_barrel);               
+                var dataSet = new CartDataSet(_barrel,script.InputDataFileName);               
                 dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet,script.StartLocation.X);                
                 return dataSet;
             }

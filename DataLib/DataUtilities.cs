@@ -52,7 +52,7 @@ namespace DataLib
         }
         public CylData CorrectData(CylData points)
         {
-            var result = new CylData();
+            var result = new CylData(points.FileName);
             points.SortByTheta();
             for(int i=0;i<points.Count;i++)
             {
@@ -84,7 +84,7 @@ namespace DataLib
                 {
                    for (int i = 0; i < points.Count  - 1 ; i++)
                    {
-                        var segment = new CylData();
+                        var segment = new CylData(points.FileName);
                         
                         segment.Add(points[i]);
                         segment.Add(points[i + 1]);
@@ -135,7 +135,7 @@ namespace DataLib
         {
             var spacing =  points[0].DistanceTo(points[1]);
             var pointSpacing = Math.Round(minFeatureSize / spacing);
-            var result = new CylData();
+            var result = new CylData(points.FileName);
             if(pointSpacing<2.0)
             {
                 result = points;
@@ -548,7 +548,7 @@ namespace DataLib
         {
             try
             {
-                var cartdata = new CartData();
+                var cartdata = new CartData("");
                 foreach(Vector2 pt in points)
                 {
                     cartdata.Add(new Vector3(pt.X, pt.Y, z));

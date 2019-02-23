@@ -9,7 +9,73 @@ namespace DataLib
 {
     public class DisplayData : List<PointF>
     {
-        public RectangleF BoundingRect(float borderPercent)
+        public string FileName { get; set; }
+        public string ShortFileName
+        {
+            get
+            {
+                return System.IO.Path.GetFileName(FileName);
+            }
+        }
+        public static string GetNearestFile(Point mousePt, List<DisplayData> displayDataList)
+        {
+            try
+            {
+                double minDist2 = double.MaxValue;
+                string filename = "";
+                PointF minPt = new PointF();
+                foreach (var display in displayDataList)
+                {
+                    foreach (var p in display)
+                    {
+                        var dist2 = Math.Pow(p.X - mousePt.X, 2) + Math.Pow(p.Y - mousePt.Y, 2);
+                        if (dist2 < minDist2)
+                        {
+                            minDist2 = dist2;
+                            minPt = new PointF(p.X, p.Y);
+                            filename = display.ShortFileName;
+                        }
+                    }
+                }
+
+                return filename;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public static PointF GetNearestPoint(Point mousePt, List<DisplayData> displayDataList)
+        {
+            try
+            {
+                double minDist2 = double.MaxValue;
+                string filename = "";
+                PointF minPt = new PointF();
+                foreach (var display in displayDataList)
+                {
+                    foreach (var p in display)
+                    {
+                        var dist2 = Math.Pow(p.X - mousePt.X, 2) + Math.Pow(p.Y - mousePt.Y, 2);
+                        if (dist2 < minDist2)
+                        {
+                            minDist2 = dist2;
+                            minPt = new PointF(p.X, p.Y);
+                            filename = display.ShortFileName;
+                        }
+                    }
+                }
+
+                return minPt;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public RectangleF BoundingRect(float borderPercent,int decimalPlaces)
         {
             float maxX = float.MinValue;
             float minX = float.MaxValue;
@@ -25,10 +91,12 @@ namespace DataLib
                 minY = Math.Min(pt.Y, minY);
             }
             width = maxX - minX;
-            height = maxY - minY;
-            float borderx = width * borderPercent/2;
-            float bordery = height * borderPercent/2;
-            return new RectangleF(minX - borderx, minY - bordery, (maxX - minX) + borderx, (maxY - minY) + bordery);
+            double round = Math.Pow(10, decimalPlaces);
+            float bordery = height * borderPercent / 2;
+            float minYRound = (float)(Math.Floor((minY-bordery) * round)/round);
+            float maxYRound = (float)(Math.Ceiling((maxY+bordery) * round) / round);
+            height = (float)(maxYRound - minYRound);                    
+            return new RectangleF(minX , minYRound , width , height );
         }
         public RectangleF BoundingRect()
         {
@@ -45,7 +113,15 @@ namespace DataLib
                 }
                 return new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
-     
+        //public DisplayData()
+        //{
+        //    FileName = "";
+
+        //}
+        public DisplayData(string filename)
+        {
+            FileName = filename;
+        }
     }
    
     

@@ -217,7 +217,7 @@ namespace BarrelInspectionProcessorForm
 
                     OpenProcessedCartDataFiles(_inputFileNames);
                     
-                    DisplayData();
+                   // DisplayData();
                     labelStatus.Text = "Processed File Read In OK";
 
                 }
@@ -258,7 +258,7 @@ namespace BarrelInspectionProcessorForm
                     
 
                 }
-                _inspScript = new CartInspScript(ScanFormat.LINE);
+                //_inspScript = new CartInspScript(ScanFormat.LINE);
                 _inspDataSetList.Add(inspDataSet);
             }
         }
@@ -280,7 +280,7 @@ namespace BarrelInspectionProcessorForm
                     }
 
                 }
-                _inspScript = new CylInspScript(ScanFormat.RING);
+                //_inspScript = new CylInspScript(ScanFormat.RING);
                 _inspDataSetList.Add(inspDataSet);
             }
         }
@@ -388,7 +388,7 @@ namespace BarrelInspectionProcessorForm
             try
             {
                 BuildBarrelFromInputs();                
-                double probeSpacing =0 ;
+                
                 double startA = 0;
                 double startX = 0;
                 int ptsPerRev = 1;
@@ -396,13 +396,10 @@ namespace BarrelInspectionProcessorForm
                 var endPos = new CNCLib.XAMachPostion(0,0);
                 double endA = 0;
                 double endX = 0;
-                //read ring revolutions
-                double ringRevs = 1;
+                
+                
                 double axialInc = 0;
-                if (textBoxRingRevs.Enabled)
-                {
-                    InputVerification.TryGetValue(textBoxRingRevs, "x>0", 0, double.MaxValue, out ringRevs);
-                }
+                
                 if (_scanFormat == ScanFormat.AXIAL)
                 {       
 
@@ -447,19 +444,21 @@ namespace BarrelInspectionProcessorForm
                 double pitch = Math.Abs(startX - endX) / ringCount;
                 textBoxPitch.Text = pitch.ToString("f3");
 
+                var calDataSet = GetCalDataSet();
+                var probeSetup = GetProbeSetup();
+                var outputUnit = new MeasurementUnit(LengthUnit.INCH);
 
                 if (_useFilenameData)
                 { 
-                        _inspScript = InspectionScriptBuilder.BuildScript(dataFilename, axialInc, ringRevs, pitch, ptsPerRev);
+                        _inspScript = InspectionScriptBuilder.BuildScriptFromFile(_scanFormat,outputUnit,probeSetup,calDataSet,
+                            dataFilename,ptsPerRev);
                 }
                 else
                 {
-                    InputVerification.TryGetValue(textBoxProbeSpacing, "x>0", 0, double.MaxValue, out probeSpacing);
+                   
                     //read start angle
-
                     InputVerification.TryGetValue(textBoxStartPosA, "x>0", 0, double.MaxValue, out startA);
                     //read start x 
-
                     InputVerification.TryGetValue(textBoxStartPosX, "x>0", 0, double.MaxValue, out startX);
 
                     if (textBoxEndPosA.Enabled)
@@ -483,37 +482,60 @@ namespace BarrelInspectionProcessorForm
                     }
                     else
                     {
-                        ringRevs = (endA - startA) / 360.0;
+                        double ringRevs = (endA - startA) / 360.0;
                         pitch = (endX - startX) / ringRevs;
                         axialInc = Math.Abs((endX - startX) / (ptsPerRev * ringRevs));
                     }
                    
-                    _inspScript = InspectionScriptBuilder.BuildScript(
-                        dataFilename, _probes[0].Type,_scanFormat, 
-                        startPos, endPos, axialInc, ringRevs, 
-                        pitch, ptsPerRev, grooves);
+                    _inspScript =  InspectionScriptBuilder.BuildScript(_scanFormat, outputUnit, probeSetup, calDataSet,
+                            dataFilename, ptsPerRev,pitch, startPos, endPos);
                 }
-                
-                _inspScript.ProbeSetup.UseDualProbeAve = (_probeCount==2);
+               
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        ProbeSetup GetProbeSetup()
+        {
+            try
+            {
+                var probeSetup = new ProbeSetup();
+                probeSetup.UseDualProbeAve = (_probeCount == 2);
                 double probePhase = 0;
-                if(_inspScript.ProbeSetup.UseDualProbeAve)
+                if (probeSetup.UseDualProbeAve)
                 {
                     InputVerification.TryGetValue(textBoxProbePhaseDeg, "360.0>x>=-360.0", -360.0, 360, out probePhase);
-                    _inspScript.ProbeSetup.ProbePhaseDifferenceRad = Math.PI * probePhase / 180.0;
+                    probeSetup.ProbePhaseDifferenceRad = Math.PI * probePhase / 180.0;
                 }
-                double ringCalDiameterInch=0;
-                InputVerification.TryGetValue(textBoxRingCal, "x>0", out ringCalDiameterInch);
-                _inspScript.ProbeSetup.ProbeDirection = _probeDirection;
-                _inspScript.ProbeSetup.ProbeCount = _probeCount;
-                _inspScript.ProbeSetup.ProbeList.AddRange(_probes);
+                
+                probeSetup.ProbeDirection = _probeDirection;
+                probeSetup.ProbeCount = _probeCount;
+                probeSetup.ProbeList.AddRange(_probes);
+                return probeSetup;
+            }
+            catch (Exception)
+            {
 
-                CalDataSet calDataSet = new CalDataSet(_barrel.DimensionData.LandNominalDiam/2);
-                switch(_knownDiamType)
+                throw;
+            }
+            
+        }
+        CalDataSet GetCalDataSet()
+        {
+            try
+            {
+                CalDataSet calDataSet = new CalDataSet(_barrel.DimensionData.LandNominalDiam / 2);
+
+                switch (_knownDiamType)
                 {
                     case DiamCalType.RINGCAL:
                         if (_calFilename != "")
                         {
-                            calDataSet = CalDataBuilder.BuildCalData(_inspScript,ringCalDiameterInch, _calFilename);
+                            double ringCalDiameterInch = 0;
+                            InputVerification.TryGetValue(textBoxRingCal, "x>0", out ringCalDiameterInch);
+                            calDataSet = CalDataBuilder.BuildCalData(_inspScript, ringCalDiameterInch, _calFilename);
                             _barrel.DimensionData.ActualLandDiam = calDataSet.NominalRadius * 2;
                         }
                         else
@@ -530,14 +552,16 @@ namespace BarrelInspectionProcessorForm
                         calDataSet = new CalDataSet(_barrel.DimensionData.LandNominalDiam / 2);
                         break;
                 }
-                _inspScript.CalDataSet = calDataSet;
+                return calDataSet;
+                
             }
             catch (Exception)
             {
+
                 throw;
             }
+            
         }
-        
        // double _axialInc;
         string _outputPath;
         private string GetShortenedPathString(string path)
@@ -585,15 +609,15 @@ namespace BarrelInspectionProcessorForm
                 {
                     case ScanFormat.AXIAL:
                         var axialbuilder = new AxialDataBuilder(_barrel);
-                        return Task.Run(() => axialbuilder.BuildAxialAsync(ct, progress, _inspScript as CylInspScript, rawSiData, _dataOutOptions));
+                        return Task.Run(() => axialbuilder.BuildAxialAsync(ct, progress, _inspScript as AxialInspScript, rawSiData, _dataOutOptions));
 
                     case ScanFormat.RING:
                         var ringBuilder = new RingDataBuilder(_barrel);
-                        return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript as CylInspScript, rawSiData, _dataOutOptions));
+                        return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript as RingInspScript, rawSiData, _dataOutOptions));
 
                     case ScanFormat.SPIRAL:
                         var spiralBuilder = new SpiralDataBuilder(_barrel);
-                        return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript as CylInspScript, rawSiData, _dataOutOptions));
+                        return Task.Run(() => spiralBuilder.BuildSpiralAsync(ct, progress, _inspScript as SpiralInspScript, rawSiData, _dataOutOptions));
 
                     //case ScanFormat.LINE:
                     //    var lineBuilder = new CartesianDataBuilder(_barrel);
@@ -687,6 +711,7 @@ namespace BarrelInspectionProcessorForm
                 var cts = new CancellationTokenSource();
                 var ct = cts.Token;
                 string status = "Processing file";
+                Refresh();
                 labelStatus.Text = status;
                 foreach (string filename in _inputFileNames)
                 {
@@ -695,6 +720,7 @@ namespace BarrelInspectionProcessorForm
                     _inspDataSetList.Add(inspDataSet);
                 }
                 labelStatus.Text = "Finished Processing File";
+                Refresh();
                 ResetOnClick();               
 
                 radioButtonViewProcessed.Checked = true;
@@ -728,7 +754,7 @@ namespace BarrelInspectionProcessorForm
                 }
                 progressBarProcessing.Value = 0;
                 textBoxDataOut.Lines = dataOuputText.ToArray();
-                DisplayData();
+               // DisplayData();
             }
             catch (Exception)
             {
@@ -746,6 +772,7 @@ namespace BarrelInspectionProcessorForm
                 await ProcessFiles();               
                 CorrectForAveAngle();
                 ResetOnClick();
+                DisplayData();
             }
             catch (Exception ex)
             {
@@ -1338,6 +1365,7 @@ namespace BarrelInspectionProcessorForm
                         }
                         displayData.FileName = ringData.Filename;
                     }
+                    
                     _displayDataList.Add(displayData);
                 }                
             }
@@ -1412,8 +1440,15 @@ namespace BarrelInspectionProcessorForm
         { 
             try
             {
-                BuildDefDisplayDataList();
-                DisplayData(_displayDataList);
+                if(_inspDataSetList[0] is SpiralDataSet spiralData)
+                {
+                    Load3DView(spiralData.CorrectedSpiralData);
+                }
+                else
+                {
+                    BuildDefDisplayDataList();
+                    DisplayData(_displayDataList);
+                }                
             }
             catch (Exception)
             {
@@ -1859,8 +1894,8 @@ namespace BarrelInspectionProcessorForm
 
                             ringData.CorrectedCylData = corrData;
                             ringData.CorrectedLandPoints = da.CorrectForError(ringData.CorrectedLandPoints);
-                            dataOuputText.Add("***Correcting Angle****" + inspDataSet.Filename);
 
+                            dataOuputText.Add("***Correcting Angle****" + inspDataSet.Filename);
                             dataOuputText.Add("Correction angle: " + GeometryLib.Geometry.ToDegs(da.CorrectionAngle).ToString("f5") + " degs");
                             dataOuputText.Add("Ave radius: " + da.AveRadius.ToString("f5"));
                                                
@@ -1868,7 +1903,7 @@ namespace BarrelInspectionProcessorForm
                         
                     }
                    
-                    DisplayData();
+                   // DisplayData();
                 }
                 else
                 {
@@ -2455,9 +2490,10 @@ namespace BarrelInspectionProcessorForm
                     {
                         if (_inspDataSetList[0] is RingDataSet ringData)
                         {
-                            var resetData = DataBuilder.ResetToKnownRadius(ringData.CorrectedCylData, _knownRadiusPt, knownR);
-                            //_displayData.Add(resetData.AsScreenData(_viewPlane));
-                            DisplayData();
+                            var resetData = DataBuilder.ResetToKnownRadius(ringData.CorrectedCylData, _knownRadiusPt, knownR);                             
+                            _displayDataList.Clear();
+                            _displayDataList.Add(resetData.AsDisplayData(ViewPlane.THETAR));
+                            DisplayData(_displayDataList);
                         }
                     }                  
                 }
@@ -2643,12 +2679,12 @@ namespace BarrelInspectionProcessorForm
                 userControl11.MainViewport.Camera = userControl11.TheCamera;
                 userControl11.PositionCamera();
 
-                COLORCODE colorcode = _dataOutOptions.SurfaceColorCode;
+                COLORCODE colorcode = COLORCODE.RAINBOW;
                 double maxDepth = (_barrel.DimensionData.GrooveMaxDiam - _barrel.DimensionData.LandMinDiam) / 2.0;
                 double nominalRadius = _barrel.DimensionData.LandNominalDiam / 2.0;
                 double scaleFactor = _dataOutOptions.SurfaceFileScaleFactor;
                 double radialDirection = -1;
-
+                labelStatus.Text = "Building 3D Model";
                 mb.BuildModel(ref MainModel3Dgroup, spiralScan, radialDirection, nominalRadius, maxDepth, scaleFactor, colorcode);
 
                 ModelVisual3D model_visual = new ModelVisual3D();
@@ -2941,7 +2977,7 @@ namespace BarrelInspectionProcessorForm
                     cartDataSet.CartData.AddRange(pointList);                      
                     _inspDataSetList = new List<InspDataSet>();
                     _inspDataSetList.Add(cartDataSet);
-                    DisplayData();
+                    
                 }
             }
             catch (Exception)
@@ -2955,6 +2991,7 @@ namespace BarrelInspectionProcessorForm
             try
             {
                 OpenDxfFile();
+                DisplayData();
             }
             catch (Exception ex)
             {

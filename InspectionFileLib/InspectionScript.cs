@@ -9,14 +9,24 @@ using DataLib;
 using ProbeController;
 namespace InspectionLib
 {
- 
-   
-   
+
+    public enum ScanFormat
+    {
+        RING,
+        SPIRAL,
+        AXIAL,
+        LAND,
+        GROOVE,
+        CAL,
+        LINE,
+        UNKNOWN
+    }
+
     /// <summary>
     /// contains properties of inspection script used to build NC inspection file
     /// </summary>
     /// 
-   
+
     [System.Xml.Serialization.XmlInclude(typeof(CylInspScript))]
   
     public  class InspectionScript
@@ -28,13 +38,13 @@ namespace InspectionLib
         public ProbeSetup ProbeSetup { get; set; }
         public CalDataSet CalDataSet { get; set; }        
         
-        public InspectionScript()
+        public InspectionScript(ScanFormat scanFormat,MeasurementUnit outputUnit, ProbeSetup probeSetup,CalDataSet calDataSet)
         {
-            //FileName = InspectionScriptFile.TempFileName;
-            ScanFormat = ScanFormat.RING;
-            OutputUnit = new MeasurementUnit(LengthUnit.INCH);
-            CalDataSet = new CalDataSet();
-            ProbeSetup = new ProbeSetup();
+
+            ScanFormat = scanFormat;
+            OutputUnit = outputUnit;
+            CalDataSet = calDataSet;
+            ProbeSetup = probeSetup;
             
         }
     }

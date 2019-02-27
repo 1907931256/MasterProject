@@ -11,9 +11,15 @@ namespace InspectionLib
 {
     public class SpiralDataBuilder : DataBuilder
     {
-       
 
-        override protected CylData GetData(CylInspScript script, double[] data)
+        protected PointCyl GetPoint(int i, SpiralInspScript script, double r)
+        {
+            var z = script.ZDir * i / script.PitchInch + script.StartLocation.X;
+            var theta = script.ThetaDir * i * script.AngleIncrement + Geometry.ToRadians(script.StartLocation.Adeg);
+            var pt = new PointCyl(r, theta, z, i);
+            return pt;
+        }
+        protected CylData GetData(SpiralInspScript script, double[] data)
         {
             try
             {
@@ -77,7 +83,7 @@ namespace InspectionLib
             }
 
         }
-        SpiralDataSet BuildSpiralFromRadialData(CylInspScript script, double[] rawInputData, IProgress<int> progress)
+        SpiralDataSet BuildSpiralFromRadialData(SpiralInspScript script, double[] rawInputData, IProgress<int> progress)
         {
             try
             {
@@ -121,7 +127,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, SpiralInspScript script, double[] rawDataSet, DataOutputOptions options)
         {
             try
             {

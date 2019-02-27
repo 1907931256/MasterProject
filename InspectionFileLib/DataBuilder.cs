@@ -39,14 +39,7 @@ namespace InspectionLib
         protected virtual CylData GetData(CylInspScript script, double[] data)
         {
            return new CylData(script.InputDataFileName);
-        }       
-        protected PointCyl GetPoint(int i, CylInspScript script, double r)
-        {
-            var z = script.ZDir * i * script.AxialIncrement + script.StartLocation.X;
-            var theta = script.ThetaDir * i * script.AngleIncrement + Geometry.ToRadians(script.StartLocation.Adeg);
-            var pt = new PointCyl(r, theta, z, i);
-            return pt;
-        }        
+        }              
         protected CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
         {
             try

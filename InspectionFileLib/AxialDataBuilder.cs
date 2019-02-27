@@ -13,12 +13,19 @@ namespace InspectionLib
 {
     public class AxialDataBuilder : DataBuilder
     {
+        protected PointCyl GetPoint(int i, AxialInspScript script, double r)
+        {
+            var z = script.ZDir * i * script.AxialIncrement + script.StartLocation.X;
+            var theta = Geometry.ToRadians(script.StartLocation.Adeg);
+            var pt = new PointCyl(r, theta, z, i);
+            return pt;
+        }
         /// <summary>
         /// build axial data set from raw data
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildAxialPoints(CylInspScript script, double[] data)
+        InspDataSet BuildAxialPoints(AxialInspScript script, double[] data)
         {
             try
             {
@@ -48,7 +55,7 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildFromAxial(CylInspScript script, double[] rawInputData)
+        InspDataSet BuildFromAxial(AxialInspScript script, double[] rawInputData)
         {
             try
             {
@@ -72,7 +79,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, AxialInspScript script, double[] rawDataSet, DataOutputOptions options)
         {
             try
             {

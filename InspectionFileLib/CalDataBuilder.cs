@@ -25,7 +25,7 @@ namespace InspectionLib
                     {
                         var dualData = new KeyenceDualSiDataSet(script, CsvFileName);
 
-                        data = dualData.GetData(DataLib.ScanFormat.CAL)[0];
+                        data = dualData.GetData(ScanFormat.CAL)[0];
                     }
                     return new CalDataSet(ringGageDiamInch, data, cylScript.ProbeSetup.ProbeDirection);
                 }

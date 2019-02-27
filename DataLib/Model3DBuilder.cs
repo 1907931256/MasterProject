@@ -184,8 +184,7 @@ namespace DataLib
                         x[0] = zio * dzInput;
                         x[1] = (zio + 1) * dzInput;
                         x[2] = (zio + 2) * dzInput;
-                        var func = MathNet.Numerics.Fit.PolynomialFunc(x, y, 2);
-
+                        var func = MathNet.Numerics.Fit.PolynomialFunc(x, y, 2);                        
                         while (z < z1 && zOutIndex < zOutCount)
                         {
                             valuesOut[xio, zOutIndex] = func(z);
@@ -218,7 +217,7 @@ namespace DataLib
         {
             try
             {
-                AmbientLight ambient_light = new AmbientLight(Colors.Gray);
+                AmbientLight ambient_light = new AmbientLight(Colors.DarkGray);
                 DirectionalLight directional_light = new DirectionalLight(Colors.Gray, new Vector3D(-1.0, -3.0, -2.0));
                 model_group.Children.Add(ambient_light);
                 model_group.Children.Add(directional_light);
@@ -242,12 +241,12 @@ namespace DataLib
             {
                 // If the point is in the point dictionary,
                 // return its saved index.
-                if (pointDictionary.ContainsKey(point))
-                    return pointDictionary[point];
+               // if (pointDictionary.ContainsKey(point))
+               //     return pointDictionary[point];
 
                 // We didn't find the point. Create it.
                 points.Add(point);
-                pointDictionary.Add(point, points.Count - 1);
+               // pointDictionary.Add(point, points.Count - 1);
 
                 // Set the point's texture coordinates.
                 texture_coords.Add(
@@ -323,20 +322,32 @@ namespace DataLib
 
                 // Make the surface's material using an image brush.
                 ImageBrush texture_brush = new ImageBrush();
-               
+                //ImageBrush grid_brush = new ImageBrush();
                 string filename = "texture.png";
+                //filename = "Grid.png";
                 var  uri = new Uri(filename,UriKind.Relative);
                 texture_brush.ImageSource = new BitmapImage(uri);
-                DiffuseMaterial surface_material = new DiffuseMaterial(texture_brush);
-
+                //grid_brush.ImageSource = new BitmapImage(new Uri(filename, UriKind.Relative));
+                var surface_material = new DiffuseMaterial(texture_brush );
+                //var surface_material = new DiffuseMaterial(grid_brush);
                 // Make the mesh's model.
                 GeometryModel3D surface_model = new GeometryModel3D(mesh, surface_material);
 
+                var xOrigin = (xIndexMin - offset_x) * xScaling;
+                var yOrigin = 0;
+                var zOrigin = (zIndexMin - offset_z) * zScaling;
+
+
+                var axis = new Rect3D(xOrigin, yOrigin, zOrigin, dxIndex * xScaling, dxIndex * xScaling, dzIndex * zScaling);
+                var axisBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                var axisMaterial = new DiffuseMaterial(axisBrush);
+                //var axisModel = new GeometryModel3D(axis, axisMaterial);
                 // Make the surface visible from both sides.
                 surface_model.BackMaterial = surface_material;
 
                 // Add the model to the model groups.
                 model_group.Children.Add(surface_model);
+               // model_group.Children.Add(axis);
             }
             catch (Exception)
             {

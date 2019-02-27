@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CNCLib;
 using DataLib;
+using ProbeController;
+
 namespace InspectionLib
 {
     public class InspectionScriptBuilder
@@ -20,6 +22,7 @@ namespace InspectionLib
         static double getVal(string str, string name)
         {
             double val = 0.0;
+            str = str.ToUpper();
             str = str.Trim();
             int len = name.Length;
             if (str.StartsWith(name))
@@ -99,12 +102,21 @@ namespace InspectionLib
        
         static ScanFormat GetMethod(string label)
         {
-            label = label.Trim();
-            label = label.ToUpper();
-            var dict = BuildMethodDictionary();
-            var methType = ScanFormat.RING;
-            dict.TryGetValue(label, out methType);
-            return methType;
+            try
+            {
+                label = label.Trim();
+                label = label.ToUpper();
+                var dict = BuildMethodDictionary();
+                var methType = ScanFormat.UNKNOWN;
+                dict.TryGetValue(label, out methType);
+                return methType;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
         static BarrelLib.BarrelType GetBarrelType(string label)
         {
@@ -142,88 +154,91 @@ namespace InspectionLib
             _landName = "LANDS";
             _grooveName = "GROOVES";
         }
-        static CylInspScript BuildScript(string filename, double axisIncrement, double revs,
-            double pitchInch, int ptsPerRev, ScanFormat method)
+        static public InspectionScript BuildScriptFromFile(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
+            CalDataSet calDataSet, string filename, int ptsPerRev)
         {
-            CylInspScript script;
-            var fileCodes = ParseFilename(filename);
-            
-            int len = fileCodes.Length;
-
-            // var start = new MachinePosition(MachineGeometry.CYLINDER);
-            var start = FindStartPosition(fileCodes, _linAxisName);
-
-            // var end = new MachinePosition(MachineGeometry.CYLINDER);
-            var end = FindEndPosition(fileCodes, _linAxisName);
-            //start.X = getVal(fileCodes[2].ToUpper(), _linAxisName);
-
-            switch (method)
+            try
             {
-                case ScanFormat.RING:
-                    end.X = start.X;
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.AXIAL:
-                case ScanFormat.SPIRAL:
-                    end.X = getVal(fileCodes[3].ToUpper(), _linAxisName);
-                    start.Adeg = getVal(fileCodes[4].ToUpper(), _rotAxisName);
-                    end.Adeg = getVal(fileCodes[5].ToUpper(), _rotAxisName);
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.GROOVE:
-                case ScanFormat.LAND:
-                    var groovelabels = new string[] { _grooveName, _landName };
-                    var groove1 = (int)getVal(fileCodes[4].ToUpper(), groovelabels);
-                    var groove2 = (int)getVal(fileCodes[5].ToUpper(), groovelabels);
-                    int[] grooves = new int[2] { groove1, groove2 };
-                    script = new CylInspScript(method, start, end, axisIncrement, grooves);
-                    break;
-                default:
-                    script = new CylInspScript(method, start, end);
-                    break;
+                switch (scanFormat)
+                {
+                    case ScanFormat.RING:
+                        return BuildRingScriptFromFilename(scanFormat, outputUnit, probeSetup,
+                             calDataSet, filename, ptsPerRev);
+                    case ScanFormat.SPIRAL:
+                        return BuildSpirScriptFromFilename(scanFormat, outputUnit, probeSetup,
+                             calDataSet, filename, ptsPerRev);
+                    default:
+                        return new InspectionScript(scanFormat, outputUnit, probeSetup, calDataSet);
+                }
             }
-            script.InputDataFileName = filename;
-            return script;
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static public InspectionScript BuildScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
+            CalDataSet calDataSet, string filename, int ptsPerRev, double spiralPitchInch, XAMachPostion start, XAMachPostion end)
+        {
+            try
+            {
+                switch (scanFormat)
+                {
+                    case ScanFormat.RING:
+                        return BuildRingScript(scanFormat, outputUnit, probeSetup,
+                             calDataSet, filename, ptsPerRev, start, end);
+                    case ScanFormat.SPIRAL:
+                        return BuildSpirScript(scanFormat, outputUnit, probeSetup,
+                             calDataSet, filename, ptsPerRev, spiralPitchInch, start, end);
+                    default:
+                        return new InspectionScript(scanFormat, outputUnit, probeSetup, calDataSet);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }           
         }
 
-        static public CylInspScript BuildScript(string filename, double axisIncrement, double revs, double pitchInch, int ptsPerRev)
+    static SpiralInspScript BuildSpirScriptFromFilename(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, CalDataSet calDataSet,
+            string filename, int ptsPerRev)
         {
             var fileCodes = ParseFilename(filename);
-            int len = fileCodes.Length;
-            var method = GetMethod(fileCodes[len - 1]);
-            method = ScanFormat.RING;            
-            return BuildScript(filename, axisIncrement, revs, pitchInch, ptsPerRev, method);
+            var start = new XAMachPostion();
+            var end = new XAMachPostion();
+            start.X = getVal(fileCodes[2], _linAxisName);
+            end.X = getVal(fileCodes[3], _linAxisName);
+            start.Adeg = getVal(fileCodes[4], _rotAxisName);
+            end.Adeg = getVal(fileCodes[5], _rotAxisName);
+            var dx = end.X - start.X;
+            var da = end.Adeg - start.Adeg;
+            var rotations = da / 360;
+            double spiralPitchInch = dx / rotations;
+            return new SpiralInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev, spiralPitchInch);
         }
-        static public InspectionScript BuildScript(string filename,ProbeController.ProbeType probeType, ScanFormat method,
-            XAMachPostion start, XAMachPostion end, double axisIncrement, double revs, double pitchInch, int ptsPerRev, int[] grooves)
+        static  SpiralInspScript BuildSpirScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, 
+            CalDataSet calDataSet, string filename, int ptsPerRev, double spiralPitchInch, XAMachPostion start, XAMachPostion end)
         {
-            InspectionScript script;
-            switch (method)
-            {
-                case ScanFormat.RING:
-                    end.X = start.X;
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.AXIAL:
-                case ScanFormat.SPIRAL:
-
-                    script = new CylInspScript(method, start, end, pitchInch, ptsPerRev);
-                    break;
-                case ScanFormat.GROOVE:
-                case ScanFormat.LAND:
-                    script = new CylInspScript(method, start, end, axisIncrement, grooves);
-                    break;
-                case ScanFormat.LINE:
-                
-                    script = new CartInspScript(method);
-                    break;
-                case ScanFormat.CAL:
-                default:
-                    script = new CylInspScript(method, start, end);
-                    break;
-            }
-            script.InputDataFileName = filename;
-            return script;
+            return  new SpiralInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev, spiralPitchInch);
+        }
+        static  RingInspScript BuildRingScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, 
+            CalDataSet calDataSet, string filename,  int ptsPerRev,XAMachPostion start,XAMachPostion end)
+        {
+            return new RingInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev);
+        }
+        static   RingInspScript BuildRingScriptFromFilename(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, 
+            CalDataSet calDataSet, 
+            string filename,  int ptsPerRev)
+        {            
+            var fileCodes = ParseFilename(filename);
+            var start = new XAMachPostion();
+            var end = new XAMachPostion();
+            start.X = getVal(fileCodes[2], _linAxisName);           
+            start.Adeg = getVal(fileCodes[3], _rotAxisName);
+            end.X = start.X;
+            end.Adeg = getVal(fileCodes[4], _rotAxisName);
+            return new RingInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev);
         }
     }
 }

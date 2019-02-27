@@ -9,17 +9,9 @@ namespace DataLib
     public enum RawDataFormat
     {
         RADIAL,
-        XY
+        XY,
+        UNKNOWN
     }
-    public enum ScanFormat
-    {
-        RING,
-        SPIRAL,
-        AXIAL,
-        LAND,
-        GROOVE,
-        CAL,
-        LINE
-    }
+    
 
 }

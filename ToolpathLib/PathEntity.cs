@@ -196,6 +196,9 @@ namespace ToolpathLib
             SortByPassExcOrder();
         }
     }
+    /// <summary>
+    /// holds location, jet direction feedrate of xsection path entity
+    /// </summary>
     public class XSectionPathEntity
     {
         public double AlongLocation { get; set; }

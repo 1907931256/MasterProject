@@ -21,30 +21,37 @@ namespace InspectionLib
         {
             try
             {
-
-                var points = new CylData(script.InputDataFileName);
-                double probeSpacing = script.CalDataSet.ProbeSpacingInch;
-                int pointCt = Math.Min(script.PointsPerRevolution, data.GetUpperBound(0));
-               
-                double minDiam = double.MaxValue;
-                for (int i = 0; i < pointCt; i++)
+                if(script is RingInspScript ringScript)
                 {
-                    var z = script.StartLocation.X;
-                    var theta = script.ThetaDir * i * script.AngleIncrement + Geometry.ToRadians(script.StartLocation.Adeg);                    
+                    var points = new CylData(ringScript.InputDataFileName);
+                    double probeSpacing = ringScript.CalDataSet.ProbeSpacingInch;
+                    int pointCt = Math.Min(ringScript.PointsPerRevolution, data.GetUpperBound(0));
 
-                    var diam = data[i];
-                    var sum = data[i];
-                    if (sum < minDiam)
+                    double minDiam = double.MaxValue;
+                    for (int i = 0; i < pointCt; i++)
                     {
-                        minDiam = sum;
+                        var z = script.StartLocation.X;
+                        var theta = script.ThetaDir * i * ringScript.AngleIncrement + Geometry.ToRadians(ringScript.StartLocation.Adeg);
+
+                        var diam = data[i];
+                        var sum = data[i];
+                        if (sum < minDiam)
+                        {
+                            minDiam = sum;
+                        }
+                        var pt1 = new PointCyl((probeSpacing + sum) / 2.0, theta, z, i);
+
+                        points.Add(pt1);
+
                     }
-                    var pt1 = new PointCyl((probeSpacing+ sum) / 2.0, theta, z, i);
-
-                    points.Add(pt1);
-
+                    points.NominalMinDiam = minDiam + ringScript.CalDataSet.ProbeSpacingInch;
+                    return points;
                 }
-                points.NominalMinDiam = minDiam + script.CalDataSet.ProbeSpacingInch;
-                return points;
+                else
+                {
+                    return new CylData("");
+                }
+                
             }
             catch (Exception)
             {
@@ -59,7 +66,7 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildRingFromRadialData(CylInspScript script, double[] rawInputData)
+        InspDataSet BuildRingFromRadialData(RingInspScript script, double[] rawInputData)
         {
             try
             {
@@ -84,7 +91,7 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet, DataOutputOptions options)
+        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, RingInspScript script, double[] rawDataSet, DataOutputOptions options)
         {
             try
             {

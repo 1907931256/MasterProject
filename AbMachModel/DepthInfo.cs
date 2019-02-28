@@ -33,6 +33,17 @@ namespace AbMachModel
             
             SearchType = DepthSearchType.FindAveDepth;
         }
+        public DepthInfo(DepthInfo info)
+        {
+            LocationOfDepthMeasure = info.LocationOfDepthMeasure;
+            SearchRadius = info.SearchRadius;
+            StartDepth = info.StartDepth;
+            TargetDepth = info.TargetDepth;
+            DepthTolerance = info.DepthTolerance;
+            CurrentDepth = info.CurrentDepth;
+            SearchType = info.SearchType;
+            ConstTargetDepth = info.ConstTargetDepth;
+        }
         public DepthInfo(GeometryLib.Vector3 locationOfMeasurment,DepthSearchType searchType,double searchRadius)
         {
             LocationOfDepthMeasure = locationOfMeasurment;

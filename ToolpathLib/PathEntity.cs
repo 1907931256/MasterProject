@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using GeometryLib;
 using DataLib;
+
 namespace ToolpathLib
 {
    
@@ -40,6 +41,7 @@ namespace ToolpathLib
                 }
             }
         }
+       
         public void MeasureDepthsAtJetLocations(CartData depthData)
         {
             foreach (XSectionPathEntity xpe in this)

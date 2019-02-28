@@ -205,12 +205,12 @@ namespace BarrelLib
             _maxCircumference = Math.PI * _landMaxDiam;
             _minCircumference = Math.PI * _landMinDiam;
             
-            _grooveMaxWidth = (_maxCircumference - (_landMinWidth * _grooveCount)) / _grooveCount;
-            _grooveMinWidth = (_minCircumference - (_landMaxWidth * _grooveCount)) / _grooveCount;
-            _grooveMaxWidthTheta = pi2 * (_grooveMaxWidth / _maxCircumference);
-            _grooveMinWidthTheta = pi2 * (_grooveMinWidth / _minCircumference);
-            _grooveHWMin = _grooveMinWidthTheta / 2.0;
-            _grooveHWMax = _grooveMaxWidthTheta / 2.0;
+           // _grooveMaxWidth = (_maxCircumference - (_landMinWidth * _grooveCount)) / _grooveCount;
+           // _grooveMinWidth = (_minCircumference - (_landMaxWidth * _grooveCount)) / _grooveCount;
+           // _grooveMaxWidthTheta = pi2 * (_grooveMaxWidth / _maxCircumference);
+           // _grooveMinWidthTheta = pi2 * (_grooveMinWidth / _minCircumference);
+           // _grooveHWMin = _grooveMinWidthTheta / 2.0;
+           // _grooveHWMax = _grooveMaxWidthTheta / 2.0;
             _landNomDiam = (_landMaxDiam + _landMinDiam) / 2.0; 
             _grooveNomDiam = (_grooveMinDiam + _grooveMaxDiam) / 2.0;
             _nomCircumference = (_maxCircumference + _minCircumference) / 2.0;
@@ -232,6 +232,9 @@ namespace BarrelLib
                     break;
                 case BarrelType.M240_762mm:
                     BuildM240Dims();
+                    break;
+                case BarrelType.M_50mm:
+                    Build50mmDims();
                     break;
             }
             _twistProfile = new TwistProfile(type);
@@ -277,6 +280,20 @@ namespace BarrelLib
             _grooveMaxDiam = .3095;           
             _landMinWidth = .0457;
             _landMaxWidth = .060;
+            _firstGrooveThetaOffset = 0;
+        }
+        void Build50mmDims()
+        {
+            _length = 48;
+            _landMaxDiam = 1.969;
+            _landMinDiam = 1.972;
+            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
+            _landActualDiam = _landNomDiam;
+            _grooveCount = 24;
+            _grooveMinDiam = 2.007;
+            _grooveMaxDiam = 2.023;
+            _grooveMaxWidth = .1457;
+            _grooveMinWidth = .129;
             _firstGrooveThetaOffset = 0;
         }
         double _grooveHWMin;

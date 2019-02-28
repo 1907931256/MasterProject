@@ -43,7 +43,7 @@ namespace BarrelInspectionProcessorForm
         string manufStepStr;
         private void SetComboBoxes()
         {
-            var barrelTypeList = new List<string>() { "M2_50_Cal", "M242_25mm", "M284_155mm", "M240_762mm", "Flat Plate" };
+            var barrelTypeList = new List<string>() { "M2_50_Cal", "M242_25mm", "M284_155mm", "M240_762mm","M_50mm", "Flat Plate" };
             var scanFormatList = new List<string>() { "RING", "SPIRAL", "AXIAL", "LAND", "GROOVE", "CAL", "LINE" };
             var probeDirectionList = new List<string>() { "BORE I.D.", "ROD O.D." };
             var probeTypeList = new List<string>() { "SI", "LJ" };

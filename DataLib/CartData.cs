@@ -13,7 +13,7 @@ namespace DataLib
   
     public class CartData : List<Vector3>
     {
-        public string FileName { get; private set; }
+        public string FileName { get; set; }
         public double GetDataRotation(Vector3 pt1, Vector3 pt2)
         {
             return Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.X);
@@ -259,13 +259,14 @@ namespace DataLib
             }
         }
         BoundingBox _boundingBox;
-        //public CartData()
-        //{
-        //    FileName = "";
-        //}
+        public CartData()
+        {
+            FileName = "";
+        }
         public CartData(string filename)
         {
             FileName = filename;
         }
+        
     }
 }

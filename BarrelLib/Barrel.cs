@@ -87,6 +87,7 @@ namespace BarrelLib
         M242_25mm,
         M284_155mm,
         M240_762mm,
+        M_50mm,
         UNKNOWN
     }
     /// <summary>

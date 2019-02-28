@@ -99,6 +99,15 @@ namespace AbMachModel
                 throw;
             }
         }
+        public DataLib.CartData AsCartData()
+        {
+            var cartData = new DataLib.CartData();
+            foreach (var pt in this)
+            {
+                cartData.Add(new Vector3(pt.X, pt.Y, 0));
+            }
+            return cartData;
+        }
         public List<Vector2> ParseFile(string scanFilename, double minYValue, double maxYValue)
         {
             var stringArr = FileIOLib.CSVFileParser.ParseFile(scanFilename);

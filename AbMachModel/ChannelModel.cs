@@ -12,6 +12,7 @@ using AbMachModel;
 using FileIOLib;
 using DwgConverterLib;
 using System.Drawing;
+using DataLib;
 namespace AbMachModel
 {
 
@@ -19,48 +20,36 @@ namespace AbMachModel
     public class ChannelModel
     {
         XSecJet jet;
-        XSecPathList pathList;
+        XSecPathList path;
         RunInfo runInfo;
-        AbMachParameters parameters;
+        XSecModelParams parameters;
         XSectionProfile profile;
         XSectionProfile targetProf;
         XSectionProfile startProf;
         XSectionProfile tempProf;
 
-        double meshSize;
-        double jetR;
-        double nominalFeedrate;
-        public ChannelModel(XSectionProfile targetProfile, XSecJet xSecJet, XSecPathList path, RunInfo runInfo, AbMachParameters abMachParameters)
+        
+        public ChannelModel(XSectionProfile targetProfile, XSecJet xSecJet, XSecPathList path,
+             XSecModelParams parameters)
         {
             jet = xSecJet;
-            pathList = path;
-            this.runInfo = runInfo;
-            parameters = abMachParameters;
+            this.path = path;           
+            this.parameters = parameters;
             targetProf = targetProfile;
         }
-        Ray2[,] GetJetArray()
+        public ChannelModel(XSectionProfile targetProfile, XSectionProfile startProfile, XSecJet xSecJet, XSecPathList path,
+              XSecModelParams parameters)
         {
-            int jetW = (int)(Math.Ceiling(jetR * 2 / meshSize));
-            Ray2[,] jetArr = new Ray2[pathList.Count, jetW];
-            for (int pathIndex = 0; pathIndex < pathList.Count; pathIndex++)
-            {
-                double endX = pathList[pathIndex].CrossLoc + jetR;
-                for (int jetLocIndex = 0; jetLocIndex < jetW; jetLocIndex++)
-                {
-                    double x = (pathList[pathIndex].CrossLoc - jetR) + (meshSize * jetLocIndex);
-                    var origin = new Vector2(x, 0);
-                    double angleDeg = 90;
-                    double angRad = Math.PI * (angleDeg / 180.0);
-                    var direction = new Vector2(Math.Cos(angRad), Math.Sin(angRad));
-                    double jetX = x - pathList[pathIndex].CrossLoc;
-                    double mrr = jet.GetMrr(jetX) * nominalFeedrate / pathList[pathIndex].Feedrate;
-                    var jetRay = new Ray2(origin, direction, mrr);
-                    jetArr[pathIndex, jetLocIndex] = jetRay;
-                }
-            }
-            return jetArr;
+            jet = xSecJet;
+            this.path = path;
+            this.parameters = parameters;
+            targetProf = targetProfile;
+            startProf = startProfile;
         }
-        public void Run(CancellationToken ct, IProgress<int> progress)
+        
+        int totalModelRuns;
+        int currentModelRun;
+        public void Run(CancellationToken ct, IProgress<int> progress,int innerIterations, int outerIterations)
         {
             try
             {
@@ -68,21 +57,31 @@ namespace AbMachModel
                 var meshSize = parameters.MeshSize;
                 var gridOrigin = profile.Origin;
                 var gridWidth = profile.Width;
-                var jetArr = GetJetArray();
-                var tempProfile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
-                var jetRayList = new List<Ray2>();
+                var jetArr = new XSecJetPath(jet, path, parameters.MeshSize, parameters.RemovalRate.NominalSurfaceSpeed);
                 var baseMrr = parameters.RemovalRate.DepthPerPass;
+                var mrr = baseMrr;
                 var averagingWindow = parameters.SmoothingWindowWidth;
                 var critAngle = parameters.Material.CriticalRemovalAngle;
-                for (int iter = 0; iter < runInfo.Iterations; iter++)
+                int outerIterator = 0;
+                int innerIterator = 0;
+
+                totalModelRuns = outerIterations * innerIterations * parameters.RunTotal;
+                currentModelRun = 0;
+                var depthInfo = new DepthInfo(parameters.DepthInfo);
+                
+                while (outerIterator < outerIterations)
                 {
-                    profile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
-                    for (int i = 0; i < runInfo.Runs; i++)
-                    {
 
-
-
+                   
+                    mrr = baseMrr;
+                    innerIterator = 0;
+                    while (innerIterator < innerIterations)
+                    {               
+                        RunPath(ct,progress,jetArr, gridOrigin, gridWidth, averagingWindow, mrr, critAngle);
+                        depthInfo = GetNewDepthInfo(depthInfo);
+                        mrr= GetNewMrr(mrr, depthInfo);
                     }
+                   
                 }
             }
             catch
@@ -90,6 +89,7 @@ namespace AbMachModel
                 throw;
             }
         }
+        
         void SaveProfileParams(double critAngle,double averagingWindow)
         {
             var paramList = new List<string>();            
@@ -104,85 +104,81 @@ namespace AbMachModel
                     + AngleEffect(n, critAngle).ToString() + "," + n.ToString() + "," + c.ToString());
 
             }
+            
         }
-        DepthInfo GetDepthInfo(int run, RunInfo runInfo)
+        DepthInfo GetNewDepthInfo( DepthInfo oldDepthInfo)
         {
             var depthInfo = new DepthInfo();
-            double inspectionLoc = parameters.DepthInfo.LocationOfDepthMeasure.X;
 
-            //Console.WriteLine("Run: " + run.ToString());             
+            double inspectionLoc = oldDepthInfo.LocationOfDepthMeasure.X;
             depthInfo.StartDepth = startProf.GetValue(inspectionLoc);
             depthInfo.TargetDepth = targetProf.GetValue(inspectionLoc);
-            //Console.WriteLine("StartDepth: " + parameters.DepthInfo.StartDepth.ToString());             
             depthInfo.CurrentDepth = profile.GetValue(inspectionLoc);
-            //Console.WriteLine("Total Depth: " + currentDepth.ToString());
-            //Console.WriteLine("TargetDepthAtRun: " + targetDepthAtRun.ToString());
-            //Console.WriteLine("TargetTotalDepthAtRun: " + targetTotalDepth.ToString());
             return depthInfo;
         }
-        double AdjustMrr(double baseMrr,DepthInfo depthInfo)
+        double GetNewMrr(double baseMrr,DepthInfo depthInfo)
         {
+            depthInfo.CurrentDepth = GetInspectionDepth();
             double  mrrAdjustFactor = Math.Abs(depthInfo.TargetDepth / depthInfo.CurrentDepth);
             double newMrr = baseMrr * mrrAdjustFactor;
             return newMrr;
         }
-        void RunPath(Ray2[,] jetArr, Vector2 gridOrigin, double gridWidth, double averagingWindow,double curvatureSearchWindow, double baseMrr, double critAngle)
+        XSecJetPath GetNewJetArrayFeedrates(double measureWidth, string directory,string timeCode)
         {
-            int run = parameters.RunInfo.CurrentRun;
-            while (parameters.RunInfo.CurrentRun < parameters.RunInfo.Runs)
-            {
-                //index across jet locations in jet-path array 
-                for (int pathIndex = 0; pathIndex < jetArr.GetLength(0); pathIndex++)
-                {
-                    var tempProf = new XSectionProfile(gridOrigin, gridWidth, meshSize);
-                    for (int jetLocIndex = 0; jetLocIndex < jetArr.GetLength(1); jetLocIndex++)
-                    {
-                        var jetRay = jetArr[pathIndex, jetLocIndex];
-                        double x = jetRay.Origin.X;
-                        var profileNormal = profile.GetNormalAngle(x, averagingWindow);
-                        var angleEffect = AngleEffect(profileNormal, critAngle);
-                        var curvature =parameters.CurvatureEffect.Factor(profile.GetCurvature(x, curvatureSearchWindow));
-                        double materialRemoved = baseMrr * jetRay.Length * angleEffect * curvature;
-                        tempProf.SetValue(materialRemoved, x);
-                    }
-                    tempProf.Smooth(jetR);
-                    profile.AddProfile(tempProf);
-                    profile.Smooth(jetR);
-                }
-                if (run == parameters.RunInfo.Runs - 1)
-                {
-                    
-
-                }
-                run++;
-            }
-
-            double inspectionDepth = profile.GetValue(parameters.DepthInfo.LocationOfDepthMeasure.X);
-            Console.WriteLine("Run: " + run.ToString() + " Depth: " + inspectionDepth.ToString());
-            double targetDepthAtRun = parameters.DepthInfo.TargetDepth * (run) / runInfo.Runs;
-            Console.WriteLine("targetDepthAtRun: " + targetDepthAtRun.ToString());
-            double mrrAdjustFactor = targetDepthAtRun / inspectionDepth;
-            Console.WriteLine("mrrAdjustFactor: " + mrrAdjustFactor.ToString());
-            if (parameters.RunInfo.RunType == ModelRunType.NewMRR)
-            {
-                baseMrr *= mrrAdjustFactor;
-                Console.WriteLine("new Mrr: " + baseMrr.ToString());
-            }
-            Console.WriteLine("");
-            var angleEffectList = new List<string>();
-            var normalsList = new List<string>();
-            if (run == parameters.RunInfo.Runs - 1)
-            {
-                for (int profIndex = 0; profIndex < profile.Count; profIndex++)
-                {
-                    double x = profIndex * profile.MeshSize + profile.Origin.X;
-                    var n = profile.GetNormalAngle(x, averagingWindow);
-                    normalsList.Add(x.ToString() + "," + n.ToString());
-
-                }
-            }
+            path.AdjustFeedrates(profile.AsCartData(), targetProf.AsCartData(), measureWidth);
+            FileIOLib.FileIO.Save(path.AsCSVFile(), directory + "pathlist" + timeCode + ".csv");
+            var jetArray = new XSecJetPath(jet, path, parameters.MeshSize, parameters.RemovalRate.NominalSurfaceSpeed);
+            return jetArray;
         }
-    
+        double GetInspectionDepth()
+        {
+           return  profile.GetValue(parameters.DepthInfo.LocationOfDepthMeasure.X);
+        }
+        void RunPath(CancellationToken ct, IProgress<int> progress, XSecJetPath jetArr, Vector2 gridOrigin, double gridWidth,
+            double averagingWindow,double mrr, double critAngle)
+        {
+            try
+            {
+                double curvatureSearchWindow = .014;
+                int run = 0;
+                profile = new XSectionProfile(startProf);
+                while (run < parameters.RunTotal && !ct.IsCancellationRequested)
+                {
+                    //index acroos jet path locations in jet path array
+                    for (int pathIndex = 0; pathIndex < jetArr.PathCount; pathIndex++)
+                    {
+                        //index across jet locations in jet-path array 
+                        var tempProf = new XSectionProfile(gridOrigin, gridWidth, parameters.MeshSize);
+                        for (int jetLocIndex = 0; jetLocIndex < jetArr.JetCount; jetLocIndex++)
+                        {
+                                var jetRay = jetArr.GetJetRay(pathIndex, jetLocIndex);
+                                double x = jetRay.Origin.X;
+                                var profileNormal = profile.GetNormalAngle(x, averagingWindow);
+                                var angleEffect = AngleEffect(profileNormal, critAngle);
+                                var curvatureEffect = parameters.CurvatureEffect.Factor(profile.GetCurvature(x, curvatureSearchWindow));
+                                double materialRemoved = mrr * jetRay.Length * angleEffect * curvatureEffect;
+                                tempProf.SetValue(materialRemoved, x);
+                                
+                        }                        
+                        tempProf.Smooth(jet.Radius);
+                        profile.AddProfile(tempProf);
+                        profile.Smooth(jet.Radius);                       
+                    }
+                    int p = (int)(100 * currentModelRun++ / totalModelRuns);
+                    progress.Report(p);
+                    run++;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
+       
+       
         double AngleEffect(double normalAngle, double critAngle)
         {
             return Math.Abs(Math.Cos(Math.Abs(normalAngle) - critAngle));

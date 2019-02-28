@@ -24,7 +24,23 @@ namespace AbMachModel
             return ce;
         }
     }
-
+    public class XSecModelParams
+    {
+        public CurvatureEffect CurvatureEffect { get; set; }
+        public int RunTotal { get; set; }
+        public double SmoothingWindowWidth { get; set; }
+        public double MeshSize { get; set; }
+        public RemovalRate RemovalRate { get; set; }
+        public Material Material { get; set; }
+        public DepthInfo DepthInfo { get; set; }
+        public XSecModelParams()
+        {
+            Material = new Material();
+            RemovalRate = new RemovalRate();
+            CurvatureEffect = new CurvatureEffect();
+            DepthInfo = new DepthInfo();
+        }
+    }
     public class AbMachParameters
     {
          public AbMachOperation Operation { get;  set; }
@@ -33,7 +49,7 @@ namespace AbMachModel
          public Material Material { get;  set;}
          public AbMachJet AbMachJet { get;  set;}
          public DepthInfo DepthInfo { get;  set;}
-         public CurvatureEffect CurvatureEffect { get; set; }
+        
          public double SmoothingWindowWidth { get; set; }
          public double MeshSize { get { return _meshSize; } set { _meshSize = value; } }
          
@@ -64,7 +80,7 @@ namespace AbMachModel
             Material = new Material();
             Operation = AbMachOperation.OTHER;
             DepthInfo = new DepthInfo();
-            CurvatureEffect = new CurvatureEffect();
+            
         }
 
     }

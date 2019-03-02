@@ -241,17 +241,23 @@ namespace ToolpathLib
             FeedHistory = new List<double>();
         }
     }
-    public  class PathEntity
+    public class PathEntity
+    {
+
+    }
+    public  class PathEntity5Axis
     {
         public BlockType Type {get; set;}        
         public CNCLib.XYZBCMachPosition Position { get; set; }
-        public Vector3 PositionAsVector
+        public CNCLib.XYZBCMachPosition PrevPosition { get; set; }
+        public Vector3 PositionAsVector3
         {
             get
             {
                 return new Vector3(Position.X, Position.Y, Position.Z);
             }
         }
+        public bool BAxisRolloverFlag { get; set; }
         public Vector3 DirVector {get; set;}	    
 	    public CComp Ccomp { get; set;}
         public Vector3 JetVector { get; set; }
@@ -274,10 +280,11 @@ namespace ToolpathLib
         public bool ContainsF { get; set; }
         public bool ContainsN { get; set; }
         public string InputString { get; set; }
-        public PathEntity()
+        public PathEntity5Axis()
         {
             ActiveMcodes = new List<string>();
             Position = new CNCLib.XYZBCMachPosition();
+            PrevPosition = new CNCLib.XYZBCMachPosition();
             Type = BlockType.Unknown;
             Ccomp = CComp.NoChange;
             ControlFlag = CtrlFlag.Unknown;

@@ -80,14 +80,14 @@ namespace AbMachModel
                                 pathCount++;
                                 if (mpe.JetOn && feedFactor != 0)
                                 {
-                                        BoundingBox searchBox = BoundingBoxBuilder.GetSearchCylinder(surface.BoundingBox, mpe.PositionAsVector, mpe.JetVector, searchRadius);
+                                        BoundingBox searchBox = BoundingBoxBuilder.GetSearchCylinder(surface.BoundingBox, mpe.PositionAsVector3, mpe.JetVector, searchRadius);
                                         List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(searchBox);
                                     
                                     Octree<AbmachPoint> localSurface = OctreeBuilder<AbmachPoint>.Build(jetIntersectList,  surface.MeshSize);// OctreeBuilder<AbmachPoint>.Build(jetIntersectList, searchBox, surface.MeshSize);
                                     
                                     var newPts = new List<AbmachPoint>();
                                         var mpeV = new Vector3(mpe.Position.X, mpe.Position.Y, 0);
-                                        var jetRay = new Ray(mpe.PositionAsVector, mpe.JetVector);
+                                        var jetRay = new Ray(mpe.PositionAsVector3, mpe.JetVector);
 
                                         foreach (AbmachPoint jetPt in localSurface.GetAllPoints())
                                         {
@@ -172,7 +172,7 @@ namespace AbMachModel
             {
                 foreach (ModelPathEntity mpe in path)
                 {
-                    double distance = point.Distance2To(mpe.PositionAsVector);
+                    double distance = point.Distance2To(mpe.PositionAsVector3);
                     distances.Add(distance);
                 }
                 var distArray = distances.ToArray();
@@ -287,7 +287,7 @@ namespace AbMachModel
         }
         double getMaxDepth(ModelPathEntity mpe, double searchRadius)
         {
-            List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(BoundingBoxBuilder.GetSearchBox(mpe.PositionAsVector, searchRadius));
+            List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(BoundingBoxBuilder.GetSearchBox(mpe.PositionAsVector3, searchRadius));
             double maxDepth = 0;
             foreach (AbmachPoint pt in jetIntersectList)
             {
@@ -299,7 +299,7 @@ namespace AbMachModel
         }
         double getMinDepth(ModelPathEntity mpe,double searchRadius)
         {
-            List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(BoundingBoxBuilder.GetSearchBox(mpe.PositionAsVector, searchRadius));
+            List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(BoundingBoxBuilder.GetSearchBox(mpe.PositionAsVector3, searchRadius));
             double minDepth = 1e16;
             foreach(AbmachPoint pt in jetIntersectList)
             {
@@ -317,7 +317,7 @@ namespace AbMachModel
         {
             double depth = 0;
 
-            List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(BoundingBoxBuilder.GetSearchBox(mpe.PositionAsVector, searchRadius));
+            List<AbmachPoint> jetIntersectList = surface.GetPointsInsideBox(BoundingBoxBuilder.GetSearchBox(mpe.PositionAsVector3, searchRadius));
             int pointCount = 0;
             foreach(AbmachPoint pt in jetIntersectList)
             {
@@ -338,7 +338,7 @@ namespace AbMachModel
             double pathLength = 0;
             for (int i = 0; i < path.Count - 1; i++)
             {
-                pathLength += (path[i + 1].PositionAsVector - path[i].PositionAsVector).Length;
+                pathLength += (path[i + 1].PositionAsVector3 - path[i].PositionAsVector3).Length;
             }
             double avePathLen = pathLength / path.Count;
 

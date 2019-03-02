@@ -198,7 +198,7 @@ namespace Abmach3TestForm
             {
                 //inputFile = "STRAIGHT-4.NC";
                 //string inputFile = "SURF-TEST-1.nc";
-                ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+                ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputFile);
                 ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
                 path = mpb.Build(toolpath, meshSize);
                 int pathCount = path.Count;
@@ -289,7 +289,7 @@ namespace Abmach3TestForm
                 List<Vector3> pathAsVectors = new List<Vector3>();
                 foreach (ModelPathEntity mpe in path)
                 {
-                    pathAsVectors.Add(mpe.PositionAsVector);
+                    pathAsVectors.Add(mpe.PositionAsVector3);
                 }
                 BoundingBox boundingBox = new BoundingBox(xMin, yMin, path.JetOnBoundingBox.Min.Z, xMax, yMax, path.JetOnBoundingBox.Max.Z);
                 if (model2dMode)

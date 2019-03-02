@@ -36,12 +36,12 @@ namespace ToolpathLib
         string[] pathStart;
         string[] pathEnd;
         MCodeDictionary _mcodeDictionary;
-        ToolPath path;
+        ToolPath5Axis path;
 
         bool jeton;
         internal NcFileParser()
         {
-            path = new ToolPath();
+            path = new ToolPath5Axis();
             splitters = new string[] {" "};
             pathGCodes = new string[] { "G0", "G00", "G1", "G01", "G2", "G02", "G3", "G03", "G4", "G04" };
             mCodes = new string[] { "M61", "M62", "M63", "M64", "M65", "M66" };
@@ -66,7 +66,7 @@ namespace ToolpathLib
             f="F";
         }
        
-        internal ToolPath ParsePath(List<string> file)
+        internal ToolPath5Axis ParsePath(List<string> file)
         {
             jeton = false;
             int pathNumber = 0;
@@ -81,7 +81,7 @@ namespace ToolpathLib
 
                 if (isPath(line, out blockT))
                 {
-                    PathEntity pe = parseString(line, blockT, jeton);
+                    PathEntity5Axis pe = parseString(line, blockT, jeton);
                     pe.PathNumber = pathNumber;
                     
                     path.Add(pe);
@@ -151,7 +151,7 @@ namespace ToolpathLib
             return isAPath;
         }
 
-        private PathEntity parseString(string line, BlockType blockT,bool jetIsOn)
+        private PathEntity5Axis parseString(string line, BlockType blockT,bool jetIsOn)
         {
             bool invertedFeed = isFeedrateInverted(line);
 
@@ -168,7 +168,7 @@ namespace ToolpathLib
                 case BlockType.Delay:
                     return parseDelay(line, blockT, jetIsOn, invertedFeed);
                 default:
-                    return new PathEntity();
+                    return new PathEntity5Axis();
             }
         }
         private bool isPathEnd(string line)

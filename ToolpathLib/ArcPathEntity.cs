@@ -6,7 +6,7 @@ using GeometryLib;
 namespace ToolpathLib
 {
    
-    public class ArcPathEntity:PathEntity
+    public class ArcPathEntity:PathEntity5Axis
     {
 
         public ArcSpecType ArcType { get; set; }

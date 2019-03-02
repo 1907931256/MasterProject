@@ -5,7 +5,7 @@ using System.Text;
 using GeometryLib;
 namespace ToolpathLib
 {
-    class LinePathEntity:PathEntity
+    class LinePathEntity:PathEntity5Axis
     {
         public bool RapidMove { get; set; }
         public bool PlungeMove { get; set; }    

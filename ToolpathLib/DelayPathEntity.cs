@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ToolpathLib
 {
-    class DelayPathEntity:PathEntity
+    class DelayPathEntity:PathEntity5Axis
     {
         public double Delay{get;set;}
         public DelayPathEntity()

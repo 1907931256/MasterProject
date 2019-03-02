@@ -17,7 +17,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "STRAIGHT-TEST-8-3-15.nc";
             double increment = .01;
-            ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputFile);
            
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
             ModelPath mp = mpb.Build(toolpath, increment);
@@ -28,7 +28,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "2-CELL-TEST.2.nc";
             double increment = .01;
-            ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputFile);
             
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
             ModelPath mp = mpb.Build(toolpath, increment);
@@ -40,7 +40,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "STRAIGHT-TEST-8-3-15.nc";
             double increment = .01;
-            ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputFile);
             Assert.AreEqual(1, toolpath[1].Position.X, "Xtp0");
             Assert.AreEqual(1, toolpath[1].Position.Y, "Xtp0");
             Assert.AreEqual(2, toolpath[1].Position.Z, "Xtp0");
@@ -67,7 +67,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "SPLINE-CHANNEL-CONTOURPATH.NCI";
             double increment =.005;
-            ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputFile);
 
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
             ModelPath mp = mpb.Build(toolpath, increment);
@@ -83,7 +83,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_toolpathIsEmptyAndIncrementIsZero_ReturnsEmptyPath()
         {
             string inputPath = null;
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = 0;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -96,7 +96,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_PathIsGoodButIncrementIsZero_ReturnsEmptyPath()
         {
             string inputPath = "SPLINE-CHANNEL-CONTOURPATH.NCI";
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = 0;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -109,7 +109,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_PathIsGoodButIncrementIsNeg_ReturnsEmptyPath()
         {
             string inputPath = "SPLINE-CHANNEL-CONTOURPATH.NCI";
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = -.001;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -121,7 +121,7 @@ namespace ToolpathLibTests
         public void modelpathbuilder_buildpath_BoundingBoxOK()
         {
               string inputPath = "SPLINE-CHANNEL-CONTOURPATH.NCI";
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = .001;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -139,7 +139,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_toolpathIsEmpty_ReturnsEmptyPath()
         {
             string inputPath = null;
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
            
             double increment = .005;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -151,7 +151,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_toolpathIsEmpty_modelPathIsNotNull()
         {
             string inputPath = "";
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
            double increment = .005;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -165,7 +165,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_toolpathIsEmpty_modelpathIsEmpty()
         {
             string inputPath = "";
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = .005;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -179,7 +179,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_toolpathIsNull_modelPathIsNotNull()
         {
             string inputPath = null;
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = .005;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();
@@ -193,7 +193,7 @@ namespace ToolpathLibTests
         public void ModelPathBuilder_toolpathIsNull_modelpathIsEmpty()
         {
             string inputPath = null;
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             double increment = .005;
             ConstantDistancePathBuilder mpb = new ConstantDistancePathBuilder();

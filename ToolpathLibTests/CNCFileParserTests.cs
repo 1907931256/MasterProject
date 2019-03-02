@@ -13,7 +13,7 @@ namespace ToolpathLibTests
         public void CNCFileParser_ParseNCIFile_pathNotNull()
         {
             string inputFile = "SPLINE-CHANNEL-CONTOURPATH.NCI";
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
             Assert.IsNotNull(toolpath);
         }
         [TestMethod]
@@ -21,7 +21,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "SPLINE-CHANNEL-CONTOURPATH.NCI";
 
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
             int count = toolpath.Count;
             Assert.IsFalse(count == 0);
         }
@@ -30,7 +30,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "SPLINE-CHANNEL-CONTOURPATH.NCI";
 
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
            
             Assert.AreEqual(-3.876529, toolpath[0].Position.X,"Xentity0");
             Assert.AreEqual(0.05, toolpath[0].Position.Y,"Yentity0");
@@ -58,7 +58,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "2-CELL-TEST.2.nc";
            
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
             Assert.IsNotNull(toolpath);
            
         }
@@ -67,7 +67,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "2-CELL-TEST.2.nc";
 
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
             int count = toolpath.Count;
             Assert.AreNotEqual(0,toolpath.Count);
         }
@@ -76,7 +76,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "";
 
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
             int count = toolpath.Count;
             Assert.AreEqual(0, toolpath.Count);
         }
@@ -85,7 +85,7 @@ namespace ToolpathLibTests
         {
             string inputFile = null;
 
-             ToolPath toolpath = CNCFileParser.ToPath(inputFile);
+             ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputFile);
            
             Assert.AreEqual(0, toolpath.Count);
         }
@@ -94,7 +94,7 @@ namespace ToolpathLibTests
         {
             string inputPath = null;
 
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             Assert.IsNotNull(toolpath);
         }
@@ -103,7 +103,7 @@ namespace ToolpathLibTests
         {
             string inputPath = "";
 
-            ToolPath toolpath = CNCFileParser.ToPath(inputPath);
+            ToolPath5Axis toolpath = CNCFileParser.CreatePath(inputPath);
 
             Assert.IsNotNull(toolpath);
         }
@@ -112,7 +112,7 @@ namespace ToolpathLibTests
         {
             string inputFile = "SPLINE-CHANNEL-CONTOURPATH.NC";
          
-            ToolpathLib.ToolPath toolpath = ToolpathLib.CNCFileParser.ToPath(inputFile);
+            ToolpathLib.ToolPath5Axis toolpath = ToolpathLib.CNCFileParser.CreatePath(inputFile);
             int last = toolpath.Count - 1;
             string position;
 

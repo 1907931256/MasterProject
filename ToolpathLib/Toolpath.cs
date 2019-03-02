@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToolpathLib
 {
-    public class ToolPath : List<PathEntity>
+    public class ToolPath5Axis : List<PathEntity5Axis>
     {
         public int[] MiscIntegerArr;
         public double[] MiscRealArr;
@@ -28,7 +28,23 @@ namespace ToolpathLib
         public string OutputFileName;
         public string InputFileName;
         public string Title;
+        public void FixRollovers()
+        {
+            
+            foreach(PathEntity5Axis pe in this)
+            {
+                double deltaB = pe.Position.Bdeg - pe.PrevPosition.Bdeg;
+                double deltaC = pe.Position.Cdeg - pe.PrevPosition.Cdeg;
+                if (Math.Abs(deltaC)>90)
+                {
 
+                }
+            }
+        }
+        public void FixWrapArounds(double minCaxis,double maxCaxis)
+        {
+
+        }
         public List<string> InputPath()
         {
 
@@ -39,7 +55,7 @@ namespace ToolpathLib
             }
             return _input;
         }
-        public ToolPath()
+        public ToolPath5Axis()
         {
             MiscIntegerArr = new int[10];
             MiscRealArr = new double[10];

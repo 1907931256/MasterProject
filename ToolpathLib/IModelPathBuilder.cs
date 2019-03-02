@@ -8,6 +8,6 @@ namespace ToolpathLib
 {
     interface IModelPathBuilder
     {
-        ModelPath Build(ToolPath _inputPath, double increment);
+        ModelPath Build(ToolPath5Axis _inputPath, double increment);
     }
 }

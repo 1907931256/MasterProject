@@ -7,11 +7,11 @@ namespace ToolpathLib
 {
     public class CNCFileParser
     {
-        static public ToolPath ToPath(List<string> file,string filename)
+        static ToolPath5Axis CreatePath(List<string> file,string filename)
         {
             try
             {
-                ToolPath toolpath = new ToolPath();
+                ToolPath5Axis toolpath = new ToolPath5Axis();
                 NCFileType fileType = selectFileType(filename);
                 if (file.Count > 0)
                 {
@@ -38,7 +38,7 @@ namespace ToolpathLib
             }
            
         }
-        static public ToolPath ToPath(string fileName)
+        static public ToolPath5Axis CreatePath(string fileName)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace ToolpathLib
                 {
                     throw new Exception("File Not readable");
                 }
-                return ToPath(file,fileName);  
+                return CreatePath(file,fileName);  
 
             }
             catch

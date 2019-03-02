@@ -70,6 +70,10 @@
             this.comboBoxBarrel = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.shiftDataXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
             this.labelNearestFilename = new System.Windows.Forms.Label();
             this.labelDxMeasured = new System.Windows.Forms.Label();
@@ -127,6 +131,7 @@
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonWinData = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonFitToCircle = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonShiftData = new System.Windows.Forms.ToolStripButton();
             this.tabControlParams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.labelCalStatus = new System.Windows.Forms.Label();
@@ -144,6 +149,7 @@
             this.comboBoxManStep = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panelProbeInfo = new System.Windows.Forms.Panel();
+            this.numericUpDownProbeCount = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxProbePhaseDeg = new System.Windows.Forms.TextBox();
@@ -165,13 +171,8 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.shiftDataXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripButtonShiftData = new System.Windows.Forms.ToolStripButton();
-            this.numericUpDownProbeCount = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -180,13 +181,12 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panelProbeInfo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tabControlOutput.SuspendLayout();
             this.tabPageGraph.SuspendLayout();
             this.tabPageData.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).BeginInit();
             this.SuspendLayout();
             // 
             // labelInputFIlename
@@ -450,6 +450,33 @@
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
             this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseUp);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.shiftDataXToolStripMenuItem,
+            this.removeDatasetToolStripMenuItem,
+            this.removeAllButThisToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 70);
+            // 
+            // shiftDataXToolStripMenuItem
+            // 
+            this.shiftDataXToolStripMenuItem.Name = "shiftDataXToolStripMenuItem";
+            this.shiftDataXToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.shiftDataXToolStripMenuItem.Text = "Shift Data ";
+            // 
+            // removeDatasetToolStripMenuItem
+            // 
+            this.removeDatasetToolStripMenuItem.Name = "removeDatasetToolStripMenuItem";
+            this.removeDatasetToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.removeDatasetToolStripMenuItem.Text = "Remove Dataset";
+            // 
+            // removeAllButThisToolStripMenuItem
+            // 
+            this.removeAllButThisToolStripMenuItem.Name = "removeAllButThisToolStripMenuItem";
+            this.removeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.removeAllButThisToolStripMenuItem.Text = "Remove All But This Set ";
             // 
             // panel2
             // 
@@ -969,7 +996,7 @@
             this.toolStripButtonMirror.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonMirror.Name = "toolStripButtonMirror";
             this.toolStripButtonMirror.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonMirror.Text = "Mirror";
+            this.toolStripButtonMirror.Text = "Mirror Y Axis";
             this.toolStripButtonMirror.Click += new System.EventHandler(this.toolStripButtonMirror_Click);
             // 
             // toolStripButtonWinData
@@ -992,6 +1019,15 @@
             this.toolStripButtonFitToCircle.Text = "Fit to Circle";
             this.toolStripButtonFitToCircle.ToolTipText = "Fit to Circle";
             this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.toolStripButtonFitToCircle_Click);
+            // 
+            // toolStripButtonShiftData
+            // 
+            this.toolStripButtonShiftData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonShiftData.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonShiftData.Image")));
+            this.toolStripButtonShiftData.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonShiftData.Name = "toolStripButtonShiftData";
+            this.toolStripButtonShiftData.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonShiftData.Text = "toolStripButton1";
             // 
             // tabControlParams
             // 
@@ -1219,6 +1255,29 @@
             this.panelProbeInfo.Size = new System.Drawing.Size(222, 150);
             this.panelProbeInfo.TabIndex = 41;
             // 
+            // numericUpDownProbeCount
+            // 
+            this.numericUpDownProbeCount.Location = new System.Drawing.Point(89, 31);
+            this.numericUpDownProbeCount.Maximum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.numericUpDownProbeCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownProbeCount.Name = "numericUpDownProbeCount";
+            this.numericUpDownProbeCount.Size = new System.Drawing.Size(52, 20);
+            this.numericUpDownProbeCount.TabIndex = 41;
+            this.numericUpDownProbeCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownProbeCount.ValueChanged += new System.EventHandler(this.numericUpDownProbeCount_ValueChanged);
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -1421,65 +1480,6 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.shiftDataXToolStripMenuItem,
-            this.removeDatasetToolStripMenuItem,
-            this.removeAllButThisToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 70);
-            // 
-            // shiftDataXToolStripMenuItem
-            // 
-            this.shiftDataXToolStripMenuItem.Name = "shiftDataXToolStripMenuItem";
-            this.shiftDataXToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.shiftDataXToolStripMenuItem.Text = "Shift Data ";
-            // 
-            // removeDatasetToolStripMenuItem
-            // 
-            this.removeDatasetToolStripMenuItem.Name = "removeDatasetToolStripMenuItem";
-            this.removeDatasetToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.removeDatasetToolStripMenuItem.Text = "Remove Dataset";
-            // 
-            // removeAllButThisToolStripMenuItem
-            // 
-            this.removeAllButThisToolStripMenuItem.Name = "removeAllButThisToolStripMenuItem";
-            this.removeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.removeAllButThisToolStripMenuItem.Text = "Remove All But This Set ";
-            // 
-            // toolStripButtonShiftData
-            // 
-            this.toolStripButtonShiftData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonShiftData.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonShiftData.Image")));
-            this.toolStripButtonShiftData.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonShiftData.Name = "toolStripButtonShiftData";
-            this.toolStripButtonShiftData.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonShiftData.Text = "toolStripButton1";
-            // 
-            // numericUpDownProbeCount
-            // 
-            this.numericUpDownProbeCount.Location = new System.Drawing.Point(89, 31);
-            this.numericUpDownProbeCount.Maximum = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.numericUpDownProbeCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownProbeCount.Name = "numericUpDownProbeCount";
-            this.numericUpDownProbeCount.Size = new System.Drawing.Size(52, 20);
-            this.numericUpDownProbeCount.TabIndex = 41;
-            this.numericUpDownProbeCount.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownProbeCount.ValueChanged += new System.EventHandler(this.numericUpDownProbeCount_ValueChanged);
-            // 
             // MainInspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1502,6 +1502,7 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainInspectionForm_KeyDown);
             this.Resize += new System.EventHandler(this.MainInspectionForm_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -1517,6 +1518,7 @@
             this.tabPage2.PerformLayout();
             this.panelProbeInfo.ResumeLayout(false);
             this.panelProbeInfo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabControlOutput.ResumeLayout(false);
@@ -1524,8 +1526,6 @@
             this.tabPageData.ResumeLayout(false);
             this.tabPageData.PerformLayout();
             this.tabPage4.ResumeLayout(false);
-            this.contextMenuStrip1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

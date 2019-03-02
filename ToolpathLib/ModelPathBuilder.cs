@@ -7,11 +7,11 @@ namespace ToolpathLib
 {
     public  class ModelPathBuilder
     {     
-        public BoundingBox getBoundingBox(ToolPath inputPath)
+        public BoundingBox getBoundingBox(ToolPath5Axis inputPath)
         {
             var pointList = new List<Vector3>();
 
-            foreach (PathEntity ent in inputPath)
+            foreach (PathEntity5Axis ent in inputPath)
             {
                 pointList.Add(new Vector3(ent.Position.X, ent.Position.Y, ent.Position.Z));
             }
@@ -19,11 +19,11 @@ namespace ToolpathLib
             BoundingBox ext = BoundingBoxBuilder.FromPtArray(pointList.ToArray());
             return ext;
         }
-        public BoundingBox getJetOnBoundingBox(ToolPath inputPath)
+        public BoundingBox getJetOnBoundingBox(ToolPath5Axis inputPath)
         {
             var pointList = new List<Vector3>();
 
-            foreach (PathEntity ent in inputPath)
+            foreach (PathEntity5Axis ent in inputPath)
             {
                 if(ent.JetOn)
                     pointList.Add(new Vector3(ent.Position.X, ent.Position.Y, ent.Position.Z));

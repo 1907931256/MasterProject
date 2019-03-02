@@ -8,6 +8,6 @@ namespace ToolpathLib
 {
     interface ICncFileParser
     {
-        ToolPath ParsePath(List<string> file);
+        ToolPath5Axis ParsePath(List<string> file);
     }
 }

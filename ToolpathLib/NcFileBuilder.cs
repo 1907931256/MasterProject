@@ -18,19 +18,29 @@ namespace ToolpathLib
             this.machine = machine;
             currentLineNumber = machine.StartingLineNumber;
         }
-        
-        public List<string>Build(ToolPath path,bool invertFeedrates,List<string>header)
+        public List<string> Build(ToolPath5Axis path, bool invertFeedrates,bool fixRollovers,bool fixWrapArounds, List<string> header)
         {
             invertF = invertFeedrates;
             var file = new List<string>();
             file.AddRange(header);
-            foreach(PathEntity pe in path)
+            foreach (PathEntity5Axis pe in path)
             {
                 file.Add(buildLine(pe));
             }
             return file;
         }
-        string buildLine(PathEntity pe)
+        public List<string>Build(ToolPath5Axis path,bool invertFeedrates,List<string>header)
+        {
+            invertF = invertFeedrates;
+            var file = new List<string>();
+            file.AddRange(header);
+            foreach(PathEntity5Axis pe in path)
+            {
+                file.Add(buildLine(pe));
+            }
+            return file;
+        }
+        string buildLine(PathEntity5Axis pe)
         {
             string line = "";
             switch(pe.Type)
@@ -132,7 +142,7 @@ namespace ToolpathLib
                     break;               
             }          
         }
-        void appendPositions(PathEntity pe,ref StringBuilder line)
+        void appendPositions(PathEntity5Axis pe,ref StringBuilder line)
         {
            
                     line.Append("X");
@@ -152,7 +162,7 @@ namespace ToolpathLib
         {
             line.Append(machine.F + f.Value.ToString(machine.FFormat));
         }
-        string addMove(PathEntity pe)
+        string addMove(PathEntity5Axis pe)
         {
             
             StringBuilder line = new StringBuilder();

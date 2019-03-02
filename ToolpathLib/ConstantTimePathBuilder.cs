@@ -12,7 +12,7 @@ namespace ToolpathLib
         double averageSpacing;
         double averageFeedrate;
         int pointCount;
-        public ModelPath Build(ToolPath inputPath, double increment)
+        public ModelPath Build(ToolPath5Axis inputPath, double increment)
         {
             averageSpacing = 0;
             pointCount = 0;
@@ -21,7 +21,7 @@ namespace ToolpathLib
 
             return new ModelPath();
         }
-        ModelPath parsePath(ToolPath inputPath, double timeIncrement)
+        ModelPath parsePath(ToolPath5Axis inputPath, double timeIncrement)
         {
 
             ModelPath mp = new ModelPath(getBoundingBox(inputPath),getJetOnBoundingBox(inputPath));
@@ -44,7 +44,7 @@ namespace ToolpathLib
             mp.IsFiveAxis = isFiveAxis;
             return mp;
         }
-        private ModelPathEntity interpolate(PathEntity p1, PathEntity p2, double currentTime, double timeInc)
+        private ModelPathEntity interpolate(PathEntity5Axis p1, PathEntity5Axis p2, double currentTime, double timeInc)
         {
             ModelPathEntity mpe = new ModelPathEntity(p1);
             if (p2 is LinePathEntity)
@@ -63,7 +63,7 @@ namespace ToolpathLib
             mpe.TravelTime = timeInc;
             return mpe;
         }
-        private ModelPathEntity interpolateLine(PathEntity p1, PathEntity p2, double currentTime)
+        private ModelPathEntity interpolateLine(PathEntity5Axis p1, PathEntity5Axis p2, double currentTime)
         {
             ModelPathEntity mpe = new ModelPathEntity(p2);
             double dt = currentTime - p1.CumulativeTime;
@@ -89,7 +89,7 @@ namespace ToolpathLib
 
             return mpe;
         }
-        private CNCLib.XYZBCMachPosition interpolatePosition(PathEntity p1, PathEntity p2, double currentTime)
+        private CNCLib.XYZBCMachPosition interpolatePosition(PathEntity5Axis p1, PathEntity5Axis p2, double currentTime)
         {
             double dx = p2.Position.X - p1.Position.X;
             double dy = p2.Position.Y - p1.Position.Y;
@@ -109,7 +109,7 @@ namespace ToolpathLib
             }
             return Position;
         }
-        private Vector3 interpolateVector(PathEntity p1, PathEntity p2, double currentTime)
+        private Vector3 interpolateVector(PathEntity5Axis p1, PathEntity5Axis p2, double currentTime)
         {
             double dvx = p2.JetVector.X - p1.JetVector.X;
             double dvy = p2.JetVector.Y - p1.JetVector.Y;
@@ -120,11 +120,11 @@ namespace ToolpathLib
             double vz = p1.JetVector.Z + t * dvz;
             return new Vector3(vx, vy, vz);
         }
-        private double interpolateTime(PathEntity p1, double currentTime)
+        private double interpolateTime(PathEntity5Axis p1, double currentTime)
         {
             return currentTime - p1.CumulativeTime;
         }
-        private ModelPathEntity interpolateArc(PathEntity p1, PathEntity p2, double currentTime)
+        private ModelPathEntity interpolateArc(PathEntity5Axis p1, PathEntity5Axis p2, double currentTime)
         {
             ModelPathEntity mpe = new ModelPathEntity(p2);
             ArcPathEntity arc = p2 as ArcPathEntity;
@@ -132,7 +132,7 @@ namespace ToolpathLib
             mpe.Position = getNewArcEndpoint(arc, dt);
             return mpe;
         }
-        private ModelPathEntity interpolateDelay(PathEntity p1, PathEntity p2, double currentTime)
+        private ModelPathEntity interpolateDelay(PathEntity5Axis p1, PathEntity5Axis p2, double currentTime)
         {
             ModelPathEntity mpe = new ModelPathEntity(p1);
 

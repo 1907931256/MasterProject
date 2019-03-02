@@ -10,7 +10,7 @@ namespace ToolpathLib
     {
         Plane _xSectPlane;
 
-        public XSecPathList Build(ToolPath inputPath, double increment, Plane xsectionPlane)
+        public XSecPathList Build(ToolPath5Axis inputPath, double increment, Plane xsectionPlane)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace ToolpathLib
                 throw;
             }
         }
-        private XSecPathList parsePath(ToolPath inputPath, double increment)
+        private XSecPathList parsePath(ToolPath5Axis inputPath, double increment)
         {
             
             var mp = new XSecPathList();
@@ -42,7 +42,7 @@ namespace ToolpathLib
                         var xpe = new XSectionPathEntity()
                         {
                             Feedrate = inputPath[i - 1].Feedrate.Value,                        
-                            CrossLoc = inputPath[i - 1].PositionAsVector.Y,
+                            CrossLoc = inputPath[i - 1].PositionAsVector3.Y,
                             PassExecOrder = j++
                         };
                         mp.Add(xpe);

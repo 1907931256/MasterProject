@@ -87,6 +87,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyenceLJLib", "KeyenceLJLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyenceSILib", "KeyenceSILib\KeyenceSILib.csproj", "{08EFBB3B-C30E-4300-9113-77D4782268C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterCamPostProcessor", "MasterCamPostProcessor\MasterCamPostProcessor.csproj", "{8058C4B1-19F7-4EF4-80F4-A06615A82D82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -575,6 +577,22 @@ Global
 		{08EFBB3B-C30E-4300-9113-77D4782268C5}.Release|x64.Build.0 = Release|Any CPU
 		{08EFBB3B-C30E-4300-9113-77D4782268C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{08EFBB3B-C30E-4300-9113-77D4782268C5}.Release|x86.Build.0 = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|x64.Build.0 = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Debug|x86.Build.0 = Debug|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|x64.ActiveCfg = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|x64.Build.0 = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|x86.ActiveCfg = Release|Any CPU
+		{8058C4B1-19F7-4EF4-80F4-A06615A82D82}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

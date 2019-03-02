@@ -265,7 +265,7 @@ namespace AbMachModel
                 double pathLength = 0;
                 for (int i = 0; i < _path.Count - 1; i++)
                 {
-                    pathLength += (_path[i + 1].PositionAsVector - _path[i].PositionAsVector).Length;
+                    pathLength += (_path[i + 1].PositionAsVector3 - _path[i].PositionAsVector3).Length;
                 }
                 double avePathLen = pathLength / _path.Count;
 
@@ -388,8 +388,8 @@ namespace AbMachModel
                         while (currentPathNumber == ent.PathNumber)
                         {
                             segmentDepth += averageDepth(ent.Position.X, ent.Position.Y, searchRadius);
-                            int i = _surface.Xindex(ent.PositionAsVector.X);
-                            int j = _surface.Yindex(ent.PositionAsVector.Y);
+                            int i = _surface.Xindex(ent.PositionAsVector3.X);
+                            int j = _surface.Yindex(ent.PositionAsVector3.Y);
                             segmentTargetDepth += _surface.GetTargetDepth(i,j);
                             segmentCount ++;
                         }

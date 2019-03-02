@@ -9,7 +9,7 @@ namespace ToolpathLib
     public class ConstantDistancePathBuilder : ModelPathBuilder, IModelPathBuilder
     {
         bool isFiveAxis;
-        public ModelPath Build(ToolPath inputPath, double increment)
+        public ModelPath Build(ToolPath5Axis inputPath, double increment)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace ToolpathLib
             }
             
         }
-        private ModelPath parsePath(ToolPath inputPath, double increment)
+        private ModelPath parsePath(ToolPath5Axis inputPath, double increment)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace ToolpathLib
            
 
         }
-        private List<ModelPathEntity> parseLine(double increment, PathEntity p2, PathEntity p1)
+        private List<ModelPathEntity> parseLine(double increment, PathEntity5Axis p2, PathEntity5Axis p1)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace ToolpathLib
             }
            
         }
-        private List<ModelPathEntity> parseArc(double increment, PathEntity entity, CNCLib.XYZBCMachPosition startPoint)
+        private List<ModelPathEntity> parseArc(double increment, PathEntity5Axis entity, CNCLib.XYZBCMachPosition startPoint)
         {
             try
             {
@@ -185,7 +185,7 @@ namespace ToolpathLib
             }
            
         }
-        private List<ModelPathEntity> parseDelay(double increment, PathEntity entity, DelayPathEntity delayEnt)
+        private List<ModelPathEntity> parseDelay(double increment, PathEntity5Axis entity, DelayPathEntity delayEnt)
         {
             try
             {

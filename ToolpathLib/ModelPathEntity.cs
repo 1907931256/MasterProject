@@ -6,11 +6,11 @@ using GeometryLib;
 namespace ToolpathLib
 {
     
-    public class ModelPathEntity:PathEntity
+    public class ModelPathEntity:PathEntity5Axis
     {
         public List<int> IntersectionIndices { get; set; }
         public List<double> RadiusList { get; set; }
-        public ModelPathEntity(PathEntity pEnt)
+        public ModelPathEntity(PathEntity5Axis pEnt)
         {
             Ccomp = pEnt.Ccomp;
             CcompTangent = pEnt.CcompTangent;

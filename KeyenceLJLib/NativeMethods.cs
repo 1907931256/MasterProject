@@ -501,8 +501,12 @@ namespace KeyenceLJLib
 		public static extern uint LJV7IF_GetVersion();
 
 		[DllImport("LJV7_IF.dll")]
-		public static extern int LJV7IF_UsbOpen(int lDeviceId);
-
+        public static extern int LJV7IF_UsbOpen(int lDeviceId);
+        public static Rc UsbOpen(int lDeviceId)
+        {
+            return  (Rc)LJV7IF_UsbOpen(lDeviceId);
+            
+        }
 		[DllImport("LJV7_IF.dll")]
 		public static extern int LJV7IF_EthernetOpen(int lDeviceId, ref LJV7IF_ETHERNET_CONFIG ethernetConfig);
 

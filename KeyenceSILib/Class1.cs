@@ -254,15 +254,15 @@ namespace KeyenceSILib
     //} 
     public class NativeMethods
     {
-        [DllImport("SIIF.dll")]
-        private static extern RC SIIF_OpenDeviceUsb();
+        [DllImport("SIIF.dll" )]
+        public static extern RC SIIF_OpenDeviceUsb();
         public static RC OpenDeviceUsb()
         {
             return SIIF_OpenDeviceUsb();
         }
         [DllImport("SIIF.dll")]
         public static extern RC SIIF_CloseDevice();
-        [DllImport("SIIF.dll",EntryPoint = "SIIF_GetCalcDataSingle")]
+        [DllImport("SIIF.dll" )]
         private static extern RC SIIF_GetCalcDataSingle(long outNo, ref SIIF_FLOATVALUE_OUT calcData);
         public static RC GetCalcDataSingle(long outNo, ref SIIF_FLOATVALUE_OUT calcData)
         {

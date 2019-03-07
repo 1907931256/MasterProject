@@ -51,24 +51,24 @@ namespace GeometryLib
                 Vector3 basePoint = new Vector3(vert[0]);
                 if(theta0==thetaMax)
                 {
-                    side1Points.AddRange(Geometry.BreakMany(side01, side1Spacing));
-                    side2Points.AddRange(Geometry.BreakMany(side02, pointSpacing));
+                    side1Points.AddRange(GeomUtilities.BreakMany(side01, side1Spacing));
+                    side2Points.AddRange(GeomUtilities.BreakMany(side02, pointSpacing));
                     basePoint = vert[0];
                 }
                 else
                 {
                     if (theta1 == thetaMax)
                     {
-                        side1Points.AddRange(Geometry.BreakMany(side01, side1Spacing));
-                        side2Points.AddRange(Geometry.BreakMany(side12, pointSpacing));
+                        side1Points.AddRange(GeomUtilities.BreakMany(side01, side1Spacing));
+                        side2Points.AddRange(GeomUtilities.BreakMany(side12, pointSpacing));
                         basePoint = vert[1];
                     }
                     else
                     {
                         if (theta2 == thetaMax)
                         {
-                            side1Points.AddRange(Geometry.BreakMany(side02, side1Spacing));
-                            side2Points.AddRange(Geometry.BreakMany(side12, pointSpacing));
+                            side1Points.AddRange(GeomUtilities.BreakMany(side02, side1Spacing));
+                            side2Points.AddRange(GeomUtilities.BreakMany(side12, pointSpacing));
                             basePoint = vert[2];
                         }
                     }                    

@@ -39,7 +39,7 @@ namespace DataLib
         }
         public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double radius)
         {
-            var centers = DataUtilities.FindCirclesofKnownR(pt1, pt2, radius);
+            var centers = GeometryLib.GeomUtilities.FindCirclesofKnownR(pt1, pt2, radius);
             var center = new Vector3();
             if (centers[0].Y > centers[1].Y)
             {
@@ -49,7 +49,7 @@ namespace DataLib
             {
                 center = centers[1];
             }
-            var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y, 0);
+            var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y,0);
             Translate(translation);
             var pt1Trans = pt1.Translate(translation);
             var pt2Trans = pt2.Translate(translation);

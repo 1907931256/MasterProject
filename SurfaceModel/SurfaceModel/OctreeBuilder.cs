@@ -77,10 +77,10 @@ namespace SurfaceModel
 
                 foreach (Line ent in alongContour)
                 {
-                    List<Vector3> ptList = Geometry.BreakMany(ent, minPointSpacing);
+                    List<Vector3> ptList = GeomUtilities.BreakMany(ent, minPointSpacing);
                     alongPoints.AddRange(ptList);
                 }
-                acrossPoints = Geometry.BreakMany(acrossContour, minPointSpacing);
+                acrossPoints = GeomUtilities.BreakMany(acrossContour, minPointSpacing);
 
                 Vector3[] sortedPts = sortNormalToPlane(acrossPoints);
 

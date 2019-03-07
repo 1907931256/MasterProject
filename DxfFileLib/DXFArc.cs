@@ -94,10 +94,10 @@ namespace DwgConverterLib
             Radius = r;
             double sa = 0;
             double.TryParse(fileSection[12], out sa);
-            StartAngleRad = Geometry.ToRadians(sa);
+            StartAngleRad = GeomUtilities.ToRadians(sa);
             double ea = 0;
             double.TryParse(fileSection[14], out ea);
-            EndAngleRad = Geometry.ToRadians(ea);
+            EndAngleRad = GeomUtilities.ToRadians(ea);
             ClosedArc = false;
             int c = 7;
             //int.TryParse(fileSection[6], out c);

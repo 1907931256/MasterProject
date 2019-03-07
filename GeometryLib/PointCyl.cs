@@ -10,7 +10,7 @@ namespace GeometryLib
     {
         public double R { get; set; }
         public double ThetaRad { get; set; }
-        public double ThetaDeg() { return Geometry.ToDegs(ThetaRad); }
+        public double ThetaDeg() { return GeomUtilities.ToDegs(ThetaRad); }
         public double Z { get; set; }
        
         public BoundingBox BoundingBox()

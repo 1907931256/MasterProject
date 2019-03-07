@@ -16,7 +16,7 @@ namespace InspectionLib
                 if (script is CylInspScript cylScript)
                 {                    
                     double data = 0;
-                    if (cylScript.ProbeSetup.ProbeCount == 1)
+                    if (cylScript.ProbeSetup.Count == 1)
                     {
                         var singleData = new KeyenceSiDataSet(script, CsvFileName);
                         data = singleData.GetData()[0];
@@ -27,7 +27,7 @@ namespace InspectionLib
 
                         data = dualData.GetData(ScanFormat.CAL)[0];
                     }
-                    return new CalDataSet(ringGageDiamInch, data, cylScript.ProbeSetup.ProbeDirection);
+                    return new CalDataSet(ringGageDiamInch, data, cylScript.ProbeSetup.Direction);
                 }
                 else
                 {

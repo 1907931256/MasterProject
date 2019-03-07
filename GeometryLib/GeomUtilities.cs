@@ -5,9 +5,146 @@ using System.Text;
 
 namespace GeometryLib
 {
-    public class Geometry
+    public class GeomUtilities
     {
+        static public Vector2[] FindCirclesofKnownR(Vector2 p1, Vector2 p2, double radius)
+        {
+            try
+            {
+                if (radius < 0) throw new ArgumentException("Negative radius.");
+                if (radius == 0)
+                {
+                    if (p1 == p2) return new[] { p1 };
+                    else throw new InvalidOperationException("No circles.");
+                }
+                if (p1 == p2) throw new InvalidOperationException("Infinite number of circles.");
 
+                double sqDistance = p1.Distance2To(p2);
+                double sqDiameter = 4 * radius * radius;
+                if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
+
+                var midPoint = new Vector2((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+                if (sqDistance == sqDiameter) return new[] { midPoint };
+
+                double d = Math.Sqrt(radius * radius - sqDistance / 4);
+                double distance = Math.Sqrt(sqDistance);
+                double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
+                return new[] {
+                    new Vector2(midPoint.X - oy, midPoint.Y + ox),
+                    new Vector2(midPoint.X + oy, midPoint.Y - ox)
+                };
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        static public Vector3[] FindCirclesofKnownR(Vector3 p1, Vector3 p2, double radius)
+        {
+            try
+            {
+                if (radius < 0) throw new ArgumentException("Negative radius.");
+                if (radius == 0)
+                {
+                    if (p1 == p2) return new[] { p1 };
+                    else throw new InvalidOperationException("No circles.");
+                }
+                if (p1 == p2) throw new InvalidOperationException("Infinite number of circles.");
+
+                double sqDistance = p1.Distance2To(p2);
+                double sqDiameter = 4 * radius * radius;
+                if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
+
+                var midPoint = new Vector3((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2,0);
+                if (sqDistance == sqDiameter) return new[] { midPoint };
+
+                double d = Math.Sqrt(radius * radius - sqDistance / 4);
+                double distance = Math.Sqrt(sqDistance);
+                double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
+                return new[] {
+                    new Vector3(midPoint.X - oy, midPoint.Y + ox,0),
+                    new Vector3(midPoint.X + oy, midPoint.Y - ox,0)
+                };
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        static public System.Drawing.PointF[] FindCirclesofKnownR(System.Drawing.PointF p1, System.Drawing.PointF p2, double radius)
+        {
+            try
+            {
+                if (radius < 0) throw new ArgumentException("Negative radius.");
+                if (radius == 0)
+                {
+                    if (p1 == p2) return new[] { p1 };
+                    else throw new InvalidOperationException("No circles.");
+                }
+                if (p1 == p2) throw new InvalidOperationException("Infinite number of circles.");
+
+                double sqDistance = Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2);
+                double sqDiameter = 4 * radius * radius;
+                if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
+
+                var midPoint = new System.Drawing.PointF((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+                if (sqDistance == sqDiameter) return new[] { midPoint };
+
+                double d = Math.Sqrt(radius * radius - sqDistance / 4);
+                double distance = Math.Sqrt(sqDistance);
+                double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
+                return new[] {
+                    new System.Drawing.PointF((float)(midPoint.X - oy), (float)(midPoint.Y + ox)),
+                    new System.Drawing.PointF((float)(midPoint.X + oy), (float)(midPoint.Y - ox))
+                };
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public static Circle2 FitCirleToThreePoints(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            try
+            {
+                double x1 = (p1.X + p2.X) / 2.0;
+                double y1 = (p1.Y + p2.Y) / 2.0;
+                double dy1 = p2.X - p1.X;
+                double dx1 = -1 * (p2.Y - p1.Y);
+                double x2 = (p3.X + p2.X) / 2.0;
+                double y2 = (p3.Y + p2.Y) / 2.0;
+                double dy2 = p3.X - p2.X;
+                double dx2 = -1 * (p3.Y - p2.Y);
+                var line1 = new Line2(new Vector2(x1, y1), new Vector2(x1 + dx1, y1 + dy1));
+                var line2 = new Line2(new Vector2(x2, y2), new Vector2(x2 + dx2, y2 + dy2));
+                var intersection = GeomUtilities.LineLineXYIntersect(line1, line2);
+                if (!(intersection.Intersects))
+                {
+                    throw new Exception("Points are colinear, Couldn't find arc");
+                }
+                else
+                {
+                    var center = new Vector2(intersection.X, intersection.Y);
+                    var dx = center.X - p1.X;
+                    var dy = center.Y - p1.Y;
+                    var r = Math.Sqrt(dx * dx + dy * dy);
+                    return new Circle2(center, r);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
         public static double ToDegs(double ThetaRadians)
         {
             return 180 * ThetaRadians / Math.PI;

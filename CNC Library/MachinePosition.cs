@@ -7,12 +7,12 @@ namespace CNCLib
         
         double _aRad;
         double _x;
-        public double Adeg { get { return Geometry.ToDegs(_aRad); } set { _aRad = Geometry.ToRadians(value); } }
+        public double Adeg { get { return GeomUtilities.ToDegs(_aRad); } set { _aRad = GeomUtilities.ToRadians(value); } }
         public double X { get { return _x; } set { _x = value; } }
         public XAMachPostion(double x,double aDegrees)
         {
             _geometry = MachineGeometry.XA;
-            _aRad = Geometry.ToRadians(aDegrees);
+            _aRad = GeomUtilities.ToRadians(aDegrees);
             _x = x;
         }
         public XAMachPostion()
@@ -27,8 +27,8 @@ namespace CNCLib
         public double X { get { return _x; } set { _x = value; } }
         public double Y { get { return _y; } set { _y = value; } }
         public double Z { get { return _z; } set { _z = value; } }
-        public double Bdeg { get { return Geometry.ToDegs(_bRad); } set { _bRad = Geometry.ToRadians(value); } }
-        public double Cdeg { get { return Geometry.ToDegs(_cRad); } set { _cRad = Geometry.ToRadians(value); } }
+        public double Bdeg { get { return GeomUtilities.ToDegs(_bRad); } set { _bRad = GeomUtilities.ToRadians(value); } }
+        public double Cdeg { get { return GeomUtilities.ToDegs(_cRad); } set { _cRad = GeomUtilities.ToRadians(value); } }
         double _bRad;
         double _cRad;
         double _x;
@@ -45,8 +45,8 @@ namespace CNCLib
         {
             _geometry = MachineGeometry.XYZBC;
 
-            _bRad = Geometry.ToRadians(p.Bdeg);
-            _cRad = Geometry.ToRadians(p.Cdeg);
+            _bRad = GeomUtilities.ToRadians(p.Bdeg);
+            _cRad = GeomUtilities.ToRadians(p.Cdeg);
             _x = p.X;
             _y = p.Y;
             _z = p.Z;
@@ -56,8 +56,8 @@ namespace CNCLib
         {
             _geometry = MachineGeometry.XYZBC;
 
-            _bRad = Geometry.ToRadians(bDegs);
-            _cRad = Geometry.ToRadians(cDegs);
+            _bRad = GeomUtilities.ToRadians(bDegs);
+            _cRad = GeomUtilities.ToRadians(cDegs);
             _x = x;
             _y = y;
             _z = Z;

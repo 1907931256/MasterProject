@@ -31,7 +31,7 @@ namespace InspectionLib
                     for (int i = 0; i < pointCt; i++)
                     {
                         var z = script.StartLocation.X;
-                        var theta = script.ThetaDir * i * ringScript.AngleIncrement + Geometry.ToRadians(ringScript.StartLocation.Adeg);
+                        var theta = script.ThetaDir * i * ringScript.AngleIncrement + GeomUtilities.ToRadians(ringScript.StartLocation.Adeg);
 
                         var diam = data[i];
                         var sum = data[i];
@@ -73,7 +73,7 @@ namespace InspectionLib
                 var dataSet = new RingDataSet(_barrel,script.InputDataFileName);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution);
-                dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.ProbeDirection);
+                dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction);
                 dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CorrectedCylData, script.PointsPerRevolution);
                 return dataSet;
             }

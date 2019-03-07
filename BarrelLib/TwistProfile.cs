@@ -12,9 +12,28 @@ namespace BarrelLib
     /// </summary>
     public class TwistProfile
     {
-        public int Direction { get { return _direction; } }
+        public enum TwistType
+        {
+            Uniform,
+            Progressive
+        }
+        public enum DirectionEnum
+        {
+            RIGHT_HAND=0,
+            LEFT_HAND=1
+        }
+        public int DirectionSign {
+            get
+            {
+                if (Direction == DirectionEnum.LEFT_HAND)
+                    return 1;
+                else
+                    return -1;
+            }
+        }
+        public DirectionEnum Direction { get; set; }
         TwistType _type;
-        TwistValue[] _twist;
+        List<GeometryLib.PointCyl> _twist;
         public static string Name = "Twist_Profile";
         public static string EndName = "End_Twist";
 
@@ -23,7 +42,7 @@ namespace BarrelLib
             double theta = 0;
             switch(_type)
             {
-                case TwistType.Constant:
+                case TwistType.Uniform:
                     theta= ThetaRadforconstantTwist(z);
                     break;
                 case TwistType.Progressive:
@@ -34,7 +53,7 @@ namespace BarrelLib
         }
         double ThetaRadforconstantTwist(double z)
         {
-            double th =_direction * Math.PI * 2 * (z / _inchPerRev);
+            double th =_twistDirection * Math.PI * 2 * (z / _inchPerRev);
             //th %= (Math.PI * 2);
             //if (th < 0)
              //   th += (Math.PI * 2);
@@ -47,12 +66,12 @@ namespace BarrelLib
         /// <returns></returns>
         double ThetaRadAtForNonConstant(double z)
         {
-            TwistValue tw0 = new TwistValue();
-            TwistValue tw1 = new TwistValue();
+            var tw0 = new GeometryLib.PointCyl();
+            var tw1 = new GeometryLib.PointCyl();
             double theta = 0;
             bool zFound = false;
 
-            for (int i = 0; i < _twist.Length - 1; i++)
+            for (int i = 0; i < _twist.Count - 1; i++)
             {
                 if ((z >= _twist[i].Z) && (z <= _twist[i + 1].Z))
                 {
@@ -86,7 +105,7 @@ namespace BarrelLib
             file.Add("z theta");//2
             file.Add("inch degrees");//3
 
-            foreach (TwistValue tw in _twist)
+            foreach (GeometryLib.PointCyl tw in _twist)
             {
                 StringBuilder stb = new StringBuilder();
                 stb.Append(tw.Z);
@@ -100,8 +119,8 @@ namespace BarrelLib
         void OpenTXT(string fileName)
         {
             List<string> file = FileIO.ReadDataTextFile(fileName);
-            
-            List<TwistValue> twistList = new List<TwistValue>();
+
+            _twist = new List<GeometryLib.PointCyl>();
 
             if (file.Count >= 2)
             {
@@ -117,7 +136,7 @@ namespace BarrelLib
                     for (int i = 4; i < file.Count; i++)
                     {
                         string[] splitLine = file[i].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-                        TwistValue twist = new TwistValue();
+                        var twist = new GeometryLib.PointCyl();
 
                         if (splitLine.Length > 1)
                         {
@@ -132,19 +151,13 @@ namespace BarrelLib
                                 twist.ThetaRad= result;
                             }
 
-                            twistList.Add(twist);
+                            _twist.Add(twist);
                         }
 
                     }
-                }
-                _twist = twistList.ToArray();
+                }             
 
-            }
-            else
-            {
-                _type = TwistType.Progressive;
-                _twist = new TwistValue[0];
-            }
+            }          
 
         }
         public TwistProfile(string twistFileName)
@@ -153,27 +166,35 @@ namespace BarrelLib
         }
         double _length;
         double _inchPerRev;
-        int _direction;
-        public TwistProfile(double length, double inchPerRevolution,int direction)
+        int _twistDirection;
+        public TwistProfile(double length, double inchPerRevolution,DirectionEnum direction)
         {
-            _type = TwistType.Constant;
+            _type = TwistType.Uniform;
             _inchPerRev = inchPerRevolution;
-            _direction = direction;
+            Direction = direction;
             _length = length;
+            if(Direction==DirectionEnum.LEFT_HAND)
+            {
+                _twistDirection = 1;
+            }
+            else
+            {
+                _twistDirection = -1;
+            }
             int len = (int)Math.Ceiling(_length * 1000);
             double dl = _length / 1000;
-            double dt = _direction* (Math.PI * 2) / (inchPerRevolution * 1000);
-            _twist = new TwistValue[len];
+            double dt = _twistDirection * (Math.PI * 2) / (inchPerRevolution * 1000);
+            _twist = new List<GeometryLib.PointCyl>();
             for(int i=0;i<len;i++)
             {
-               _twist[i] = new TwistValue(i * dl, i * dt);
+               _twist[i] = new GeometryLib.PointCyl(1,i * dl, i * dt);
             }
         }
         public TwistProfile(BarrelType type)
         {
-            _type = TwistType.Constant;
-            _twist = new TwistValue[0];
-            switch(type)
+            _type = TwistType.Uniform;
+            _twist = new List<GeometryLib.PointCyl>();
+            switch (type)
             {
                 case BarrelType.M2_50_Cal:
                     setM2Twist();
@@ -187,54 +208,50 @@ namespace BarrelLib
                 case BarrelType.M240_762mm:
                     setM240Twist();
                     break;
+                    
             }
            
         }
         public TwistProfile()
         {
-            _type = TwistType.Constant;
-            _twist = new TwistValue[0];
+            _type = TwistType.Uniform;
+            _twist = new List<GeometryLib.PointCyl>();
             setM2Twist();
         }
         void setM284Twist()
         {
-            _type = TwistType.Constant;
+            _type = TwistType.Uniform;
             _length = 240;
             _inchPerRev = 122;
-            _direction = -1;
+            _twistDirection = -1;
         }
         void setM242Twist()
         {
             _type = TwistType.Progressive;
             _length = 78;
             _inchPerRev = 40;
-            _direction = -1;
+            _twistDirection = -1;
         }
         void setM240Twist()
         {
-            _type = TwistType.Constant;
+            _type = TwistType.Uniform;
             _length = 30;
             _inchPerRev = 12;
-            _direction = -1;
+            _twistDirection = -1;
         }
         void setM2Twist()
         {
-            _type = TwistType.Constant;
+            _type = TwistType.Uniform;
             _length = 48;
             _inchPerRev = 15;
-            _direction = -1;
+            _twistDirection = -1;
         }
-        public TwistProfile(double[] z, double[] theta, TwistType type)
-        {
-            int l = Math.Min(z.Length, theta.Length);
-            _twist = new TwistValue[l];
-            _direction = Math.Sign(theta[theta.Length - 1] - theta[0]);
 
-            for (int i = 0; i < _twist.Length - 1; i++)
-            {
-                _twist[i].Z = z[i];
-                _twist[i].ThetaRad = theta[i];
-            }
+        public TwistProfile(GeometryLib.PointCyl[] points, TwistType type,DirectionEnum direction)
+        {
+
+            _twist = points.ToList();
+            Direction = direction;
             _type = type;
 
         }

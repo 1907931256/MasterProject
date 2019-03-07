@@ -107,7 +107,7 @@ namespace InspectionLib
                 label = label.Trim();
                 label = label.ToUpper();
                 var dict = BuildMethodDictionary();
-                var methType = ScanFormat.UNKNOWN;
+                var methType = ScanFormat.AXIAL;
                 dict.TryGetValue(label, out methType);
                 return methType;
             }
@@ -144,7 +144,7 @@ namespace InspectionLib
             dict.Add("AX", ScanFormat.AXIAL);
             dict.Add("SP", ScanFormat.SPIRAL);            
             dict.Add("CAL", ScanFormat.CAL);
-            dict.Add("LN", ScanFormat.LINE);
+            dict.Add("LN", ScanFormat.SINGLE);
             return dict;
         }
         static InspectionScriptBuilder()
@@ -153,6 +153,40 @@ namespace InspectionLib
             _rotAxisName = "A";
             _landName = "LANDS";
             _grooveName = "GROOVES";
+        }
+        static SpiralInspScript BuildSpirScriptFromFilename(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, CalDataSet calDataSet,
+            string filename, int ptsPerRev)
+        {
+            var fileCodes = ParseFilename(filename);
+            var start = new XAMachPostion();
+            var end = new XAMachPostion();
+            start.X = getVal(fileCodes[2], _linAxisName);
+            end.X = getVal(fileCodes[3], _linAxisName);
+            start.Adeg = getVal(fileCodes[4], _rotAxisName);
+            end.Adeg = getVal(fileCodes[5], _rotAxisName);
+            var dx = end.X - start.X;
+            var da = end.Adeg - start.Adeg;
+            var rotations = da / 360;
+            double spiralPitchInch = dx / rotations;
+            var script = new SpiralInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev, spiralPitchInch);
+            script.InputDataFileName = filename;
+            return script;
+        }
+
+        static RingInspScript BuildRingScriptFromFilename(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
+            CalDataSet calDataSet,
+            string filename, int ptsPerRev)
+        {
+            var fileCodes = ParseFilename(filename);
+            var start = new XAMachPostion();
+            var end = new XAMachPostion();
+            start.X = getVal(fileCodes[2], _linAxisName);
+            start.Adeg = getVal(fileCodes[3], _rotAxisName);
+            end.X = start.X;
+            end.Adeg = getVal(fileCodes[4], _rotAxisName);
+            var script = new RingInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev);
+            script.InputDataFileName = filename;
+            return script;
         }
         static public InspectionScript BuildScriptFromFile(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
             CalDataSet calDataSet, string filename, int ptsPerRev)
@@ -167,6 +201,12 @@ namespace InspectionLib
                     case ScanFormat.SPIRAL:
                         return BuildSpirScriptFromFilename(scanFormat, outputUnit, probeSetup,
                              calDataSet, filename, ptsPerRev);
+                    case ScanFormat.AXIAL:
+                    case ScanFormat.CAL:
+                    case ScanFormat.GROOVE:
+                    case ScanFormat.LAND:
+                    case ScanFormat.RASTER:
+                    case ScanFormat.SINGLE:
                     default:
                         return new InspectionScript(scanFormat, outputUnit, probeSetup, calDataSet);
                 }
@@ -177,6 +217,21 @@ namespace InspectionLib
                 throw;
             }
         }
+        static SpiralInspScript BuildSpirScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
+           CalDataSet calDataSet, string filename, int ptsPerRev, double spiralPitchInch, XAMachPostion start, XAMachPostion end)
+        {
+            var script = new SpiralInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev, spiralPitchInch);
+            script.InputDataFileName = filename;
+            return script;
+        }
+        static RingInspScript BuildRingScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
+            CalDataSet calDataSet, string filename, int ptsPerRev, XAMachPostion start, XAMachPostion end)
+        {
+            var script = new RingInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev);
+            script.InputDataFileName = filename;
+            return script;
+        }
+
         static public InspectionScript BuildScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup,
             CalDataSet calDataSet, string filename, int ptsPerRev, double spiralPitchInch, XAMachPostion start, XAMachPostion end)
         {
@@ -190,6 +245,13 @@ namespace InspectionLib
                     case ScanFormat.SPIRAL:
                         return BuildSpirScript(scanFormat, outputUnit, probeSetup,
                              calDataSet, filename, ptsPerRev, spiralPitchInch, start, end);
+                    case ScanFormat.AXIAL:
+                    case ScanFormat.CAL:
+                    case ScanFormat.GROOVE:
+                    case ScanFormat.LAND:
+                    case ScanFormat.RASTER:
+                    case ScanFormat.SINGLE:
+                   
                     default:
                         return new InspectionScript(scanFormat, outputUnit, probeSetup, calDataSet);
                 }
@@ -201,44 +263,6 @@ namespace InspectionLib
             }           
         }
 
-    static SpiralInspScript BuildSpirScriptFromFilename(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, CalDataSet calDataSet,
-            string filename, int ptsPerRev)
-        {
-            var fileCodes = ParseFilename(filename);
-            var start = new XAMachPostion();
-            var end = new XAMachPostion();
-            start.X = getVal(fileCodes[2], _linAxisName);
-            end.X = getVal(fileCodes[3], _linAxisName);
-            start.Adeg = getVal(fileCodes[4], _rotAxisName);
-            end.Adeg = getVal(fileCodes[5], _rotAxisName);
-            var dx = end.X - start.X;
-            var da = end.Adeg - start.Adeg;
-            var rotations = da / 360;
-            double spiralPitchInch = dx / rotations;
-            return new SpiralInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev, spiralPitchInch);
-        }
-        static  SpiralInspScript BuildSpirScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, 
-            CalDataSet calDataSet, string filename, int ptsPerRev, double spiralPitchInch, XAMachPostion start, XAMachPostion end)
-        {
-            return  new SpiralInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev, spiralPitchInch);
-        }
-        static  RingInspScript BuildRingScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, 
-            CalDataSet calDataSet, string filename,  int ptsPerRev,XAMachPostion start,XAMachPostion end)
-        {
-            return new RingInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev);
-        }
-        static   RingInspScript BuildRingScriptFromFilename(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, 
-            CalDataSet calDataSet, 
-            string filename,  int ptsPerRev)
-        {            
-            var fileCodes = ParseFilename(filename);
-            var start = new XAMachPostion();
-            var end = new XAMachPostion();
-            start.X = getVal(fileCodes[2], _linAxisName);           
-            start.Adeg = getVal(fileCodes[3], _rotAxisName);
-            end.X = start.X;
-            end.Adeg = getVal(fileCodes[4], _rotAxisName);
-            return new RingInspScript(scanFormat, outputUnit, probeSetup, calDataSet, start, end, ptsPerRev);
-        }
+        
     }
 }

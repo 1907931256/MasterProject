@@ -512,8 +512,8 @@ namespace ToolpathLib
             {
                 Vector3 pt = new Vector3(0, 0, 1);
                 Vector3 origin = new Vector3(0, 0, 0);                
-                pt.RotateY(origin, Geometry.ToRadians(ent.Position.Bdeg));
-                pt.RotateZ(origin, Geometry.ToRadians(ent.Position.Cdeg));
+                pt.RotateY(origin, GeomUtilities.ToRadians(ent.Position.Bdeg));
+                pt.RotateZ(origin, GeomUtilities.ToRadians(ent.Position.Cdeg));
                 ent.JetVector = pt;
             }
             else

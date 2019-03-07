@@ -52,14 +52,14 @@ namespace InspectionLib
                 words = FileIO.Split(fileList[7]);
                 _targetPasses = Convert.ToInt32(words[1]);
                 words = FileIO.Split(fileList[8]);
-                _rasterOffsetAngle = GeometryLib.Geometry.ToRadians(Convert.ToDouble(words[1]));
+                _rasterOffsetAngle = GeometryLib.GeomUtilities.ToRadians(Convert.ToDouble(words[1]));
                 for (int i = 10; i < fileList.Count; i++)
                 {
                     words = FileIO.Split(fileList[i]);
                     if (words.Length == 4)
                     {
                         int rasterIndex = Convert.ToInt32(words[0]);
-                        double thetaRel = GeometryLib.Geometry.ToRadians(Convert.ToDouble(words[1]));
+                        double thetaRel = GeometryLib.GeomUtilities.ToRadians(Convert.ToDouble(words[1]));
                         double speed = Convert.ToDouble(words[2]);
                         double depth = Convert.ToDouble(words[3]);
                         var mrs = new MachineRasterSpeed(rasterIndex, thetaRel, speed, depth);

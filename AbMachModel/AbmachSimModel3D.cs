@@ -96,7 +96,7 @@ namespace AbMachModel
                                                 //var jetV = new Vector3(jetPt.Position.X, jetPt.Position.Y, 0);
 
                                                 //double pointRadius = jetV.DistanceTo(mpeV);
-                                                double pointRadius = Geometry.RayPointDistance(jetRay, jetPt.Position);
+                                                double pointRadius = GeomUtilities.RayPointDistance(jetRay, jetPt.Position);
                                                 if (pointRadius <= testJetRadius)
                                                 {
                                                     double jFactor = jetFactor(pointRadius);

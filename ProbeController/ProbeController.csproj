@@ -47,7 +47,6 @@
     <Compile Include="ProbeController.cs" />
     <Compile Include="ProbeSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SiCommandDict.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\File IO Library\FileIO\FileIOLib.csproj">

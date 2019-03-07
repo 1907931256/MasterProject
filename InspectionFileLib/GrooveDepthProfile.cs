@@ -50,7 +50,7 @@ namespace InspectionLib
                 {
                     words = FileIO.Split(lines[i]);
                     int index = Convert.ToInt32(words[0]);
-                    double theta = Geometry.ToRadians(Convert.ToDouble(words[1]));
+                    double theta = GeomUtilities.ToRadians(Convert.ToDouble(words[1]));
                     double depth = Convert.ToDouble(words[2]);
                     var dm = new DepthMeasurement(new PointCyl(), theta, index, depth);
                     this.Add(dm);

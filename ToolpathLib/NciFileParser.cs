@@ -273,8 +273,8 @@ namespace ToolpathLib
             entity.JetVector = new GeometryLib.Vector3(xTop - entity.Position.X, yTop - entity.Position.Y, zTop - entity.Position.Z);
             entity.ControlFlag = (CtrlFlag)(int.Parse(paramArr[8]));
             entity.JetOn = getJetOn(entity.Feedrate.Value, toolpath.NomFeedrate);
-            entity.Position.Bdeg =GeometryLib.Geometry.ToDegs( Math.Acos(entity.JetVector.Z / entity.JetVector.Length));
-            entity.Position.Cdeg = GeometryLib.Geometry.ToDegs(Math.Atan2(entity.JetVector.Y, entity.JetVector.X));
+            entity.Position.Bdeg =GeometryLib.GeomUtilities.ToDegs( Math.Acos(entity.JetVector.Z / entity.JetVector.Length));
+            entity.Position.Cdeg = GeometryLib.GeomUtilities.ToDegs(Math.Atan2(entity.JetVector.Y, entity.JetVector.X));
             return entity;
         }
         private void eof(string[] paramArr)

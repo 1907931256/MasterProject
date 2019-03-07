@@ -43,7 +43,7 @@ namespace BarrelLib
                 if (entity is Arc) 
                 {
                     Arc arc = entity as Arc;
-                    if (Geometry.RayArcXYIntersect(arc, ray).Intersects)
+                    if (GeomUtilities.RayArcXYIntersect(arc, ray).Intersects)
                     {
                         intersection = true;
                         
@@ -53,7 +53,7 @@ namespace BarrelLib
                 if (entity is Line) 
                 {
                     Line line = entity as Line;
-                    if (Geometry.RayLineXYIntersect(ray, line).Intersects)
+                    if (GeomUtilities.RayLineXYIntersect(ray, line).Intersects)
                     {
                         intersection = true;
                         

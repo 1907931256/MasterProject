@@ -34,7 +34,7 @@ namespace BarrelInspectionProcessorForm
         LogFile _logFile;
         InputFileType inputFileType;
         
-        int _probeCount;
+        
         string barrelTypeStr;
         string scanFormatStr;
         string probeDirectionStr;
@@ -43,10 +43,10 @@ namespace BarrelInspectionProcessorForm
         string manufStepStr;
         private void SetComboBoxes()
         {
-            var barrelTypeList = new List<string>() { "M2_50_Cal", "M242_25mm", "M284_155mm", "M240_762mm","M_50mm", "Flat Plate" };
-            var scanFormatList = new List<string>() { "RING", "SPIRAL", "AXIAL", "LAND", "GROOVE", "CAL", "LINE" };
+            var barrelTypeList = Enum.GetNames(typeof(BarrelType)); //;new List<string>() { "M2_50_Cal", "M242_25mm", "M284_155mm", "M240_762mm","M_50mm", "Flat Plate" };
+            var scanFormatList = Enum.GetNames(typeof(ScanFormat));// new List<string>() { "RING", "SPIRAL", "AXIAL", "LAND", "GROOVE", "CAL", "SINGLE","RASTER" };
             var probeDirectionList = new List<string>() { "BORE I.D.", "ROD O.D." };
-            var probeTypeList = new List<string>() { "SI", "LJ" };
+            var probeConfigList = Enum.GetNames(typeof(ProbeConfig));// new List<string>() { "SINGLE_SI_F10", "DUAL_SI_F10","SINGLE_LJ_V7060","LJ_V7060_SI_F10" };
             var knownDiamList = new List<string>() { "Default Value", "Set Value", "Diameter Profile", "Ring Calibrated" };
             var manufStepList = new List<string>(){ "Pre-Boring ","Boring In-process","Post Boring","Post Honing","Groove Machining In-Process",
                                                     "Post Groove Machining","Post Final Honing","In Use"};
@@ -54,13 +54,13 @@ namespace BarrelInspectionProcessorForm
             ComboListBoxHelper.FillComboBox(comboBoxBarrel, barrelTypeList.ToArray());
             ComboListBoxHelper.FillComboBox(comboBoxDiameterType, knownDiamList.ToArray());
             ComboListBoxHelper.FillComboBox(comboBoxProbeDirection, probeDirectionList.ToArray());
-            ComboListBoxHelper.FillComboBox(comboBoxProbeType, probeTypeList.ToArray());
+            ComboListBoxHelper.FillComboBox(comboBoxProbeConifg, probeConfigList.ToArray());
             ComboListBoxHelper.FillComboBox(comboBoxManStep, manufStepList.ToArray());
 
             comboBoxBarrel.SelectedIndex = ComboListBoxHelper.GetIndexOf(barrelTypeStr, comboBoxBarrel.Items);
             comboBoxMethod.SelectedIndex = ComboListBoxHelper.GetIndexOf(scanFormatStr, comboBoxMethod.Items);
             comboBoxProbeDirection.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeDirectionStr, comboBoxProbeDirection.Items);
-            comboBoxProbeType.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeTypeStr, comboBoxProbeType.Items);
+            comboBoxProbeConifg.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeTypeStr, comboBoxProbeConifg.Items);
             comboBoxDiameterType.SelectedIndex = ComboListBoxHelper.GetIndexOf(knownDiamTypeStr, comboBoxDiameterType.Items);
             comboBoxManStep.SelectedIndex = ComboListBoxHelper.GetIndexOf(manufStepStr, comboBoxManStep.Items);
         }
@@ -70,7 +70,7 @@ namespace BarrelInspectionProcessorForm
             scanFormatStr = Properties.Settings.Default.scanFormat;
             probeDirectionStr = Properties.Settings.Default.probeDirection;
             probeTypeStr = Properties.Settings.Default.probeType;
-            _probeCount = Properties.Settings.Default.probeCount;
+            
             knownDiamTypeStr = Properties.Settings.Default.diamCalType;
             manufStepStr = Properties.Settings.Default.manufStep;
             _useFilenameData = Properties.Settings.Default._useFileNameData;
@@ -79,10 +79,10 @@ namespace BarrelInspectionProcessorForm
         private void SetPropertyValues()
         {
             Properties.Settings.Default.barrelType = comboBoxBarrel.SelectedItem.ToString();
-            Properties.Settings.Default.probeType = comboBoxProbeType.SelectedItem.ToString();
+            Properties.Settings.Default.probeType = comboBoxProbeConifg.SelectedItem.ToString();
             Properties.Settings.Default.probeDirection = comboBoxProbeDirection.SelectedItem.ToString();
             Properties.Settings.Default.scanFormat = comboBoxMethod.SelectedItem.ToString();
-            Properties.Settings.Default.probeCount = _probeCount;
+           
             Properties.Settings.Default.diamCalType = comboBoxDiameterType.SelectedItem.ToString();
             Properties.Settings.Default.manufStep = comboBoxManStep.SelectedItem.ToString();
             Properties.Settings.Default._useFileNameData = _useFilenameData;
@@ -108,7 +108,7 @@ namespace BarrelInspectionProcessorForm
                 
 
                 textBoxPitch.ReadOnly = true;
-                numericUpDownProbeCount.Value = _probeCount;
+                
                 textBoxNomDiam.Text = _barrel.DimensionData.ActualLandDiam.ToString("f4");
                 
                 //_probeDirection = ProbeController.ProbeDirection.ID;
@@ -258,7 +258,7 @@ namespace BarrelInspectionProcessorForm
                     
 
                 }
-                //_inspScript = new CartInspScript(ScanFormat.LINE);
+                
                 _inspDataSetList.Add(inspDataSet);
             }
         }
@@ -280,7 +280,7 @@ namespace BarrelInspectionProcessorForm
                     }
 
                 }
-                //_inspScript = new CylInspScript(ScanFormat.RING);
+                
                 _inspDataSetList.Add(inspDataSet);
             }
         }
@@ -497,22 +497,47 @@ namespace BarrelInspectionProcessorForm
                 throw;
             }
         }
+        ProbeConfig _probeConfig;
         ProbeSetup GetProbeSetup()
         {
             try
             {
-                var probeSetup = new ProbeSetup();
-                probeSetup.UseDualProbeAve = (_probeCount == 2);
                 double probePhase = 0;
-                if (probeSetup.UseDualProbeAve)
-                {
-                    InputVerification.TryGetValue(textBoxProbePhaseDeg, "360.0>x>=-360.0", -360.0, 360, out probePhase);
-                    probeSetup.ProbePhaseDifferenceRad = Math.PI * probePhase / 180.0;
-                }
+                var probeSetup = new ProbeSetup();                
+                probeSetup.Direction = _probeDirection;
+                probeSetup.ProbeConfig = _probeConfig;
+                InputVerification.TryGetValue(textBoxProbePhaseDeg, "360.0>x>=-360.0", -360.0, 360, out probePhase);
+                double probePhaseRad = Math.PI * probePhase / 180.0;
+                Probe probe;
                 
-                probeSetup.ProbeDirection = _probeDirection;
-                probeSetup.ProbeCount = _probeCount;
-                probeSetup.ProbeList.AddRange(_probes);
+                switch(_probeConfig)
+                {
+                    
+                    case ProbeConfig.SINGLE_LJ_V7060:
+                        probe = new Probe(Probe.ProbeType.LJ_V7060, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);                        
+                        probeSetup.Add(probe);
+                        break;
+                    case ProbeConfig.SINGLE_SI_F10:
+                        probe = new Probe(Probe.ProbeType.SI_F10, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);                        
+                        probeSetup.Add(probe);
+                        break;
+                    case ProbeConfig.DUAL_SI_F10:
+                        probe = new Probe(Probe.ProbeType.SI_F10, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);
+                        probeSetup.Add(probe);
+                        probe = new Probe(Probe.ProbeType.SI_F10,new MeasurementUnit(LengthUnit.MICRON),probePhaseRad);
+                        probeSetup.Add(probe);
+                        break;
+                    case ProbeConfig.LJ_V7060_SI_F10:
+                        probe = new Probe(Probe.ProbeType.LJ_V7060, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);
+                        probeSetup.Add(probe);
+                        probe = new Probe(Probe.ProbeType.SI_F10, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);
+                        probeSetup.Add(probe);
+                        break;
+                }                       
+                
+
+                           
+                
                 return probeSetup;
             }
             catch (Exception)
@@ -531,7 +556,7 @@ namespace BarrelInspectionProcessorForm
                 switch (_knownDiamType)
                 {
                     case DiamCalType.RINGCAL:
-                        if (_calFilename != "")
+                        if (_calFilename != "" && System.IO.File.Exists(_calFilename))
                         {
                             double ringCalDiameterInch = 0;
                             InputVerification.TryGetValue(textBoxRingCal, "x>0", out ringCalDiameterInch);
@@ -595,15 +620,15 @@ namespace BarrelInspectionProcessorForm
             {
                 
                 double[] rawSiData = new double[1];
-                if (_inspScript.ProbeSetup.ProbeCount == 1)
+                if (_inspScript.ProbeSetup.ProbeConfig == ProbeConfig.SINGLE_SI_F10)
                 {
                     var keyenceSiDataSet = new KeyenceSiDataSet(_inspScript, dataFilename);
                     rawSiData = keyenceSiDataSet.GetData();
                 }
                 else
                 {
-                    var keyenceDualSiDataSet = new KeyenceDualSiDataSet(_inspScript, dataFilename);
-                    rawSiData = keyenceDualSiDataSet.GetData(_scanFormat);
+                    var keyenceMultiSiDataSet = new KeyenceDualSiDataSet(_inspScript, dataFilename);
+                    rawSiData = keyenceMultiSiDataSet.GetData(_scanFormat);
                 }
                 switch (_inspScript.ScanFormat)
                 {
@@ -637,7 +662,7 @@ namespace BarrelInspectionProcessorForm
             try
             {
               
-                var keyenceLjDataSet = new KeyenceLJDataSet(_inspScript, dataFilename);
+                var keyenceLjDataSet = new KeyenceLJDataSet(_inspScript, dataFilename,new MeasurementUnit(LengthUnit.INCH));
                 Vector2[] rawLJData = keyenceLjDataSet.GetData();
                 switch (_inspScript.ScanFormat)
                 {
@@ -649,8 +674,8 @@ namespace BarrelInspectionProcessorForm
                     //    var ringBuilder = new RingDataBuilder(_barrel);
                     //    return Task.Run(() => ringBuilder.BuildRingAsync(ct, progress, _inspScript as CylInspScript, rawLJData, _dataOutOptions));
 
-                    case ScanFormat.LINE:
-                        var lineBuilder = new CartesianDataBuilder(_barrel);
+                    case ScanFormat.SINGLE:
+                        var lineBuilder = new SingleScanDataBuilder(_barrel);
                         return Task.Run(() => lineBuilder.BuildSingleLineAsync(ct, progress, _inspScript as CartInspScript, rawLJData, _dataOutOptions));
                     default:
                         return null;
@@ -672,11 +697,13 @@ namespace BarrelInspectionProcessorForm
                 var centerline = new PointCyl(0, 0, 0);
                 double[] rawSiData= new double[1] { 0 };
                 Vector2[] rawLJData = new Vector2[1] { new Vector2() };
-                switch(_probes[0].Type)
+                switch(_probeConfig)
                 {
-                    case ProbeType.LJ:
+                    case ProbeConfig.SINGLE_LJ_V7060:
                         return ProcessLJDataAsync(dataFilename, ct, progress);                        
-                    case ProbeType.SI:
+                    case ProbeConfig.SINGLE_SI_F10:
+                        return ProcessSiDataAsync(dataFilename, ct, progress);
+                    case ProbeConfig.DUAL_SI_F10:
                         return ProcessSiDataAsync(dataFilename, ct, progress);
                     default:
                         return null;
@@ -942,7 +969,7 @@ namespace BarrelInspectionProcessorForm
 
         }
         ScanFormat _scanFormat;
-        ProbeController.ProbeDirection _probeDirection;
+        ProbeDirection _probeDirection;
         private void ComboBoxProbeDirection_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -950,10 +977,10 @@ namespace BarrelInspectionProcessorForm
                 switch (comboBoxProbeDirection.SelectedIndex)
                 {
                     case 0://bore id
-                        _probeDirection = ProbeController.ProbeDirection.ID;
+                        _probeDirection = ProbeDirection.ID;
                         break;
                     case 1: //rod od
-                        _probeDirection = ProbeController.ProbeDirection.OD;
+                        _probeDirection = ProbeDirection.OD;
                         break;
                     
                 }
@@ -963,29 +990,30 @@ namespace BarrelInspectionProcessorForm
                 throw;
             }
         }        
-        List<Probe> _probes;
+        
         private void comboBoxProbeType_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
-            {
-                _probes = new List<Probe>();
-                Probe probe = new Probe();
-                switch (comboBoxProbeType.SelectedIndex)
+            { 
+               // "", "DUAL_SI_F10","SINGLE_LJ_V7060","LJ_V7060_SI_F10" };
+                switch (comboBoxProbeConifg.SelectedIndex)
                 {
-                    case 0://si distance
-                        probe = new Probe(ProbeType.SI);
-                        probe.MeasurementUnit = new MeasurementUnit(LengthUnit.MICRON);
-                        probe.StartMeasuringRange = 0;
-                        probe.MeasuringRange = .62;
-                        break;                        
-                    case 1://line scan
-                        probe = new Probe(ProbeType.LJ);
-                        probe.MeasurementUnit = new MeasurementUnit(LengthUnit.NANOX10);
-                        probe.StartMeasuringRange = 0;
-                        probe.MeasuringRange = .62;
+                    case 0:
+                        _probeConfig = ProbeConfig.SINGLE_SI_F10;
                         break;
+                    case 1:
+                        _probeConfig = ProbeConfig.DUAL_SI_F10;
+                        break;
+                    case 2:
+                        _probeConfig = ProbeConfig.SINGLE_LJ_V7060;
+                        break;
+                    case 3:
+                        _probeConfig = ProbeConfig.LJ_V7060_SI_F10;
+                        break;
+                    
+
                 }
-                _probes.Add(probe);
+
             }
             catch (Exception)
             {
@@ -1030,7 +1058,7 @@ namespace BarrelInspectionProcessorForm
                         _scanFormat = ScanFormat.CAL;
                         break;
                     case 6:
-                        _scanFormat = ScanFormat.LINE;
+                        _scanFormat = ScanFormat.SINGLE;
                         SetLineSwitches();
                         break;
                 }
@@ -1051,6 +1079,8 @@ namespace BarrelInspectionProcessorForm
             {
                 _barrelType = Barrel.GetBarrelType(comboBoxBarrel.SelectedItem.ToString());
                 _barrel = new Barrel(_barrelType);
+                textBoxNomDiam.Text = _barrel.DimensionData.LandNominalDiam.ToString("f4");
+                textBoxRingCal.Text = _barrel.DimensionData.RingCalibrationDiam.ToString("f4");
             }
             catch (Exception ex)
             {
@@ -1190,7 +1220,7 @@ namespace BarrelInspectionProcessorForm
             switch (_scanFormat)
             {
                 case ScanFormat.AXIAL:
-                case ScanFormat.LINE:
+                case ScanFormat.SINGLE:
                     xLabelstr = xLabel.ToString("f3");
                     break;
                 case ScanFormat.RING:
@@ -1270,7 +1300,7 @@ namespace BarrelInspectionProcessorForm
                 var sizeY = GetGridRange(rect.Height);
                 int xGridCount;
                 int yGridCount = 10;
-                if (_scanFormat == ScanFormat.AXIAL ||  _scanFormat== ScanFormat.LINE)
+                if (_scanFormat == ScanFormat.AXIAL ||  _scanFormat== ScanFormat.SINGLE)
                 {
                     xGridCount = 10;
                     sizeX = GetGridRange(rect.Width);
@@ -1517,7 +1547,7 @@ namespace BarrelInspectionProcessorForm
                 if(dataSelection == DataSelection.ROTATE || dataSelection== DataSelection.FITCIRCLE)
                 {
                     _dataRotationRad = Math.Atan2(endPartCoords.Y - startPartCoords.Y, endPartCoords.X - startPartCoords.X);
-                    double angle = GeometryLib.Geometry.ToDegs(_dataRotationRad);
+                    double angle = GeometryLib.GeomUtilities.ToDegs(_dataRotationRad);
                     measurement = angle.ToString("f4");
                 }
                 
@@ -1668,7 +1698,7 @@ namespace BarrelInspectionProcessorForm
                             labelXPosition.Text = "Angle: " + angle.ToString("f6") + " " + _angleLabel;
                             labelYPosition.Text = "Radius: " + _mouseLocPart.Y.ToString("f6") + " " + _lengthLabel;
                             break;
-                        case ScanFormat.LINE:
+                        case ScanFormat.SINGLE:
                         default:
                             labelZPosition.Text = "X: " + _mouseLocPart.X.ToString("F6") + _lengthLabel;
                             labelYPosition.Text = "Y: " + _mouseLocPart.Y.ToString("f6") + _lengthLabel;
@@ -1896,7 +1926,7 @@ namespace BarrelInspectionProcessorForm
                             ringData.CorrectedLandPoints = da.CorrectForError(ringData.CorrectedLandPoints);
 
                             dataOuputText.Add("***Correcting Angle****" + inspDataSet.Filename);
-                            dataOuputText.Add("Correction angle: " + GeometryLib.Geometry.ToDegs(da.CorrectionAngle).ToString("f5") + " degs");
+                            dataOuputText.Add("Correction angle: " + GeometryLib.GeomUtilities.ToDegs(da.CorrectionAngle).ToString("f5") + " degs");
                             dataOuputText.Add("Ave radius: " + da.AveRadius.ToString("f5"));
                                                
                         }
@@ -3005,13 +3035,9 @@ namespace BarrelInspectionProcessorForm
             
             SetPropertyValues();
             Properties.Settings.Default.Save();
-            _logFile.GetFileName();
-            
+            _logFile.GetFileName();            
         }
 
-        private void numericUpDownProbeCount_ValueChanged(object sender, EventArgs e)
-        {
-            _probeCount = (int)numericUpDownProbeCount.Value;
-        }
+        
     }
 }

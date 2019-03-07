@@ -9,15 +9,14 @@ using ProbeController;
 using DataLib;
 namespace InspectionLib
 {
-   
-    public abstract class RawDataFile
+    
+    public abstract class RawDataSet
     {
-        public string Filename { get; protected set; }
         public MeasurementUnit InputUnits { get; protected set; }
-        public MeasurementUnit OutputUnits { get;  set; }
-        
+        public MeasurementUnit OutputUnits { get; set; }
         public RawDataFormat DataFormat { get; protected set; }
         public ScanFormat ScanFormat { get; protected set; }
+        public string Filename { get; protected set; }        
         protected int _headerRowCount;
         protected int _rowCount;
         protected int _colCount;
@@ -27,7 +26,18 @@ namespace InspectionLib
 
         }
     }
-    public class KeyenceLJDataSet : RawDataFile
+    public class KeyenceLJSiDataSet
+    {
+        KeyenceSiDataSet KeyenceSiDataSet;
+        KeyenceLJDataSet KeyenceLJDataSet;
+        public KeyenceLJSiDataSet(KeyenceSiDataSet keyenceSiDataSet,KeyenceLJDataSet keyenceLJDataSet)
+        {
+            KeyenceLJDataSet = keyenceLJDataSet;
+            KeyenceSiDataSet = keyenceSiDataSet;
+
+        }
+    }
+    public class KeyenceLJDataSet : RawDataSet
     {
         List<GeometryLib.Vector2> data;
         public int Count
@@ -45,6 +55,7 @@ namespace InspectionLib
         {
             try
             {
+                
                 var words = FileIOLib.CSVFileParser.ParseFile(Filename);
                 _rowCount = words.GetLength(0);
                 _colCount = words.GetLength(1);
@@ -68,31 +79,32 @@ namespace InspectionLib
             try
             {
 
-                var data = new List<GeometryLib.Vector2>();
+                var points = new List<GeometryLib.Vector2>();
                 var colList = new List<int>();
                 if (words.GetLength(0) < _firstDataRow)
                 {
                     throw new Exception("Data rows not found");
                 }
                 int columnCount = words.GetLength(1);
-                
-                if(columnCount==2)
+                double scalingFactor = InputUnits.ConversionFactor / OutputUnits.ConversionFactor;
+                if (columnCount==2)
                 {
                     for (int i = _headerRowCount; i < _rowCount; i++)
                     {
                         double x = 0;
                         double y = 0;
                         if (double.TryParse(words[i, 0], out x) && double.TryParse(words[i, 1], out y))
-                        {         
-                            if(Math.Abs(y)<=Math.Abs(_maxValue) && Math.Abs(y)>=Math.Abs(_minValue))
-                            {
-                                data.Add(new GeometryLib.Vector2(x, y));
-                            }                                                                                
+                        {
+                            x *= scalingFactor;
+                            y *= scalingFactor;
+
+                            points.Add(new GeometryLib.Vector2(x, y));                                                                                                            
                         }
                     }
                 }
-                ScaleData();
-                return data ;
+               
+                
+                return points;
             }
             catch (Exception)
             {
@@ -100,9 +112,11 @@ namespace InspectionLib
             }
 
         }
+       
         double _minValue;
         double _maxValue;
-        public KeyenceLJDataSet(InspectionScript script, string CsvFileName)
+       
+        public KeyenceLJDataSet(InspectionScript script, string CsvFileName, MeasurementUnit fileUnits)
         {
             try
             {
@@ -111,11 +125,13 @@ namespace InspectionLib
                 ScanFormat = script.ScanFormat;
                 
                 _headerRowCount = 0;
-                _minValue = script.ProbeSetup.MinValue;
-                _maxValue = script.ProbeSetup.MaxValue;
+                
                 Filename = CsvFileName;
                 OutputUnits = script.OutputUnit;
-                InputUnits = new MeasurementUnit(LengthUnit.INCH);
+                InputUnits = fileUnits;
+                _minValue = script.ProbeSetup[0].MinValue(fileUnits);
+                _maxValue = script.ProbeSetup[0].MaxValue(fileUnits);
+                data = new List<GeometryLib.Vector2>();
                 ProcessFile();
             }
             catch (Exception)
@@ -125,29 +141,31 @@ namespace InspectionLib
             }
            
         }
-        public KeyenceLJDataSet()
-        {
-            DataFormat = RawDataFormat.XY;
-            _firstDataRow = 0;
-            ScanFormat = ScanFormat.LINE;
-            OutputUnits = new MeasurementUnit(LengthUnit.NANOX10);
-            InputUnits = new MeasurementUnit(LengthUnit.INCH);
-            data = new List<GeometryLib.Vector2>();
-        }
+        
     }
     public class KeyenceDualSiDataSet
     {
-        KeyenceSiDataSet probe1Data;
-        KeyenceSiDataSet probe2Data;
+        List<KeyenceSiDataSet> probeData;
+        
         int probeIndexOffset;
-        double[] GetValues(bool getSum)
+        int GetMinDataCount()
+        {
+            int minCount = int.MaxValue;
+            foreach(var dataset  in probeData)
+            {
+                if (dataset.Count < minCount)
+                    minCount = dataset.Count;
+            }
+            return minCount;
+        }
+        double[] GetDualProbeValues(bool getSum)
         {
             try
             {
-                var count = Math.Min(probe1Data.Count, probe2Data.Count);
+                var count = GetMinDataCount();
                 var values = new List<double>();
-                var data1 = probe1Data.GetData();
-                var data2 = probe2Data.GetData();
+                var data1 = probeData[0].GetData();
+                var data2 = probeData[1].GetData();
                 for (int i=0;i<count;i++)
                 {
 
@@ -190,28 +208,28 @@ namespace InspectionLib
                     getSumValues = false;
                     break;
             }
-            return GetValues(getSumValues);
+            return GetDualProbeValues(getSumValues);
         }
         public KeyenceDualSiDataSet(InspectionScript inspScript, string CsvFileName)
         {
             if (inspScript is RingInspScript cylScript)
             {
-                probeIndexOffset = (int)Math.Round(cylScript.PointsPerRevolution * (cylScript.ProbeSetup.ProbePhaseDifferenceRad / (2 * Math.PI)));
+                double phaseDifference = (cylScript.ProbeSetup[1].ProbePhaseRad - cylScript.ProbeSetup[0].ProbePhaseRad) / (2 * Math.PI);
+                probeIndexOffset = (int)(Math.Round(cylScript.PointsPerRevolution * phaseDifference));
 
-                probe1Data = new KeyenceSiDataSet(cylScript, CsvFileName, 1);
-                probe2Data = new KeyenceSiDataSet(cylScript, CsvFileName, 2);
+                probeData.Add(new KeyenceSiDataSet(cylScript, CsvFileName, 1));
+                probeData.Add(new KeyenceSiDataSet(cylScript, CsvFileName, 2));
             }
         }
         public KeyenceDualSiDataSet()
         {
-            probe1Data = new KeyenceSiDataSet();
-            probe2Data = new KeyenceSiDataSet();
+            probeData = new List< KeyenceSiDataSet>();            
         }
     }
     /// <summary>
     /// holds raw sensor data 
     /// </summary>
-    public class KeyenceSiDataSet:RawDataFile
+    public class KeyenceSiDataSet:RawDataSet
     {
         List<double> data;
         public int Count
@@ -297,7 +315,7 @@ namespace InspectionLib
                 data.AddRange(ExtractProbeData(words,probeNumber));
                 
                
-                double scalingFactor = InputUnits.ConversionFactor / OutputUnits.ConversionFactor;
+                double scalingFactor = OutputUnits.ConversionFactor / InputUnits.ConversionFactor;
                 ScaleData(scalingFactor);
                 
             }
@@ -345,7 +363,6 @@ namespace InspectionLib
             }
             catch (Exception)
             {
-
                 throw;
             }
 

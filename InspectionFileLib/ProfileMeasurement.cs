@@ -131,7 +131,7 @@ namespace InspectionLib
                         foreach (var depthMeasurement in groove)
                         {
                             string s = groove.GrooveNumber.ToString() + "," + depthMeasurement.RasterOrder.ToString() + ","
-                                + Geometry.ToDegs(depthMeasurement.Theta).ToString("f4") + "," + depthMeasurement.Depth.ToString("f5");
+                                + GeomUtilities.ToDegs(depthMeasurement.Theta).ToString("f4") + "," + depthMeasurement.Depth.ToString("f5");
                             file.Add(s);
                         }
                     }
@@ -143,7 +143,7 @@ namespace InspectionLib
                     file.Add("RasterOrder,Theta(degs),Depth");
                     for (int i = 0; i < _machineSpeedList.RasterCount; i++)
                     {
-                        string s = (_aveDepths[i].RasterOrder).ToString() + "," + (Geometry.ToDegs(_machineSpeedList[i].ThetaRel)).ToString("f4") + "," + (_aveDepths[i].Depth).ToString("f5");
+                        string s = (_aveDepths[i].RasterOrder).ToString() + "," + (GeomUtilities.ToDegs(_machineSpeedList[i].ThetaRel)).ToString("f4") + "," + (_aveDepths[i].Depth).ToString("f5");
                         file.Add(s);
                     }
                 }

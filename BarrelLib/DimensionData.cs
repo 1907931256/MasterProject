@@ -29,7 +29,7 @@ namespace BarrelLib
         public double MaxCircumference { get { return _maxCircumference; } }
         public double MinCircumference {  get { return _minCircumference; } }
         public double NomCircumference { get { return _nomCircumference; } }
-
+        public double RingCalibrationDiam { get { return _ringCalDiam; } }
         double _landActualDiam;
         double pi2;
         double _grooveMaxWidth;
@@ -39,7 +39,7 @@ namespace BarrelLib
         double _nomCircumference;
         double _grooveMaxWidthTheta;
         double _grooveMinWidthTheta;
-
+        double _ringCalDiam;
         double _length;
 
         double _landMaxDiam;
@@ -73,14 +73,14 @@ namespace BarrelLib
         Tuple<double, double> GetGrooveMinEnds(double z)
         {            
             double thStart = (_firstGrooveThetaOffset + _twistProfile.ThetaRadAt(z))-_grooveHWMin;           
-            double thEnd = thStart + (_twistProfile.Direction * 2* _grooveHWMin);           
+            double thEnd = thStart + (_twistProfile.DirectionSign * 2* _grooveHWMin);           
             var ends = new Tuple<double, double>(thStart, thEnd);
             return ends;
         }
         Tuple<double, double> GetGrooveMaxEnds(double z)
         {            
             double thStart = (_firstGrooveThetaOffset + _twistProfile.ThetaRadAt(z)) - _grooveHWMax;
-            double thEnd = thStart + (_twistProfile.Direction * 2 * _grooveHWMax);           
+            double thEnd = thStart + (_twistProfile.DirectionSign * 2 * _grooveHWMax);           
             var ends = new Tuple<double, double>(thStart, thEnd);
             return ends;
         }
@@ -94,10 +94,10 @@ namespace BarrelLib
             int grooveNumber = -1;
             for (int i = 0; i < _grooveCount; i++)
             {
-                double minWStart = (minEnds.Item1 + (_twistProfile.Direction * i * dTh)) % pi2;   
-                double minWEnd = (minEnds.Item2 + (_twistProfile.Direction * i * dTh))% pi2;
-                double maxWStart = (minEnds.Item1 + (_twistProfile.Direction * i * dTh)) % pi2;
-                double maxWEnd = (minEnds.Item2 + (_twistProfile.Direction * i * dTh)) % pi2;
+                double minWStart = (minEnds.Item1 + (_twistProfile.DirectionSign * i * dTh)) % pi2;   
+                double minWEnd = (minEnds.Item2 + (_twistProfile.DirectionSign * i * dTh))% pi2;
+                double maxWStart = (minEnds.Item1 + (_twistProfile.DirectionSign * i * dTh)) % pi2;
+                double maxWEnd = (minEnds.Item2 + (_twistProfile.DirectionSign * i * dTh)) % pi2;
 
                 if (_twistProfile.Direction < 0 )
                 {
@@ -243,6 +243,7 @@ namespace BarrelLib
         void BuildM2Dims()
         {
             _length = 48;
+            _ringCalDiam = .5;
             _landMaxDiam = .501;
             _landMinDiam = .4985;
             _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
@@ -257,6 +258,7 @@ namespace BarrelLib
         void BuildM284Dims()
         {
             _length = 240;
+            _ringCalDiam = 6.0;
             _landMaxDiam = 6.103;
             _landMinDiam = 6.100;
             _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
@@ -271,6 +273,7 @@ namespace BarrelLib
         void BuildM240Dims()
         {
             _length = 48;
+            _ringCalDiam = .3;
             _landMaxDiam = .3022;
             _landMinDiam = .2996;
             _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
@@ -285,6 +288,7 @@ namespace BarrelLib
         void Build50mmDims()
         {
             _length = 48;
+            _ringCalDiam = 2.0;
             _landMaxDiam = 1.969;
             _landMinDiam = 1.972;
             _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
@@ -301,6 +305,7 @@ namespace BarrelLib
         void BuildM242Dims()
         {           
             _length = 78;
+            _ringCalDiam = 1.0;
             _landMaxDiam = .9882;
             _landMinDiam = .985;
             _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;

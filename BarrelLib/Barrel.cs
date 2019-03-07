@@ -97,6 +97,7 @@ namespace BarrelLib
     {
         public BarrelType Type { get; private set; }
         public BoreDiameterType BoreDiameterType { get; set; }
+
         public MachiningData MachiningData { get; set; }
         public ManufacturingData ManufactureData { get; set; }
         public LifetimeData LifetimeData { get; set; } 

@@ -5,9 +5,5 @@ using System.Text;
 
 namespace BarrelLib
 {
-    public enum TwistType
-    {
-        Constant,
-        Progressive        
-    }
+    
 }

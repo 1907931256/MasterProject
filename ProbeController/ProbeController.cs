@@ -14,9 +14,17 @@ namespace ProbeController
         string GetProbeSettings(CancellationToken ct);        
         bool Connect();
         bool Disconnect();
-        double[] GetAllData(CancellationToken ct);
-        double[] GetDataArray(int points, CancellationToken ct);
-        double GetSingleDataPoint(CancellationToken ct);
+        
+    }
+    public class SiController
+    {
+
+        //double[] GetAllData(CancellationToken ct)
+        //{
+
+        //}
+        //double[] GetDataArray(int points, CancellationToken ct);
+        //double GetSingleDataPoint(CancellationToken ct);
     }
     public class ProbeController:ISensorComms
     {

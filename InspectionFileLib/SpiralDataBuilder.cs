@@ -15,7 +15,7 @@ namespace InspectionLib
         protected PointCyl GetPoint(int i, SpiralInspScript script, double r)
         {
             var z = script.ZDir * i / script.PitchInch + script.StartLocation.X;
-            var theta = script.ThetaDir * i * script.AngleIncrement + Geometry.ToRadians(script.StartLocation.Adeg);
+            var theta = script.ThetaDir * i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
             var pt = new PointCyl(r, theta, z, i);
             return pt;
         }
@@ -104,7 +104,7 @@ namespace InspectionLib
                     var landPointArr = GetLandPoints(row, script.PointsPerRevolution);
                     //find polynomial fit for lands and correct for eccentricity        
                     
-                    var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.ProbeDirection);
+                    var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction);
                     dataSet.CorrectedSpiralData.Add(correctedRing);
                     int p = (int)(100 * i / totalrings);
                     progress.Report(p);

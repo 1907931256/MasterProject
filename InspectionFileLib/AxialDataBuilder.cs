@@ -16,7 +16,7 @@ namespace InspectionLib
         protected PointCyl GetPoint(int i, AxialInspScript script, double r)
         {
             var z = script.ZDir * i * script.AxialIncrement + script.StartLocation.X;
-            var theta = Geometry.ToRadians(script.StartLocation.Adeg);
+            var theta = GeomUtilities.ToRadians(script.StartLocation.Adeg);
             var pt = new PointCyl(r, theta, z, i);
             return pt;
         }

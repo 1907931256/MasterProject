@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace InspectionLib
 {
-    public class CartesianDataBuilder : DataBuilder
+    public class SingleScanDataBuilder : DataBuilder
     {
        
         InspDataSet BuildCartDataFromLineData(CartInspScript script, Vector2[] rawDataSet)
@@ -27,6 +27,7 @@ namespace InspectionLib
             }
 
         }
+       
         public InspDataSet BuildSingleLineAsync(CancellationToken ct, IProgress<int> progress, CartInspScript script,
            Vector2[] rawDataSet, DataOutputOptions options)
         {
@@ -40,8 +41,9 @@ namespace InspectionLib
             {
                 throw;
             }
-        }       
-        public CartesianDataBuilder(Barrel barrel) : base(barrel)
+        }
+       
+        public SingleScanDataBuilder(Barrel barrel) : base(barrel)
         {
 
         }

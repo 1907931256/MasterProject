@@ -425,7 +425,7 @@ namespace SurfaceModel
                     foreach (T pt in points)
                     {
 
-                        distArr[i] = Geometry.RayPointDistance(ray, pt.Position);
+                        distArr[i] = GeomUtilities.RayPointDistance(ray, pt.Position);
                         ptArr[i] = pt.Position;
                         i++;
                     }

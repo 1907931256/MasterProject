@@ -55,7 +55,6 @@
             this.radioButtonPtsperRev = new System.Windows.Forms.RadioButton();
             this.comboBoxMethod = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.labelRingRevs = new System.Windows.Forms.Label();
             this.labelPitch = new System.Windows.Forms.Label();
             this.labelEndPos = new System.Windows.Forms.Label();
@@ -149,11 +148,9 @@
             this.comboBoxManStep = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panelProbeInfo = new System.Windows.Forms.Panel();
-            this.numericUpDownProbeCount = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.textBoxProbePhaseDeg = new System.Windows.Forms.TextBox();
-            this.comboBoxProbeType = new System.Windows.Forms.ComboBox();
+            this.comboBoxProbeConifg = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxProbeSpacing = new System.Windows.Forms.TextBox();
             this.textBoxGrooveList = new System.Windows.Forms.TextBox();
@@ -181,7 +178,6 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panelProbeInfo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tabControlOutput.SuspendLayout();
             this.tabPageGraph.SuspendLayout();
@@ -236,7 +232,7 @@
             this.comboBoxProbeDirection.Items.AddRange(new object[] {
             "BORE I.D.",
             "ROD O.D."});
-            this.comboBoxProbeDirection.Location = new System.Drawing.Point(90, 79);
+            this.comboBoxProbeDirection.Location = new System.Drawing.Point(224, 3);
             this.comboBoxProbeDirection.Name = "comboBoxProbeDirection";
             this.comboBoxProbeDirection.Size = new System.Drawing.Size(82, 21);
             this.comboBoxProbeDirection.TabIndex = 7;
@@ -290,22 +286,12 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 82);
+            this.label7.Location = new System.Drawing.Point(137, 6);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(80, 13);
             this.label7.TabIndex = 1;
             this.label7.Text = "Probe Direction";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 33);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(66, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Probe Count";
             // 
             // labelRingRevs
             // 
@@ -1096,7 +1082,7 @@
             this.textBoxRingCal.Location = new System.Drawing.Point(116, 244);
             this.textBoxRingCal.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxRingCal.Name = "textBoxRingCal";
-            this.textBoxRingCal.Size = new System.Drawing.Size(82, 20);
+            this.textBoxRingCal.Size = new System.Drawing.Size(48, 20);
             this.textBoxRingCal.TabIndex = 32;
             this.textBoxRingCal.Text = "0.500";
             // 
@@ -1139,7 +1125,7 @@
             this.textBoxNomDiam.Location = new System.Drawing.Point(116, 215);
             this.textBoxNomDiam.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxNomDiam.Name = "textBoxNomDiam";
-            this.textBoxNomDiam.Size = new System.Drawing.Size(121, 20);
+            this.textBoxNomDiam.Size = new System.Drawing.Size(48, 20);
             this.textBoxNomDiam.TabIndex = 28;
             this.textBoxNomDiam.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -1240,101 +1226,65 @@
             // 
             // panelProbeInfo
             // 
-            this.panelProbeInfo.Controls.Add(this.numericUpDownProbeCount);
             this.panelProbeInfo.Controls.Add(this.label11);
-            this.panelProbeInfo.Controls.Add(this.label5);
             this.panelProbeInfo.Controls.Add(this.textBoxProbePhaseDeg);
-            this.panelProbeInfo.Controls.Add(this.comboBoxProbeType);
-            this.panelProbeInfo.Controls.Add(this.label3);
+            this.panelProbeInfo.Controls.Add(this.comboBoxProbeConifg);
             this.panelProbeInfo.Controls.Add(this.label4);
             this.panelProbeInfo.Controls.Add(this.textBoxProbeSpacing);
             this.panelProbeInfo.Controls.Add(this.comboBoxProbeDirection);
             this.panelProbeInfo.Controls.Add(this.label7);
-            this.panelProbeInfo.Location = new System.Drawing.Point(12, 226);
+            this.panelProbeInfo.Location = new System.Drawing.Point(0, 226);
             this.panelProbeInfo.Name = "panelProbeInfo";
-            this.panelProbeInfo.Size = new System.Drawing.Size(222, 150);
+            this.panelProbeInfo.Size = new System.Drawing.Size(309, 140);
             this.panelProbeInfo.TabIndex = 41;
-            // 
-            // numericUpDownProbeCount
-            // 
-            this.numericUpDownProbeCount.Location = new System.Drawing.Point(89, 31);
-            this.numericUpDownProbeCount.Maximum = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.numericUpDownProbeCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownProbeCount.Name = "numericUpDownProbeCount";
-            this.numericUpDownProbeCount.Size = new System.Drawing.Size(52, 20);
-            this.numericUpDownProbeCount.TabIndex = 41;
-            this.numericUpDownProbeCount.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownProbeCount.ValueChanged += new System.EventHandler(this.numericUpDownProbeCount_ValueChanged);
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(23, 7);
+            this.label11.Location = new System.Drawing.Point(5, 26);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(62, 13);
+            this.label11.Size = new System.Drawing.Size(100, 13);
             this.label11.TabIndex = 11;
-            this.label11.Text = "Probe Type";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 112);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 13);
-            this.label5.TabIndex = 40;
-            this.label5.Text = "Probe Phase Angle (deg)";
+            this.label11.Text = "Probe Configuration";
             // 
             // textBoxProbePhaseDeg
             // 
-            this.textBoxProbePhaseDeg.Location = new System.Drawing.Point(133, 105);
+            this.textBoxProbePhaseDeg.Location = new System.Drawing.Point(221, 42);
             this.textBoxProbePhaseDeg.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxProbePhaseDeg.Name = "textBoxProbePhaseDeg";
             this.textBoxProbePhaseDeg.Size = new System.Drawing.Size(39, 20);
             this.textBoxProbePhaseDeg.TabIndex = 39;
             this.textBoxProbePhaseDeg.Text = "179.5";
             // 
-            // comboBoxProbeType
+            // comboBoxProbeConifg
             // 
-            this.comboBoxProbeType.FormattingEnabled = true;
-            this.comboBoxProbeType.Items.AddRange(new object[] {
+            this.comboBoxProbeConifg.FormattingEnabled = true;
+            this.comboBoxProbeConifg.Items.AddRange(new object[] {
             "SI",
             "LJ"});
-            this.comboBoxProbeType.Location = new System.Drawing.Point(90, 4);
-            this.comboBoxProbeType.Name = "comboBoxProbeType";
-            this.comboBoxProbeType.Size = new System.Drawing.Size(52, 21);
-            this.comboBoxProbeType.TabIndex = 10;
-            this.comboBoxProbeType.SelectedIndexChanged += new System.EventHandler(this.comboBoxProbeType_SelectedIndexChanged);
+            this.comboBoxProbeConifg.Location = new System.Drawing.Point(9, 42);
+            this.comboBoxProbeConifg.Name = "comboBoxProbeConifg";
+            this.comboBoxProbeConifg.Size = new System.Drawing.Size(153, 21);
+            this.comboBoxProbeConifg.TabIndex = 10;
+            this.comboBoxProbeConifg.SelectedIndexChanged += new System.EventHandler(this.comboBoxProbeType_SelectedIndexChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 57);
+            this.label4.Location = new System.Drawing.Point(162, 25);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(77, 13);
+            this.label4.Size = new System.Drawing.Size(101, 13);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Probe Spacing";
+            this.label4.Text = "Probe Position (X,A)";
             // 
             // textBoxProbeSpacing
             // 
-            this.textBoxProbeSpacing.Location = new System.Drawing.Point(90, 54);
+            this.textBoxProbeSpacing.Location = new System.Drawing.Point(167, 42);
             this.textBoxProbeSpacing.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxProbeSpacing.Name = "textBoxProbeSpacing";
-            this.textBoxProbeSpacing.Size = new System.Drawing.Size(42, 20);
+            this.textBoxProbeSpacing.Size = new System.Drawing.Size(50, 20);
             this.textBoxProbeSpacing.TabIndex = 0;
             this.textBoxProbeSpacing.Text = "0";
             // 
@@ -1518,7 +1468,6 @@
             this.tabPage2.PerformLayout();
             this.panelProbeInfo.ResumeLayout(false);
             this.panelProbeInfo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProbeCount)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabControlOutput.ResumeLayout(false);
@@ -1553,7 +1502,6 @@
         private System.Windows.Forms.RadioButton radioButtonPtsperRev;
         private System.Windows.Forms.Label labelRingRevs;
         private System.Windows.Forms.TextBox textBoxRingRevs;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label labelRadiusMeasured;
@@ -1643,13 +1591,12 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonRotate;
         private System.Windows.Forms.ToolStripButton toolStripButtonMirror;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox comboBoxProbeType;
+        private System.Windows.Forms.ComboBox comboBoxProbeConifg;
         private System.Windows.Forms.ToolStripButton toolStripButtonWinData;
         private System.Windows.Forms.Button buttonMeasureDepths;
         private System.Windows.Forms.ToolStripButton toolStripButtonFitToCircle;
         private System.Windows.Forms.ToolStripMenuItem OpenDXFFileToolStripMenuItem;
         private System.Windows.Forms.Panel panelProbeInfo;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxProbePhaseDeg;
         private System.Windows.Forms.Label labelNearestFilename;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
@@ -1657,7 +1604,6 @@
         private System.Windows.Forms.ToolStripMenuItem removeDatasetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeAllButThisToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButtonShiftData;
-        private System.Windows.Forms.NumericUpDown numericUpDownProbeCount;
     }
 }
 

@@ -18,8 +18,8 @@ namespace InspectionLib
         LAND,
         GROOVE,
         CAL,
-        LINE,
-        UNKNOWN
+        SINGLE,
+        RASTER
     }
 
     /// <summary>
@@ -31,6 +31,7 @@ namespace InspectionLib
   
     public  class InspectionScript
     {        
+        
         //public string FileName { get; set; }       
         public ScanFormat ScanFormat { get; protected set; }
         public MeasurementUnit OutputUnit { get; protected set; }
@@ -45,6 +46,8 @@ namespace InspectionLib
             OutputUnit = outputUnit;
             CalDataSet = calDataSet;
             ProbeSetup = probeSetup;
+            InputDataFileName = "unknownfile";
+            
             
         }
     }

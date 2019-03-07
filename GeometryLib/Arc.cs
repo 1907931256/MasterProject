@@ -6,6 +6,16 @@ using System.Text;
 
 namespace GeometryLib
 {
+    public class Circle2
+    {
+        public Vector2 Center { get; set; }
+        public double Radius { get; set; }
+        public Circle2 (Vector2 center,double r)
+        {
+            Radius = r;
+            Center = center;
+        }
+    }
     public class Arc : DwgEntity,IGeometryRoutines<Arc>
     {       
         protected bool closedArc;
@@ -27,14 +37,14 @@ namespace GeometryLib
         {
             get
             {
-                return Geometry.ToDegs(StartAngleRad);
+                return GeomUtilities.ToDegs(StartAngleRad);
             }
         }
         public double EndAngleDeg
         {
             get
             {
-                return Geometry.ToDegs(EndAngleRad);
+                return GeomUtilities.ToDegs(EndAngleRad);
             }
         }
         public bool ClosedArc
@@ -74,7 +84,7 @@ namespace GeometryLib
         { 
             get
             {
-                return Geometry.ToDegs(SweepAngleRad); 
+                return GeomUtilities.ToDegs(SweepAngleRad); 
             }
         }
         public double SweepAngleRad

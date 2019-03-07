@@ -14,7 +14,7 @@ namespace GeometryLibTests
             Vector3 rayOrigin = new Vector3(3, 4, 1);
             Vector3 rayDirection = new Vector3(0, 0, 1);
             Ray ray = new Ray(rayOrigin, rayDirection);
-            double dist = Geometry.RayPointDistance(ray, pt);
+            double dist = GeomUtilities.RayPointDistance(ray, pt);
             Assert.AreEqual(5, dist, .001);
         }
         [TestMethod]
@@ -26,7 +26,7 @@ namespace GeometryLibTests
             double len = pt1.DistanceTo(pt2);
             double spacing = .1;
             int count = (int)(Math.Round(len/spacing))+1;
-            List<Vector3> points = Geometry.BreakMany(line, spacing);
+            List<Vector3> points = GeomUtilities.BreakMany(line, spacing);
             Assert.AreEqual(count, points.Count);
             double seglen = points[0].DistanceTo(points[1]);
             Assert.AreEqual(spacing, seglen, .01);

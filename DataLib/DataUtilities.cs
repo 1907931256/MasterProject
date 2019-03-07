@@ -476,74 +476,7 @@ namespace DataLib
                 throw;
             }
         }
-        static public Vector3[] FindCirclesofKnownR(Vector3 p1, Vector3 p2, double radius)
-        {
-            try
-            {
-                if (radius < 0) throw new ArgumentException("Negative radius.");
-                if (radius == 0)
-                {
-                    if (p1 == p2) return new[] { p1 };
-                    else throw new InvalidOperationException("No circles.");
-                }
-                if (p1 == p2) throw new InvalidOperationException("Infinite number of circles.");
-
-                double sqDistance = p1.Distance2To(p2);
-                double sqDiameter = 4 * radius * radius;
-                if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
-
-                var midPoint = new Vector3((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2,0);
-                if (sqDistance == sqDiameter) return new[] { midPoint };
-
-                double d = Math.Sqrt(radius * radius - sqDistance / 4);
-                double distance = Math.Sqrt(sqDistance);
-                double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
-                return new[] {
-                    new Vector3(midPoint.X - oy, midPoint.Y + ox,0),
-                    new Vector3(midPoint.X + oy, midPoint.Y - ox,0)
-                };
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
-        static public System.Drawing.PointF[] FindCirclesofKnownR(System.Drawing.PointF p1, System.Drawing.PointF p2, double radius)
-        {
-            try
-            {
-                if (radius < 0) throw new ArgumentException("Negative radius.");
-                if (radius == 0)
-                {
-                    if (p1 == p2) return new[] { p1 };
-                    else throw new InvalidOperationException("No circles.");
-                }
-                if (p1 == p2) throw new InvalidOperationException("Infinite number of circles.");
-
-                double sqDistance = Math.Pow(p1.X-p2.X,2)+Math.Pow(p1.Y-p2.Y,2);
-                double sqDiameter = 4 * radius * radius;
-                if (sqDistance > sqDiameter) throw new InvalidOperationException("Points are too far apart.");
-
-                var midPoint = new System.Drawing.PointF((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
-                if (sqDistance == sqDiameter) return new[] { midPoint };
-
-                double d = Math.Sqrt(radius * radius - sqDistance / 4);
-                double distance = Math.Sqrt(sqDistance);
-                double ox = d * (p2.X - p1.X) / distance, oy = d * (p2.Y - p1.Y) / distance;
-                return new[] {
-                    new System.Drawing.PointF((float)(midPoint.X - oy), (float)(midPoint.Y + ox)),
-                    new System.Drawing.PointF((float)(midPoint.X + oy), (float)(midPoint.Y - ox))
-                };
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
+        
         public static CartData ConvertToCartData(Vector2[] points,double z)
         {
             try

@@ -212,7 +212,7 @@ namespace InspectionLib
         }
         public KeyenceDualSiDataSet(InspectionScript inspScript, string CsvFileName)
         {
-            if (inspScript is RingInspScript cylScript)
+            if (inspScript is CylInspScript cylScript)
             {
                 double phaseDifference = (cylScript.ProbeSetup[1].ProbePhaseRad - cylScript.ProbeSetup[0].ProbePhaseRad) / (2 * Math.PI);
                 probeIndexOffset = (int)(Math.Round(cylScript.PointsPerRevolution * phaseDifference));

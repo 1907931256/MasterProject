@@ -81,37 +81,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AngleError.cs" />
-    <Compile Include="AxialDataBuilder.cs" />
-    <Compile Include="BarrelGrooveDepth.cs" />
-    <Compile Include="BarrelProfile.cs" />
-    <Compile Include="CalDataBuilder.cs" />
-    <Compile Include="CalDataSet.cs" />
-    <Compile Include="ColorCodeScheme.cs" />
-    <Compile Include="CylInspScript.cs" />
+    <Compile Include="DataSets\AxialDataBuilder.cs" />
+    <Compile Include="DataSets\CalDataBuilder.cs" />
+    <Compile Include="DataSets\CalDataSet.cs" />
+    <Compile Include="Inspection Scripts\CylInspScript.cs" />
     <Compile Include="DataColorCode.cs" />
     <Compile Include="DataOptionsFile.cs" />
-    <Compile Include="DepthMeasurement.cs" />
     <Compile Include="DiamCalType.cs" />
-    <Compile Include="GrooveDepthProfile.cs" />
-    <Compile Include="DataFileBuilder.cs" />
+    <Compile Include="DataSets\DataFileBuilder.cs" />
     <Compile Include="DataOutputOptions.cs" />
-    <Compile Include="DataBuilder.cs" />
+    <Compile Include="DataSets\DataBuilder.cs" />
     <Compile Include="BarrelInspProfile.cs" />
-    <Compile Include="InspDataSet.cs" />
-    <Compile Include="InspectionScriptBuilder.cs" />
+    <Compile Include="DataSets\InspDataSet.cs" />
+    <Compile Include="Inspection Scripts\InspectionScriptBuilder.cs" />
     <Compile Include="ProfileBuilder.cs" />
-    <Compile Include="ProfileMeasurement.cs" />
-    <Compile Include="InspectionScript.cs" />
-    <Compile Include="InspectionScriptFile.cs" />
-    <Compile Include="MachineRasterSpeed.cs" />
-    <Compile Include="MachineRasterSpeeds.cs" />
+    <Compile Include="Inspection Scripts\InspectionScript.cs" />
+    <Compile Include="Inspection Scripts\InspectionScriptFile.cs" />
     <Compile Include="ProfileTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="KeyenceSIDataSet.cs" />
-    <Compile Include="RasterDataBuilder.cs" />
-    <Compile Include="RingDataBuilder.cs" />
-    <Compile Include="SingleLineDataBuilder.cs" />
-    <Compile Include="SpiralDataBuilder.cs" />
+    <Compile Include="DataSets\KeyenceSIDataSet.cs" />
+    <Compile Include="DataSets\RasterDataBuilder.cs" />
+    <Compile Include="DataSets\RingDataBuilder.cs" />
+    <Compile Include="DataSets\SingleLineDataBuilder.cs" />
+    <Compile Include="DataSets\SpiralDataBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AWJModelLib\AWJModelLib.csproj">

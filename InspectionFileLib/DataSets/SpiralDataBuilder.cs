@@ -12,14 +12,14 @@ namespace InspectionLib
     public class SpiralDataBuilder : DataBuilder
     {
 
-        protected PointCyl GetPoint(int i, SpiralInspScript script, double r)
+        static protected PointCyl GetPoint(int i, SpiralInspScript script, double r)
         {
-            var z = script.ZDir * i / script.PitchInch + script.StartLocation.X;
-            var theta = script.ThetaDir * i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
+            var z =  i / script.PitchInch + script.StartLocation.X;
+            var theta =  i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
             var pt = new PointCyl(r, theta, z, i);
             return pt;
         }
-        protected CylData GetData(SpiralInspScript script, double[] data)
+        static protected CylData GetData(SpiralInspScript script, double[] data)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace InspectionLib
         /// separate point list into rings from spiral
         /// </summary>
         /// <returns></returns>
-        CylGridData BuildGridList(CylData uncorrectedData, int thetaDirection)
+        static CylGridData BuildGridList(CylData uncorrectedData, int thetaDirection)
         {
             try
             {
@@ -83,17 +83,17 @@ namespace InspectionLib
             }
 
         }
-        SpiralDataSet BuildSpiralFromRadialData(SpiralInspScript script, double[] rawInputData, IProgress<int> progress)
+        static SpiralDataSet BuildSpiralFromRadialData(IProgress<int> progress,SpiralInspScript script, double[] rawInputData,int grooveCount )
         {
             try
             {
                
 
-                var data = GetUncorrectedData(script, rawInputData);
-                var dataSet = new SpiralDataSet(_barrel,script.InputDataFileName);
-                var ringData = new RingDataSet(_barrel,script.InputDataFileName);
-                ringData.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
-                dataSet.UncorrectedSpiralData = BuildGridList(ringData.UncorrectedCylData, script.ThetaDir);
+                var data = RingDataBuilder.GetUncorrectedData(script, rawInputData);
+                var dataSet = new SpiralDataSet(script.InputDataFileName);
+                var ringData = new RingDataSet(script.InputDataFileName);
+                ringData.UncorrectedCylData = RingDataBuilder.GetUncorrectedData(script, rawInputData);
+                dataSet.UncorrectedSpiralData = BuildGridList(ringData.UncorrectedCylData,Math.Sign(script.AngleIncrement));
                 int totalrings = dataSet.UncorrectedSpiralData.Count;                
 
                 //find all land points
@@ -101,7 +101,7 @@ namespace InspectionLib
                 foreach (var row in dataSet.UncorrectedSpiralData)
                 {
                    
-                    var landPointArr = GetLandPoints(row, script.PointsPerRevolution);
+                    var landPointArr = RingDataBuilder.GetLandPoints(row, script.PointsPerRevolution,grooveCount);
                     //find polynomial fit for lands and correct for eccentricity        
                     
                     var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction);
@@ -127,15 +127,15 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildSpiralAsync(CancellationToken ct, IProgress<int> progress, SpiralInspScript script, double[] rawDataSet, DataOutputOptions options)
+        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, SpiralInspScript script, double[] rawDataSet,int grooveCount)
         {
             try
             {
-                Init(options);
+                //Init(options);
                 var sw = new Stopwatch();
                 progress.Report(sw.Elapsed.Seconds);              
                
-                var dataSet = BuildSpiralFromRadialData(script, rawDataSet, progress);
+                var dataSet = BuildSpiralFromRadialData(progress,script, rawDataSet, grooveCount);
 
                 return dataSet;
             }
@@ -147,7 +147,7 @@ namespace InspectionLib
 
         }
        
-        public SpiralDataBuilder(Barrel barrel) : base(barrel)
+        public SpiralDataBuilder()
         {
 
         }

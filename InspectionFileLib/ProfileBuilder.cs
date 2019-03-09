@@ -8,42 +8,13 @@ using DataLib;
 using GeometryLib;
 namespace InspectionLib
 {
-    public class ProfileBuilder:DataBuilder
+    public class ProfileBuilder 
     {
        
-        public BarrelInspProfile Build(List<InspDataSet> inspDataSets)
-        {
-            try
-            {
-                var barrelProfile = new BarrelInspProfile( );
-                if(inspDataSets != null && inspDataSets.Count>0)
-                {                   
-                    ScanFormat format = inspDataSets[0].DataFormat;                  
-                    switch(format)
-                    {
-                        case ScanFormat.RING:
-                            barrelProfile = BuildFromRings(inspDataSets );
-                            break;
-                        case ScanFormat.AXIAL:                            
-                        case ScanFormat.GROOVE:                           
-                        case ScanFormat.LAND:
-                            barrelProfile = BuildFromAxial(inspDataSets);
-                            break;
-                    }
-
-
-                }
-                return barrelProfile;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        
        
        
-        BarrelInspProfile BuildFromRings(List<InspDataSet> inspDataSets)
+        static BarrelInspProfile BuildFromRings(List<InspDataSet> inspDataSets,int grooveCount)
         {
             try
             {
@@ -62,19 +33,18 @@ namespace InspectionLib
                         var inspData =ringData.CorrectedCylData;
 
                         var groovePoints = new CylData(inspDataSets[0].Filename);
-                        var landPoints = new CylData(inspDataSets[0].Filename);
-                        int grooveCt = ringData.Barrel.DimensionData.GrooveCount;
+                        var landPoints = new CylData(inspDataSets[0].Filename);                        
                         int pointCt = ringData.CorrectedCylData.Count;
-                        int deltaIndex = pointCt / grooveCt;
+                        int deltaIndex = pointCt / grooveCount;
 
-                        int[] grooveIndices = new int[grooveCt];
-                        int[] landIndices = new int[grooveCt];
+                        int[] grooveIndices = new int[grooveCount];
+                        int[] landIndices = new int[grooveCount];
                         //get land and groove indices
                         int grooveIndex = 0;
 
 
                         int landIndex = 0;
-                        for (int j = 0; j < grooveCt; j++)
+                        for (int j = 0; j < grooveCount; j++)
                         {
                             grooveIndex = (int)(j * deltaIndex);
                             landIndex = (int)(j * deltaIndex + deltaIndex / 2);
@@ -113,7 +83,7 @@ namespace InspectionLib
                     profile.AveGrooveProfile = aveGrooveProfile;
                     profile.AveLandProfile = aveLandProfile;
                     profile.MinLandProfile = minLandProfile;
-                    profile.Barrel = inspDataSets[0].Barrel;
+                   // profile.Barrel = inspDataSets[0].Barrel;
                 }
                     
                 return profile;
@@ -125,7 +95,7 @@ namespace InspectionLib
             }
             
         }
-        BarrelInspProfile BuildFromAxial(List<InspDataSet> inspDataSets)
+        static BarrelInspProfile BuildFromAxial(List<InspDataSet> inspDataSets)
         {
             try
             {
@@ -181,7 +151,7 @@ namespace InspectionLib
                 }
                 profile.AveGrooveProfile.AddRange(grooveProfile);
                 profile.AveLandProfile.AddRange(landProfile);
-                profile.Barrel = inspDataSets[0].Barrel;
+                //profile.Barrel = inspDataSets[0].Barrel;
                 return profile;
             }
             catch (Exception)
@@ -190,7 +160,37 @@ namespace InspectionLib
                 throw;
             }
         }
-        public ProfileBuilder(Barrel barrel):base(barrel)
+        static public BarrelInspProfile Build(List<InspDataSet> inspDataSets,int grooveCount)
+        {
+            try
+            {
+                var barrelProfile = new BarrelInspProfile();
+                if (inspDataSets != null && inspDataSets.Count > 0)
+                {
+                    ScanFormat format = inspDataSets[0].DataFormat;
+                    switch (format)
+                    {
+                        case ScanFormat.RING:
+                            barrelProfile = BuildFromRings(inspDataSets,grooveCount);
+                            break;
+                        case ScanFormat.AXIAL:
+                        case ScanFormat.GROOVE:
+                        case ScanFormat.LAND:
+                            barrelProfile = BuildFromAxial(inspDataSets);
+                            break;
+                    }
+
+
+                }
+                return barrelProfile;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public ProfileBuilder()
         {
 
         }

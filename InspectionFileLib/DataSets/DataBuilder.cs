@@ -19,12 +19,12 @@ namespace InspectionLib
     /// </summary>
     public class DataBuilder
     {
-        
-        
-               
-        protected Barrel _barrel;
 
-        public string InputFileName
+
+
+        //protected Barrel _barrel;
+
+        static public string InputFileName
         {
             get
             {
@@ -32,28 +32,28 @@ namespace InspectionLib
             }
         }
         
-        protected string _inputFileName;
-        long _id;
+        static protected string _inputFileName;
+        //long _id;
         protected BoundingBox _boundingBox;
 
-        protected virtual CylData GetData(CylInspScript script, double[] data)
-        {
-           return new CylData(script.InputDataFileName);
-        }              
-        protected CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
-        {
-            try
-            {               
-                return GetData(script, rawInputData);              
-            }
-            catch (Exception)
-            {
+        //static protected virtual CylData GetData(CylInspScript script, double[] data)
+        //{
+        //   return new CylData(script.InputDataFileName);
+        //}
+        //static protected CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
+        //{
+        //    try
+        //    {               
+        //        return GetData(script, rawInputData);              
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
-        double GetMinRadiusFromPointList(CylData singleRing, PointCyl[] landPoints)
+        static double GetMinRadiusFromPointList(CylData singleRing, PointCyl[] landPoints)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace InspectionLib
             }
 
         }
-        protected double GetCorrectionRadius(CylData singleRing)
+        static protected double GetCorrectionRadius(CylData singleRing)
         {
             double minR = GetMinAveRadius(singleRing, 5);
             double rCorrection = (singleRing.NominalMinDiam / 2.0) - minR;
@@ -143,7 +143,7 @@ namespace InspectionLib
         /// <param name="singleRing"></param>
         /// <param name="_nominalRadius"></param>
         /// <returns></returns>
-        protected CylData CorrectRadius(CylData singleRing,double rCorrection, ProbeDirection probeDir)
+        static protected CylData CorrectRadius(CylData singleRing,double rCorrection, ProbeDirection probeDir)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace InspectionLib
             }
 
         }
-      
+
 
         //}
         /// <summary>
@@ -185,7 +185,7 @@ namespace InspectionLib
         /// /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
-        protected double GetMinAveRadius(List<PointCyl> data,int searchWindowHalfW)
+        static protected double GetMinAveRadius(List<PointCyl> data,int searchWindowHalfW)
         {
             try
             {
@@ -225,7 +225,7 @@ namespace InspectionLib
         /// /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
-        protected PointCyl GetMinRadiusPt(List<PointCyl> data)
+        static protected PointCyl GetMinRadiusPt(List<PointCyl> data)
         {
             try
             {
@@ -250,13 +250,13 @@ namespace InspectionLib
             }
 
         }
-      
+
         /// <summary>
         /// get land points from data and assume minimum radius found is land
         /// </summary>
         /// <param name="rawSingleRing"></param>
         /// <returns></returns>
-        protected CylData GetLandPoints(CylData ring,int pointsPerRevolution)
+        static protected CylData GetLandPoints(CylData ring,int pointsPerRevolution,int grooveCount)
         {
             try
             {
@@ -266,7 +266,7 @@ namespace InspectionLib
                 double thMin = Math.Min(ring[0].ThetaRad, ring[ring.Count - 1].ThetaRad);
                
                 var minPt = GetMinRadiusPt(ring);
-                int grooveCount = _barrel.DimensionData.GrooveCount;
+               // int grooveCount = _barrel.DimensionData.GrooveCount;
                
                 int searchHalfWindow = (int)((pointsPerRevolution / grooveCount) / 2.0);
              
@@ -357,7 +357,7 @@ namespace InspectionLib
             }
            
         }
-        protected void AddSelfPoints(ref CylData lands, CylData pointArr)
+        static protected void AddSelfPoints(ref CylData lands, CylData pointArr)
         {
             try
             {
@@ -373,7 +373,7 @@ namespace InspectionLib
                 throw;
             } 
         }
-        protected CylData CorrectRing(CylData singleRing, CylData landPointArr, ProbeDirection probeDirection)
+        static protected CylData CorrectRing(CylData singleRing, CylData landPointArr, ProbeDirection probeDirection)
         {
             try
             {
@@ -405,37 +405,37 @@ namespace InspectionLib
                 throw;
             }
         }
-        protected double _nominalRadius;
-        protected DataOutputOptions _options;
-        protected string _fileNoExt;
+        //protected double _nominalRadius;
+        //atic protected DataOutputOptions _options;
+        static protected string _fileNoExt;
 
         /// <summary>
         /// initializing 
         /// </summary>
         /// <param name="options"></param>
         /// <param name="fileName"></param>
-        protected void Init(DataOutputOptions options)
-        {
-            try
-            {
-                _options = options;
-                //_inputFileName = fileName;
-                _nominalRadius = _barrel.DimensionData.ActualLandDiam / 2.0;
-               // _fileNoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);                
-                _id = DateTime.Now.ToBinary();
-            }
-            catch (Exception)
-            {
+        //static protected void Init(DataOutputOptions options)
+        //{
+        //    try
+        //    {
+        //        _options = options;
+        //        //_inputFileName = fileName;
+        //        //_nominalRadius = _barrel.DimensionData.ActualLandDiam / 2.0;
+        //       // _fileNoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);                
+        //       // _id = DateTime.Now.ToBinary();
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
-        protected double pi2;
+        //        throw;
+        //    }
+        //}
+        static protected double pi2;
       
-        public DataBuilder(Barrel barrel)
+        public DataBuilder()
         {
             pi2 = Math.PI * 2;
-            _barrel = barrel;
+            //_barrel = barrel;
             _boundingBox = new BoundingBox();
           
             

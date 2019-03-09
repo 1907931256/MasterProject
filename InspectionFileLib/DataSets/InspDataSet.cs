@@ -11,11 +11,19 @@ using BarrelLib;
 
 namespace InspectionLib
 {
+    public class RasterDataSet:InspDataSet
+    {
+        public CylData CorrectedCylData { get; set; }
+        public RasterDataSet(string filename) : base( filename)
+        {
+            CorrectedCylData = new CylData(Filename);             
+        }
+    }
     public class AxialDataSet:InspDataSet
     {
         public CylData CorrectedCylData { get; set; }
         public CylData UncorrectedCylData { get; set; }
-        public AxialDataSet(Barrel barrel, string filename) : base(barrel, filename)
+        public AxialDataSet( string filename) : base( filename)
         {
             CorrectedCylData = new CylData(Filename);
             UncorrectedCylData = new CylData(Filename);
@@ -26,7 +34,7 @@ namespace InspectionLib
     {
         public CylGridData CorrectedSpiralData { get; set; }
         public CylGridData UncorrectedSpiralData { get; set; }
-        public SpiralDataSet(Barrel barrel, string filename) : base(barrel, filename)
+        public SpiralDataSet(string filename) : base( filename)
         {
             CorrectedSpiralData = new CylGridData();
             UncorrectedSpiralData = new CylGridData();
@@ -65,7 +73,7 @@ namespace InspectionLib
         {
             return getRVariation(RawLandPoints);
         }
-        public RingDataSet(Barrel barrel, string filename) : base(barrel, filename)
+        public RingDataSet( string filename) : base( filename)
         {
             CorrectedCylData = new CylData(Filename);
             UncorrectedCylData = new CylData(Filename);
@@ -77,7 +85,7 @@ namespace InspectionLib
     {
         public CartData CartData { get; set; }      
         
-        public CartDataSet(Barrel barrel, string filename) : base(barrel, filename)
+        public CartDataSet( string filename) : base( filename)
         {
             CartData = new CartData(filename);
            
@@ -86,7 +94,7 @@ namespace InspectionLib
     public class CartGridDataSet : InspDataSet
     {
         public CartGridData CartGridData { get; set; }
-        public CartGridDataSet(Barrel barrel,string filename):base (barrel,filename)
+        public CartGridDataSet(string filename):base (filename)
         {
             CartGridData = new CartGridData();
         }
@@ -94,12 +102,12 @@ namespace InspectionLib
 
     public class InspDataSet
     {
-        public Barrel Barrel { get; protected set; }
+        //public Barrel Barrel { get; protected set; }
         public ScanFormat DataFormat { get; protected set; }
         public string Filename { get; protected set; }
-        public InspDataSet(Barrel barrel,string filename)
+        public InspDataSet(string filename)
         {           
-            Barrel = barrel;
+            //Barrel = barrel;
             Filename = filename;
         }
     }

@@ -17,13 +17,15 @@ namespace DataLib
                 return System.IO.Path.GetFileName(FileName);
             }
         }
-        public static string GetNearestFile(Point mousePt, List<DisplayData> displayDataList)
+        static string filename;
+        static PointF minPt;
+        static void findNearest(PointF mousePt, List<DisplayData> displayDataList)
         {
             try
             {
                 double minDist2 = double.MaxValue;
-                string filename = "";
-                PointF minPt = new PointF();
+                filename = "";
+                minPt = new PointF();
                 foreach (var display in displayDataList)
                 {
                     foreach (var p in display)
@@ -37,7 +39,18 @@ namespace DataLib
                         }
                     }
                 }
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
+        public static string GetNearestFile(PointF mousePt, List<DisplayData> displayDataList)
+        {
+            try
+            {
+                findNearest(mousePt, displayDataList);
                 return filename;
             }
             catch (Exception)
@@ -46,27 +59,11 @@ namespace DataLib
                 throw;
             }
         }
-        public static PointF GetNearestPoint(Point mousePt, List<DisplayData> displayDataList)
+        public static PointF GetNearestPoint(PointF mousePt, List<DisplayData> displayDataList)
         {
             try
             {
-                double minDist2 = double.MaxValue;
-                string filename = "";
-                PointF minPt = new PointF();
-                foreach (var display in displayDataList)
-                {
-                    foreach (var p in display)
-                    {
-                        var dist2 = Math.Pow(p.X - mousePt.X, 2) + Math.Pow(p.Y - mousePt.Y, 2);
-                        if (dist2 < minDist2)
-                        {
-                            minDist2 = dist2;
-                            minPt = new PointF(p.X, p.Y);
-                            filename = display.ShortFileName;
-                        }
-                    }
-                }
-
+                findNearest(mousePt, displayDataList);
                 return minPt;
             }
             catch (Exception)

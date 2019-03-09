@@ -168,6 +168,7 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
+            this.clearAllDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -442,27 +443,31 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.shiftDataXToolStripMenuItem,
             this.removeDatasetToolStripMenuItem,
-            this.removeAllButThisToolStripMenuItem});
+            this.removeAllButThisToolStripMenuItem,
+            this.clearAllDataToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 114);
             // 
             // shiftDataXToolStripMenuItem
             // 
             this.shiftDataXToolStripMenuItem.Name = "shiftDataXToolStripMenuItem";
             this.shiftDataXToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.shiftDataXToolStripMenuItem.Text = "Shift Data ";
+            this.shiftDataXToolStripMenuItem.Click += new System.EventHandler(this.shiftDataXToolStripMenuItem_Click);
             // 
             // removeDatasetToolStripMenuItem
             // 
             this.removeDatasetToolStripMenuItem.Name = "removeDatasetToolStripMenuItem";
             this.removeDatasetToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.removeDatasetToolStripMenuItem.Text = "Remove Dataset";
+            this.removeDatasetToolStripMenuItem.Click += new System.EventHandler(this.removeDatasetToolStripMenuItem_Click);
             // 
             // removeAllButThisToolStripMenuItem
             // 
             this.removeAllButThisToolStripMenuItem.Name = "removeAllButThisToolStripMenuItem";
             this.removeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.removeAllButThisToolStripMenuItem.Text = "Remove All But This Set ";
+            this.removeAllButThisToolStripMenuItem.Click += new System.EventHandler(this.removeAllButThisToolStripMenuItem_Click);
             // 
             // panel2
             // 
@@ -1430,6 +1435,13 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
+            // clearAllDataToolStripMenuItem
+            // 
+            this.clearAllDataToolStripMenuItem.Name = "clearAllDataToolStripMenuItem";
+            this.clearAllDataToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.clearAllDataToolStripMenuItem.Text = "Clear All Data";
+            this.clearAllDataToolStripMenuItem.Click += new System.EventHandler(this.clearAllDataToolStripMenuItem_Click);
+            // 
             // MainInspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1604,6 +1616,7 @@
         private System.Windows.Forms.ToolStripMenuItem removeDatasetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeAllButThisToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButtonShiftData;
+        private System.Windows.Forms.ToolStripMenuItem clearAllDataToolStripMenuItem;
     }
 }
 

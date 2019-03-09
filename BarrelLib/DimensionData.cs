@@ -259,13 +259,13 @@ namespace BarrelLib
         {
             _length = 240;
             _ringCalDiam = 6.0;
-            _landMaxDiam = 6.103;
-            _landMinDiam = 6.100;
+            _landMaxDiam = 6.115;
+            _landMinDiam = 6.113;
             _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
             _landActualDiam = _landNomDiam;
             _grooveCount = 48;
-            _grooveMinDiam = 6.206;
-            _grooveMaxDiam = 6.200;
+            _grooveMinDiam = 6.210;
+            _grooveMaxDiam = 6.205;
             _landMinWidth = .1554;
             _landMaxWidth = .1632;
             _firstGrooveThetaOffset = 0;

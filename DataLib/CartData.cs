@@ -20,49 +20,68 @@ namespace DataLib
         }
         public double AverageYValueInBox(BoundingBox boundingBox)
         {
-            double average = 0;
-            int count = 0;
-            foreach(var point in this)
+            try
             {
-                if(boundingBox.Contains(point))
+                double average = 0;
+                int count = 0;
+                foreach (var point in this)
                 {
-                    average += point.Y;
-                    count++;
+                    if (boundingBox.Contains(point))
+                    {
+                        average += point.Y;
+                        count++;
+                    }
                 }
+                if (count != 0)
+                {
+                    average /= count;
+                }
+                return average;
             }
-            if(count!=0)
+            catch (Exception)
             {
-                average /= count;
+
+                throw;
             }
-            return average;
+           
 
         }
-        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double radius)
+        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double fitRadius,double unrollRadius) 
         {
-            var centers = GeometryLib.GeomUtilities.FindCirclesofKnownR(pt1, pt2, radius);
-            var center = new Vector3();
-            if (centers[0].Y > centers[1].Y)
+            try
             {
-                center = centers[0];
-            }
-            else
-            {
-                center = centers[1];
-            }
-            var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y,0);
-            Translate(translation);
-            var pt1Trans = pt1.Translate(translation);
-            var pt2Trans = pt2.Translate(translation);
-            double scaling = 1.0;
-            var pt1Unr = DataConverter.UnrollCylPt(new PointCyl(pt1Trans),Math.PI/2.0, scaling, radius);
-            var pt2Unr = DataConverter.UnrollCylPt(new PointCyl(pt2Trans),Math.PI/2.0, scaling, radius);
+                var centers = GeometryLib.GeomUtilities.FindCirclesofKnownR(pt1, pt2, fitRadius);
+                var center = new Vector3();
+                if (centers[0].Y > centers[1].Y)
+                {
+                    center = centers[0];
+                }
+                else
+                {
+                    center = centers[1];
+                }
+                var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y, 0);
+                Translate(translation);
+                var pt1Trans = pt1.Translate(translation);
+                var pt2Trans = pt2.Translate(translation);
+                double scaling = 1.0;
+                var pt1Unr = DataConverter.UnrollCylPt(new PointCyl(pt1Trans), Math.PI / 2.0, scaling, unrollRadius);
+                var pt2Unr = DataConverter.UnrollCylPt(new PointCyl(pt2Trans), Math.PI / 2.0, scaling, unrollRadius);
 
-            var unrolledData = DataConverter.UnrollCylinderRing(this, scaling, radius);
-            
-            Clear();
-            AddRange(unrolledData);
-            RotateDataToLine(pt1Unr, pt2Unr);
-            CenterToXMidpoint();
+
+                var unrolledData = DataConverter.UnrollCylinderRing(this, scaling, unrollRadius);
+
+                Clear();
+                AddRange(unrolledData);
+                RotateDataToLine(pt1Unr, pt2Unr);
+                CenterToXMidpoint();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
             
         }
         public void RotateDataToLine(Vector3 pt1, Vector3 pt2)

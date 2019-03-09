@@ -15,13 +15,24 @@ namespace InspectionLib
     {
         public PointCyl[] LandPoints { get; private set; }
 
-        
-      
-        override protected CylData GetData(CylInspScript script, double[] data)
+
+        static public CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
         {
             try
             {
-                if(script is RingInspScript ringScript)
+                return GetData(script, rawInputData);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static protected CylData GetData(CylInspScript script, double[] data)
+        {
+            try
+            {
+                if(script is CylInspScript ringScript)
                 {
                     var points = new CylData(ringScript.InputDataFileName);
                     double probeSpacing = ringScript.CalDataSet.ProbeSpacingInch;
@@ -31,7 +42,7 @@ namespace InspectionLib
                     for (int i = 0; i < pointCt; i++)
                     {
                         var z = script.StartLocation.X;
-                        var theta = script.ThetaDir * i * ringScript.AngleIncrement + GeomUtilities.ToRadians(ringScript.StartLocation.Adeg);
+                        var theta =  i * ringScript.AngleIncrement + GeomUtilities.ToRadians(ringScript.StartLocation.Adeg);
 
                         var diam = data[i];
                         var sum = data[i];
@@ -66,15 +77,15 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildRingFromRadialData(RingInspScript script, double[] rawInputData)
+        static InspDataSet BuildRingFromRadialData(CylInspScript script, double[] rawInputData,int grooveCount)
         {
             try
             {
-                var dataSet = new RingDataSet(_barrel,script.InputDataFileName);
+                var dataSet = new RingDataSet(script.InputDataFileName);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
-                dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution);
+                dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution,grooveCount);
                 dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction);
-                dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CorrectedCylData, script.PointsPerRevolution);
+                dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CorrectedCylData, script.PointsPerRevolution,grooveCount);
                 return dataSet;
             }
             catch (Exception)
@@ -91,13 +102,13 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildRingAsync(CancellationToken ct, IProgress<int> progress, RingInspScript script, double[] rawDataSet, DataOutputOptions options)
+        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, CylInspScript script, double[] rawDataSet,int grooveCount )
         {
             try
             {
-                Init(options);
+                //Init(options);
                 _inputFileName = script.InputDataFileName;
-                var dataSet = BuildRingFromRadialData(script, rawDataSet);               
+                var dataSet = BuildRingFromRadialData(script, rawDataSet,grooveCount);               
                 return dataSet;
             }
             catch (Exception)
@@ -106,7 +117,7 @@ namespace InspectionLib
             }
         }
       
-        public RingDataBuilder(Barrel barrel) : base(barrel)
+        public RingDataBuilder()
         {
 
         }

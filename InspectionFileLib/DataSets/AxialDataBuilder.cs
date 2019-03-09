@@ -13,9 +13,9 @@ namespace InspectionLib
 {
     public class AxialDataBuilder : DataBuilder
     {
-        protected PointCyl GetPoint(int i, AxialInspScript script, double r)
+        static protected PointCyl GetPoint(int i, AxialInspScript script, double r)
         {
-            var z = script.ZDir * i * script.AxialIncrement + script.StartLocation.X;
+            var z =  i * script.AxialIncrement + script.StartLocation.X;
             var theta = GeomUtilities.ToRadians(script.StartLocation.Adeg);
             var pt = new PointCyl(r, theta, z, i);
             return pt;
@@ -25,12 +25,12 @@ namespace InspectionLib
         /// </summary>
         /// <param name="script"></param>
         /// <param name="rawInputData"></param>
-        InspDataSet BuildAxialPoints(AxialInspScript script, double[] data)
+        static InspDataSet BuildAxialPoints(AxialInspScript script, double[] data)
         {
             try
             {
                 var points = new CylData(script.InputDataFileName);
-                var len = data.GetLength(0);
+                var len = data.Length;
                 if (len == 0)
                 {
                     throw new Exception("Data file length cannot equal zero");
@@ -40,13 +40,12 @@ namespace InspectionLib
                 {
                     throw new Exception("Axial increment cannot equal zero.");
                 }
-
+                var dataSet = new AxialDataSet( script.InputDataFileName);               
                 for (int i = 0; i < len; i++)
-                {                   
-                    points.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
+                {
+                    dataSet.CorrectedCylData.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
                 }
-                var dataSet = new AxialDataSet(_barrel,script.InputDataFileName);
-                dataSet.CorrectedCylData = points;
+               
                 return dataSet;
             }
             catch (Exception)
@@ -55,21 +54,7 @@ namespace InspectionLib
             }
 
         }
-        InspDataSet BuildFromAxial(AxialInspScript script, double[] rawInputData)
-        {
-            try
-            {
-                Debug.WriteLine("building data from axial inspection");
-                var data = rawInputData;
-                return BuildAxialPoints(script, data);
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        
 
         /// <summary>
         /// build axial data from raw set
@@ -79,12 +64,12 @@ namespace InspectionLib
         /// <param name="script"></param>
         /// <param name="rawDataSet"></param>
         /// <param name="options"></param>
-        public InspDataSet BuildAxialAsync(CancellationToken ct, IProgress<int> progress, AxialInspScript script, double[] rawDataSet, DataOutputOptions options)
+        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, AxialInspScript script, double[] rawDataSet )
         {
             try
             {
-                Init(options);                
-                return BuildFromAxial(script, rawDataSet);
+               // Init(options);                
+                return BuildAxialPoints(script, rawDataSet);
             }
             catch (Exception)
             {
@@ -93,7 +78,7 @@ namespace InspectionLib
             }
 
         }
-        public AxialDataBuilder(Barrel barrel) : base(barrel)
+        public AxialDataBuilder()
         {
 
         }

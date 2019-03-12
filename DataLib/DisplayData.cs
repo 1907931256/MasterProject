@@ -46,6 +46,7 @@ namespace DataLib
                 throw;
             }
         }
+
         public static string GetNearestFile(PointF mousePt, List<DisplayData> displayDataList)
         {
             try
@@ -72,31 +73,64 @@ namespace DataLib
                 throw;
             }
         }
+        public DisplayData TrimTo(RectangleF window)
+        {
+            try
+            {
+                                
+                var trimmedDisplay = new DisplayData(this.FileName);
+                foreach (PointF pt in this)
+                {
+                    if(window.Contains(pt.X,pt.Y))
+                    {
+                        trimmedDisplay.Add(new PointF(pt.X, pt.Y));
+                    }
+                }
+                return trimmedDisplay;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+         
         public RectangleF BoundingRect(float borderPercent,int decimalPlaces)
         {
-            float maxX = float.MinValue;
-            float minX = float.MaxValue;
-            float maxY = float.MinValue;
-            float minY = float.MaxValue;
-            float width = 0;
-            float height = 0;
-            foreach (PointF pt in this)
+            try
             {
-                maxX = Math.Max(pt.X, maxX);
-                minX = Math.Min(pt.X, minX);
-                maxY = Math.Max(pt.Y, maxY);
-                minY = Math.Min(pt.Y, minY);
+                float maxX = float.MinValue;
+                float minX = float.MaxValue;
+                float maxY = float.MinValue;
+                float minY = float.MaxValue;
+                float width = 0;
+                float height = 0;
+                foreach (PointF pt in this)
+                {
+                    maxX = Math.Max(pt.X, maxX);
+                    minX = Math.Min(pt.X, minX);
+                    maxY = Math.Max(pt.Y, maxY);
+                    minY = Math.Min(pt.Y, minY);
+                }
+                width = maxX - minX;
+                double round = Math.Pow(10, decimalPlaces);
+                float bordery = height * borderPercent / 2;
+                float minYRound = (float)(Math.Floor((minY - bordery) * round) / round);
+                float maxYRound = (float)(Math.Ceiling((maxY + bordery) * round) / round);
+                height = (float)(maxYRound - minYRound);
+                return new RectangleF(minX, minYRound, width, height);
             }
-            width = maxX - minX;
-            double round = Math.Pow(10, decimalPlaces);
-            float bordery = height * borderPercent / 2;
-            float minYRound = (float)(Math.Floor((minY-bordery) * round)/round);
-            float maxYRound = (float)(Math.Ceiling((maxY+bordery) * round) / round);
-            height = (float)(maxYRound - minYRound);                    
-            return new RectangleF(minX , minYRound , width , height );
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
         public RectangleF BoundingRect()
         {
+            try
+            {
                 float maxX = float.MinValue;
                 float minX = float.MaxValue;
                 float maxY = float.MinValue;
@@ -109,6 +143,13 @@ namespace DataLib
                     minY = Math.Min(pt.Y, minY);
                 }
                 return new RectangleF(minX, minY, maxX - minX, maxY - minY);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+               
         }
         //public DisplayData()
         //{

@@ -55,11 +55,9 @@
             this.radioButtonPtsperRev = new System.Windows.Forms.RadioButton();
             this.comboBoxMethod = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.labelRingRevs = new System.Windows.Forms.Label();
             this.labelPitch = new System.Windows.Forms.Label();
             this.labelEndPos = new System.Windows.Forms.Label();
             this.labelMethod = new System.Windows.Forms.Label();
-            this.textBoxRingRevs = new System.Windows.Forms.TextBox();
             this.textBoxPitch = new System.Windows.Forms.TextBox();
             this.textBoxAngleInc = new System.Windows.Forms.TextBox();
             this.textBoxPtsPerRev = new System.Windows.Forms.TextBox();
@@ -73,6 +71,7 @@
             this.shiftDataXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearAllDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
             this.labelNearestFilename = new System.Windows.Forms.Label();
             this.labelDxMeasured = new System.Windows.Forms.Label();
@@ -97,7 +96,6 @@
             this.OpenDXFFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProcessedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProfileDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveDepthDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDXFProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.save3DSurfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.save3DSTLSurfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,10 +113,6 @@
             this.labelStatus = new System.Windows.Forms.Label();
             this.textBoxSerialN = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBoxCurrentPasses = new System.Windows.Forms.TextBox();
-            this.labelCurrentPasses = new System.Windows.Forms.Label();
-            this.textBoxTotalPasses = new System.Windows.Forms.TextBox();
-            this.labelTotalPasses = new System.Windows.Forms.Label();
             this.toolStripButtonCursor = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButtonFileOpen = new System.Windows.Forms.ToolStripButton();
@@ -140,12 +134,6 @@
             this.buttonBrowse = new System.Windows.Forms.Button();
             this.comboBoxDiameterType = new System.Windows.Forms.ComboBox();
             this.textBoxNomDiam = new System.Windows.Forms.TextBox();
-            this.labelNotes = new System.Windows.Forms.Label();
-            this.textBoxMiscManNotes = new System.Windows.Forms.TextBox();
-            this.labelRoundsFired = new System.Windows.Forms.Label();
-            this.textBoxRoundsFired = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.comboBoxManStep = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panelProbeInfo = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
@@ -168,7 +156,7 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.clearAllDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBoxOverLayCad = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -198,11 +186,11 @@
             // 
             // buttonProcessFile
             // 
-            this.buttonProcessFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonProcessFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonProcessFile.Location = new System.Drawing.Point(7, 37);
             this.buttonProcessFile.Margin = new System.Windows.Forms.Padding(2);
             this.buttonProcessFile.Name = "buttonProcessFile";
-            this.buttonProcessFile.Size = new System.Drawing.Size(95, 32);
+            this.buttonProcessFile.Size = new System.Drawing.Size(95, 30);
             this.buttonProcessFile.TabIndex = 3;
             this.buttonProcessFile.Text = "Process File";
             this.buttonProcessFile.UseVisualStyleBackColor = true;
@@ -294,25 +282,15 @@
             this.label7.TabIndex = 1;
             this.label7.Text = "Probe Direction";
             // 
-            // labelRingRevs
-            // 
-            this.labelRingRevs.AutoSize = true;
-            this.labelRingRevs.Location = new System.Drawing.Point(9, 180);
-            this.labelRingRevs.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelRingRevs.Name = "labelRingRevs";
-            this.labelRingRevs.Size = new System.Drawing.Size(88, 13);
-            this.labelRingRevs.TabIndex = 1;
-            this.labelRingRevs.Text = "Ring Revolutions";
-            // 
             // labelPitch
             // 
             this.labelPitch.AutoSize = true;
-            this.labelPitch.Location = new System.Drawing.Point(49, 156);
+            this.labelPitch.Location = new System.Drawing.Point(93, 156);
             this.labelPitch.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelPitch.Name = "labelPitch";
-            this.labelPitch.Size = new System.Drawing.Size(48, 13);
+            this.labelPitch.Size = new System.Drawing.Size(77, 13);
             this.labelPitch.TabIndex = 1;
-            this.labelPitch.Text = "Pitch (in)";
+            this.labelPitch.Text = "Spiral Pitch (in)";
             // 
             // labelEndPos
             // 
@@ -335,18 +313,9 @@
             this.labelMethod.Text = "Scan Format";
             this.labelMethod.Click += new System.EventHandler(this.labelMethod_Click);
             // 
-            // textBoxRingRevs
-            // 
-            this.textBoxRingRevs.Location = new System.Drawing.Point(101, 177);
-            this.textBoxRingRevs.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxRingRevs.Name = "textBoxRingRevs";
-            this.textBoxRingRevs.Size = new System.Drawing.Size(39, 20);
-            this.textBoxRingRevs.TabIndex = 0;
-            this.textBoxRingRevs.Text = "2";
-            // 
             // textBoxPitch
             // 
-            this.textBoxPitch.Location = new System.Drawing.Point(101, 154);
+            this.textBoxPitch.Location = new System.Drawing.Point(145, 153);
             this.textBoxPitch.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxPitch.Name = "textBoxPitch";
             this.textBoxPitch.Size = new System.Drawing.Size(82, 20);
@@ -433,7 +402,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(500, 390);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseClick);
+            //this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseClick);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
             this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseUp);
@@ -446,28 +415,31 @@
             this.removeAllButThisToolStripMenuItem,
             this.clearAllDataToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 92);
             // 
             // shiftDataXToolStripMenuItem
             // 
             this.shiftDataXToolStripMenuItem.Name = "shiftDataXToolStripMenuItem";
             this.shiftDataXToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.shiftDataXToolStripMenuItem.Text = "Shift Data ";
-            this.shiftDataXToolStripMenuItem.Click += new System.EventHandler(this.shiftDataXToolStripMenuItem_Click);
             // 
             // removeDatasetToolStripMenuItem
             // 
             this.removeDatasetToolStripMenuItem.Name = "removeDatasetToolStripMenuItem";
             this.removeDatasetToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.removeDatasetToolStripMenuItem.Text = "Remove Dataset";
-            this.removeDatasetToolStripMenuItem.Click += new System.EventHandler(this.removeDatasetToolStripMenuItem_Click);
             // 
             // removeAllButThisToolStripMenuItem
             // 
             this.removeAllButThisToolStripMenuItem.Name = "removeAllButThisToolStripMenuItem";
             this.removeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.removeAllButThisToolStripMenuItem.Text = "Remove All But This Set ";
-            this.removeAllButThisToolStripMenuItem.Click += new System.EventHandler(this.removeAllButThisToolStripMenuItem_Click);
+            // 
+            // clearAllDataToolStripMenuItem
+            // 
+            this.clearAllDataToolStripMenuItem.Name = "clearAllDataToolStripMenuItem";
+            this.clearAllDataToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.clearAllDataToolStripMenuItem.Text = "Clear All Data";
             // 
             // panel2
             // 
@@ -556,9 +528,9 @@
             // 
             // buttonSetRadius
             // 
-            this.buttonSetRadius.Location = new System.Drawing.Point(7, 155);
+            this.buttonSetRadius.Location = new System.Drawing.Point(7, 146);
             this.buttonSetRadius.Name = "buttonSetRadius";
-            this.buttonSetRadius.Size = new System.Drawing.Size(95, 45);
+            this.buttonSetRadius.Size = new System.Drawing.Size(95, 30);
             this.buttonSetRadius.TabIndex = 29;
             this.buttonSetRadius.Text = "Set Radius";
             this.buttonSetRadius.UseVisualStyleBackColor = true;
@@ -696,7 +668,6 @@
             // 
             this.saveProcessedFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveProfileDataToolStripMenuItem,
-            this.saveDepthDataToolStripMenuItem,
             this.saveDXFProfileToolStripMenuItem,
             this.save3DSurfaceToolStripMenuItem,
             this.save3DSTLSurfaceToolStripMenuItem,
@@ -715,13 +686,6 @@
             this.saveProfileDataToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.saveProfileDataToolStripMenuItem.Text = "Save CSV Profile";
             this.saveProfileDataToolStripMenuItem.Click += new System.EventHandler(this.SaveProfileDataToolStripMenuItem_Click);
-            // 
-            // saveDepthDataToolStripMenuItem
-            // 
-            this.saveDepthDataToolStripMenuItem.Name = "saveDepthDataToolStripMenuItem";
-            this.saveDepthDataToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.saveDepthDataToolStripMenuItem.Text = "Save CSV Depths";
-            this.saveDepthDataToolStripMenuItem.Click += new System.EventHandler(this.SaveDepthDataToolStripMenuItem_Click);
             // 
             // saveDXFProfileToolStripMenuItem
             // 
@@ -854,42 +818,6 @@
             this.label1.Size = new System.Drawing.Size(27, 13);
             this.label1.TabIndex = 22;
             this.label1.Text = "S/N";
-            // 
-            // textBoxCurrentPasses
-            // 
-            this.textBoxCurrentPasses.Location = new System.Drawing.Point(97, 112);
-            this.textBoxCurrentPasses.Name = "textBoxCurrentPasses";
-            this.textBoxCurrentPasses.Size = new System.Drawing.Size(140, 20);
-            this.textBoxCurrentPasses.TabIndex = 21;
-            this.textBoxCurrentPasses.Text = "000";
-            // 
-            // labelCurrentPasses
-            // 
-            this.labelCurrentPasses.AutoSize = true;
-            this.labelCurrentPasses.Location = new System.Drawing.Point(14, 115);
-            this.labelCurrentPasses.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelCurrentPasses.Name = "labelCurrentPasses";
-            this.labelCurrentPasses.Size = new System.Drawing.Size(78, 13);
-            this.labelCurrentPasses.TabIndex = 22;
-            this.labelCurrentPasses.Text = "Current Passes";
-            // 
-            // textBoxTotalPasses
-            // 
-            this.textBoxTotalPasses.Location = new System.Drawing.Point(97, 137);
-            this.textBoxTotalPasses.Name = "textBoxTotalPasses";
-            this.textBoxTotalPasses.Size = new System.Drawing.Size(140, 20);
-            this.textBoxTotalPasses.TabIndex = 21;
-            this.textBoxTotalPasses.Text = "000";
-            // 
-            // labelTotalPasses
-            // 
-            this.labelTotalPasses.AutoSize = true;
-            this.labelTotalPasses.Location = new System.Drawing.Point(10, 140);
-            this.labelTotalPasses.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelTotalPasses.Name = "labelTotalPasses";
-            this.labelTotalPasses.Size = new System.Drawing.Size(68, 13);
-            this.labelTotalPasses.TabIndex = 22;
-            this.labelTotalPasses.Text = "Total Passes";
             // 
             // toolStripButtonCursor
             // 
@@ -1040,20 +968,10 @@
             this.tabPage1.Controls.Add(this.buttonBrowse);
             this.tabPage1.Controls.Add(this.comboBoxDiameterType);
             this.tabPage1.Controls.Add(this.textBoxNomDiam);
-            this.tabPage1.Controls.Add(this.labelNotes);
-            this.tabPage1.Controls.Add(this.textBoxMiscManNotes);
-            this.tabPage1.Controls.Add(this.labelRoundsFired);
-            this.tabPage1.Controls.Add(this.textBoxRoundsFired);
-            this.tabPage1.Controls.Add(this.label9);
-            this.tabPage1.Controls.Add(this.comboBoxManStep);
             this.tabPage1.Controls.Add(this.textBoxSerialN);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.comboBoxBarrel);
-            this.tabPage1.Controls.Add(this.labelTotalPasses);
-            this.tabPage1.Controls.Add(this.labelCurrentPasses);
-            this.tabPage1.Controls.Add(this.textBoxCurrentPasses);
             this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.textBoxTotalPasses);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -1065,7 +983,7 @@
             // labelCalStatus
             // 
             this.labelCalStatus.AutoSize = true;
-            this.labelCalStatus.Location = new System.Drawing.Point(20, 273);
+            this.labelCalStatus.Location = new System.Drawing.Point(11, 153);
             this.labelCalStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCalStatus.Name = "labelCalStatus";
             this.labelCalStatus.Size = new System.Drawing.Size(58, 13);
@@ -1075,7 +993,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(16, 246);
+            this.label10.Location = new System.Drawing.Point(7, 126);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(91, 13);
@@ -1084,7 +1002,7 @@
             // 
             // textBoxRingCal
             // 
-            this.textBoxRingCal.Location = new System.Drawing.Point(116, 244);
+            this.textBoxRingCal.Location = new System.Drawing.Point(107, 124);
             this.textBoxRingCal.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxRingCal.Name = "textBoxRingCal";
             this.textBoxRingCal.Size = new System.Drawing.Size(48, 20);
@@ -1094,7 +1012,7 @@
             // labelNomDiam
             // 
             this.labelNomDiam.AutoSize = true;
-            this.labelNomDiam.Location = new System.Drawing.Point(19, 218);
+            this.labelNomDiam.Location = new System.Drawing.Point(10, 98);
             this.labelNomDiam.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelNomDiam.Name = "labelNomDiam";
             this.labelNomDiam.Size = new System.Drawing.Size(93, 13);
@@ -1103,7 +1021,7 @@
             // 
             // buttonBrowse
             // 
-            this.buttonBrowse.Location = new System.Drawing.Point(162, 187);
+            this.buttonBrowse.Location = new System.Drawing.Point(153, 67);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(89, 23);
             this.buttonBrowse.TabIndex = 30;
@@ -1119,7 +1037,7 @@
             "Set Value",
             "Diameter Profile",
             "Ring Calibrated"});
-            this.comboBoxDiameterType.Location = new System.Drawing.Point(22, 189);
+            this.comboBoxDiameterType.Location = new System.Drawing.Point(13, 69);
             this.comboBoxDiameterType.Name = "comboBoxDiameterType";
             this.comboBoxDiameterType.Size = new System.Drawing.Size(134, 21);
             this.comboBoxDiameterType.TabIndex = 29;
@@ -1127,77 +1045,12 @@
             // 
             // textBoxNomDiam
             // 
-            this.textBoxNomDiam.Location = new System.Drawing.Point(116, 215);
+            this.textBoxNomDiam.Location = new System.Drawing.Point(107, 95);
             this.textBoxNomDiam.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxNomDiam.Name = "textBoxNomDiam";
             this.textBoxNomDiam.Size = new System.Drawing.Size(48, 20);
             this.textBoxNomDiam.TabIndex = 28;
             this.textBoxNomDiam.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // labelNotes
-            // 
-            this.labelNotes.AutoSize = true;
-            this.labelNotes.Location = new System.Drawing.Point(5, 290);
-            this.labelNotes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelNotes.Name = "labelNotes";
-            this.labelNotes.Size = new System.Drawing.Size(38, 13);
-            this.labelNotes.TabIndex = 27;
-            this.labelNotes.Text = "Notes:";
-            // 
-            // textBoxMiscManNotes
-            // 
-            this.textBoxMiscManNotes.Location = new System.Drawing.Point(8, 309);
-            this.textBoxMiscManNotes.Multiline = true;
-            this.textBoxMiscManNotes.Name = "textBoxMiscManNotes";
-            this.textBoxMiscManNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxMiscManNotes.Size = new System.Drawing.Size(220, 127);
-            this.textBoxMiscManNotes.TabIndex = 24;
-            // 
-            // labelRoundsFired
-            // 
-            this.labelRoundsFired.AutoSize = true;
-            this.labelRoundsFired.Location = new System.Drawing.Point(10, 168);
-            this.labelRoundsFired.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelRoundsFired.Name = "labelRoundsFired";
-            this.labelRoundsFired.Size = new System.Drawing.Size(70, 13);
-            this.labelRoundsFired.TabIndex = 26;
-            this.labelRoundsFired.Text = "Rounds Fired";
-            // 
-            // textBoxRoundsFired
-            // 
-            this.textBoxRoundsFired.Location = new System.Drawing.Point(97, 165);
-            this.textBoxRoundsFired.Name = "textBoxRoundsFired";
-            this.textBoxRoundsFired.Size = new System.Drawing.Size(140, 20);
-            this.textBoxRoundsFired.TabIndex = 25;
-            this.textBoxRoundsFired.Text = "000000";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(10, 66);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(100, 13);
-            this.label9.TabIndex = 24;
-            this.label9.Text = "Manufacturing Step";
-            // 
-            // comboBoxManStep
-            // 
-            this.comboBoxManStep.FormattingEnabled = true;
-            this.comboBoxManStep.Items.AddRange(new object[] {
-            "Pre-Boring ",
-            "Boring In-process",
-            "Post Boring",
-            "Post Honing",
-            "Groove Machining In-Process",
-            "Post Groove Machining",
-            "Post Final Honing ",
-            "In Use"});
-            this.comboBoxManStep.Location = new System.Drawing.Point(13, 82);
-            this.comboBoxManStep.Name = "comboBoxManStep";
-            this.comboBoxManStep.Size = new System.Drawing.Size(224, 21);
-            this.comboBoxManStep.TabIndex = 23;
-            this.comboBoxManStep.SelectedIndexChanged += new System.EventHandler(this.ComboBoxManStep_SelectedIndexChanged);
             // 
             // tabPage2
             // 
@@ -1214,8 +1067,6 @@
             this.tabPage2.Controls.Add(this.textBoxStartPosX);
             this.tabPage2.Controls.Add(this.textBoxAngleInc);
             this.tabPage2.Controls.Add(this.labelEndPos);
-            this.tabPage2.Controls.Add(this.labelRingRevs);
-            this.tabPage2.Controls.Add(this.textBoxRingRevs);
             this.tabPage2.Controls.Add(this.textBoxEndPosX);
             this.tabPage2.Controls.Add(this.textBoxPtsPerRev);
             this.tabPage2.Controls.Add(this.labelPitch);
@@ -1313,6 +1164,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.checkBoxOverLayCad);
             this.tabPage3.Controls.Add(this.buttonMeasureDepths);
             this.tabPage3.Controls.Add(this.buttonSetRadius);
             this.tabPage3.Controls.Add(this.label8);
@@ -1435,12 +1287,16 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
-            // clearAllDataToolStripMenuItem
+            // checkBoxOverLayCad
             // 
-            this.clearAllDataToolStripMenuItem.Name = "clearAllDataToolStripMenuItem";
-            this.clearAllDataToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.clearAllDataToolStripMenuItem.Text = "Clear All Data";
-            this.clearAllDataToolStripMenuItem.Click += new System.EventHandler(this.clearAllDataToolStripMenuItem_Click);
+            this.checkBoxOverLayCad.AutoSize = true;
+            this.checkBoxOverLayCad.Location = new System.Drawing.Point(7, 240);
+            this.checkBoxOverLayCad.Name = "checkBoxOverLayCad";
+            this.checkBoxOverLayCad.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxOverLayCad.TabIndex = 47;
+            this.checkBoxOverLayCad.Text = "Overlay Min Max ";
+            this.checkBoxOverLayCad.UseVisualStyleBackColor = true;
+            this.checkBoxOverLayCad.CheckedChanged += new System.EventHandler(this.checkBoxOverLayCad_CheckedChanged);
             // 
             // MainInspectionForm
             // 
@@ -1512,8 +1368,6 @@
         private System.Windows.Forms.TextBox textBoxPitch;
         private System.Windows.Forms.RadioButton radioButtonAngleInc;
         private System.Windows.Forms.RadioButton radioButtonPtsperRev;
-        private System.Windows.Forms.Label labelRingRevs;
-        private System.Windows.Forms.TextBox textBoxRingRevs;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label labelRadiusMeasured;
@@ -1538,10 +1392,6 @@
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.TextBox textBoxSerialN;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBoxCurrentPasses;
-        private System.Windows.Forms.Label labelCurrentPasses;
-        private System.Windows.Forms.TextBox textBoxTotalPasses;
-        private System.Windows.Forms.Label labelTotalPasses;
         private System.Windows.Forms.ComboBox comboBoxProbeDirection;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ToolStripButton toolStripButtonCursor;
@@ -1555,16 +1405,11 @@
         private System.Windows.Forms.TextBox textBoxCurrentRadius;
         private System.Windows.Forms.TabControl tabControlParams;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.Label labelRoundsFired;
-        private System.Windows.Forms.TextBox textBoxRoundsFired;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.ComboBox comboBoxManStep;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ToolStripButton toolStripButtonFileOpen;
         private System.Windows.Forms.ToolStripButton toolStripButtonFileSave;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveProfileDataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveDepthDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveDXFProfileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem save3DSurfaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
@@ -1591,8 +1436,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textBoxRingCal;
-        private System.Windows.Forms.Label labelNotes;
-        private System.Windows.Forms.TextBox textBoxMiscManNotes;
         private System.Windows.Forms.Label labelCalStatus;
         private System.Windows.Forms.Button buttonBuildProfile;
         private System.Windows.Forms.ToolStripMenuItem saveAxialProfileToolStripMenuItem;
@@ -1617,6 +1460,7 @@
         private System.Windows.Forms.ToolStripMenuItem removeAllButThisToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButtonShiftData;
         private System.Windows.Forms.ToolStripMenuItem clearAllDataToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBoxOverLayCad;
     }
 }
 

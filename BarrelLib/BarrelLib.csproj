@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,6 +58,10 @@
       <Project>{e0b421b3-c2b0-4132-893e-c66376132be7}</Project>
       <Name>CNCLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataLib\DataLib.csproj">
+      <Project>{0c6fa665-a531-4163-a318-5fa4f5a65e0f}</Project>
+      <Name>DataLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DxfFileLib\DwgConverterLib.csproj">
       <Project>{5324ba86-469d-4e51-88cc-5a53b662d65d}</Project>
       <Name>DwgConverterLib</Name>
@@ -73,6 +78,12 @@
       <Project>{f48e523e-0c85-4379-8e8a-06033c61c476}</Project>
       <Name>ToolpathLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Barrel_Profiles\155mm_Profile_Max.dxf" />
+    <None Include="Barrel_Profiles\155mm_Profile_Min.dxf" />
+    <None Include="Barrel_Profiles\155mm_Profile_Nom.dxf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

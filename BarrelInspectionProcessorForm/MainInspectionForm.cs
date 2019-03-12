@@ -57,14 +57,14 @@ namespace BarrelInspectionProcessorForm
             ComboListBoxHelper.FillComboBox(comboBoxDiameterType, knownDiamList.ToArray());
             ComboListBoxHelper.FillComboBox(comboBoxProbeDirection, probeDirectionList.ToArray());
             ComboListBoxHelper.FillComboBox(comboBoxProbeConifg, probeConfigList.ToArray());
-            ComboListBoxHelper.FillComboBox(comboBoxManStep, manufStepList.ToArray());
+           
 
             comboBoxBarrel.SelectedIndex = ComboListBoxHelper.GetIndexOf(barrelTypeStr, comboBoxBarrel.Items);
             comboBoxMethod.SelectedIndex = ComboListBoxHelper.GetIndexOf(scanFormatStr, comboBoxMethod.Items);
             comboBoxProbeDirection.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeDirectionStr, comboBoxProbeDirection.Items);
             comboBoxProbeConifg.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeTypeStr, comboBoxProbeConifg.Items);
             comboBoxDiameterType.SelectedIndex = ComboListBoxHelper.GetIndexOf(knownDiamTypeStr, comboBoxDiameterType.Items);
-            comboBoxManStep.SelectedIndex = ComboListBoxHelper.GetIndexOf(manufStepStr, comboBoxManStep.Items);
+            
         }
         private void GetPropertyValues()
         {
@@ -86,7 +86,7 @@ namespace BarrelInspectionProcessorForm
             Properties.Settings.Default.scanFormat = comboBoxMethod.SelectedItem.ToString();
            
             Properties.Settings.Default.diamCalType = comboBoxDiameterType.SelectedItem.ToString();
-            Properties.Settings.Default.manufStep = comboBoxManStep.SelectedItem.ToString();
+            //Properties.Settings.Default.manufStep = comboBoxManStep.SelectedItem.ToString();
             Properties.Settings.Default._useFileNameData = _useFilenameData;
         }
         public MainInspectionForm()
@@ -190,25 +190,43 @@ namespace BarrelInspectionProcessorForm
                 _inputFileNames = new List<string>();
             }
         }
+        void OpenDxfFile(string fileName,bool mergeFile)
+        {
+            try
+            {
+                double segLength = .0008;
+                if (fileName!= "" && System.IO.File.Exists(fileName))
+                {
+                    var stringList = FileIO.ReadDataTextFile(fileName);
+                    var entityList = DwgConverterLib.DxfFileParser.Parse(fileName);
+                    var pointList = DwgConverterLib.DxfFileParser.BuildPointList(entityList, segLength);
+                    var cartDataSet = new CartDataSet(fileName);
+                    cartDataSet.CartData.AddRange(pointList);
+                    ResetLists(mergeFile);
+                    _inspDataSetList.Add(cartDataSet);
+                    _inputFileNames.Add(fileName);
+                }
+                else
+                {
+                    OpenDxfFile(mergeFile);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         void OpenDxfFile(bool mergeFile)
         {
             try
             {
                 var ofd = new OpenFileDialog();
-                double segLength = .0008;
+                
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     string fileName = ofd.FileName;
-                    var stringList = FileIO.ReadDataTextFile(fileName);
-                    var entityList = DwgConverterLib.DxfFileParser.Parse(stringList);
-                    var pointList = DwgConverterLib.DxfFileParser.BuildPointList(entityList, segLength);
-                    // _barrel = new Barrel(_barrel.Type);
-                    var cartDataSet = new CartDataSet(fileName);
-                    cartDataSet.CartData.AddRange(pointList);
-                    ResetLists(mergeFile)
-                   
-                    _inspDataSetList.Add(cartDataSet);
-                    _inputFileNames.Add(fileName);
+                    OpenDxfFile(fileName, mergeFile);
                 }
             }
             catch (Exception)
@@ -374,38 +392,20 @@ namespace BarrelInspectionProcessorForm
         }
         #endregion
 
-        string GetManufStep()
-        {
-            try
-            {
-                string s = "";
-                if (comboBoxManStep.SelectedItem != null)
-                {
-                    s = comboBoxManStep.SelectedItem.ToString();
-                }
-                return s;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
-       
+      
         void BuildBarrelFromInputs()
         {
             _barrelType = Barrel.GetBarrelType(comboBoxBarrel.SelectedItem.ToString());
             _barrel = new Barrel(_barrelType);
             string sn = textBoxSerialN.Text;
             _barrel.ManufactureData.SerialNumber = sn;
-            _barrel.ManufactureData.CurrentManufStep = GetManufStep();
-            _barrel.ManufactureData.MiscData.AddRange(textBoxMiscManNotes.Lines);
+           // _barrel.ManufactureData.CurrentManufStep = GetManufStep();
+           //_barrel.ManufactureData.MiscData.AddRange(textBoxMiscManNotes.Lines);
             int currentPasses = 1;
-            InputVerification.TryGetValue(textBoxCurrentPasses, "x>0", 0, int.MaxValue, out currentPasses);
+           // InputVerification.TryGetValue(textBoxCurrentPasses, "x>0", 0, int.MaxValue, out currentPasses);
             _barrel.MachiningData.CurrentAWJPasses = currentPasses;
             int totalPasses = 4;
-            InputVerification.TryGetValue(textBoxTotalPasses, "x>0", 0, int.MaxValue, out totalPasses);
+           // InputVerification.TryGetValue(textBoxTotalPasses, "x>0", 0, int.MaxValue, out totalPasses);
             _barrel.MachiningData.TotalAWJPasses = totalPasses;
             double nomDiam = _barrel.DimensionData.LandNominalDiam;
             //read nominal barrel diameter
@@ -440,7 +440,7 @@ namespace BarrelInspectionProcessorForm
                     break;
             }
             int roundsFired = 0;
-            InputVerification.TryGetValue(textBoxCurrentPasses, "x>=0", 0, int.MaxValue, out roundsFired);
+            //InputVerification.TryGetValue(textBoxCurrentPasses, "x>=0", 0, int.MaxValue, out roundsFired);
             _barrel.LifetimeData.RoundsFired = roundsFired;           
         }
 
@@ -1037,15 +1037,10 @@ namespace BarrelInspectionProcessorForm
             radioButtonAngleInc.Text = "Angle Increment(deg):";
             radioButtonPtsperRev.Text = "Points per Revolution:";
             radioButtonPtsperRev.Checked = true;
-            textBoxRingRevs.Enabled = true;
-
-            //textBoxExtractX.Enabled = false;
-            radioButtonViewRaw.Checked = false;
-            radioButtonViewRaw.Enabled = true;
             
-            //data outputoptions
-            buttonBuildProfile.Enabled = true;
-          
+            radioButtonViewRaw.Checked = false;
+            radioButtonViewRaw.Enabled = true;                        
+            buttonBuildProfile.Enabled = true;          
             buttonSetRadius.Enabled = true;
         }
         private void SetSpiralSwitches()
@@ -1062,7 +1057,7 @@ namespace BarrelInspectionProcessorForm
             radioButtonAngleInc.Text = "Angle Increment(deg):";
             radioButtonPtsperRev.Text = "Points per Revolution:";
             radioButtonPtsperRev.Checked = true;
-            textBoxRingRevs.Enabled = false;
+            //textBoxRingRevs.Enabled = false;
 
             //textBoxExtractX.Enabled = true;
 
@@ -1106,12 +1101,9 @@ namespace BarrelInspectionProcessorForm
             textBoxAngleInc.Text = ".001067";
             radioButtonAngleInc.Text = "Axial Inc(in):";
             radioButtonPtsperRev.Text = "Points per inch:";
-            radioButtonPtsperRev.Checked = true;
-            textBoxRingRevs.Enabled = false;
-            //textBoxExtractX.Enabled = false;           
-            //data outputoptions
-            buttonBuildProfile.Enabled = false;
-            
+            radioButtonPtsperRev.Checked = true;          
+           
+            buttonBuildProfile.Enabled = false;            
             buttonSetRadius.Enabled = false;
         }
         private void SetLineSwitches()
@@ -1180,7 +1172,7 @@ namespace BarrelInspectionProcessorForm
             //LAND 3
             //GROOVE 4
             //CAL 5
-            //LINE 6 
+            //SINGLE 6 
            
 
             try
@@ -1797,35 +1789,35 @@ namespace BarrelInspectionProcessorForm
               
         }
               
-        private void PictureBox1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            //try
-            //{
-            //    if (_inspDataSetList != null && _screenTransform != null && _inspDataSetList.Count > 0)
-            //    {
-            //        var nearestFile = GetFilenameNearestPoint(e);
-            //        labelNearestFilename.Text = "File: " + nearestFile;
-            //        switch (_dataSelection)
-            //        {
-                       
-            //            case DataSelection.SETRADIUS:
-            //                SetRadiusMouseClick(e);
-            //                DisplayData();
-            //                break;
-            //            case DataSelection.SELECTMIDPOINT:
-            //                SetMidpointClick(e);
-            //                CorrectToMidpoint();
-            //                DisplayData();
-            //                break;
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logFile.SaveMessage(ex);
-            //    MessageBox.Show(ex.Message + ":" + ex.StackTrace);
-            //}
-        }
+        //private void PictureBox1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (_inspDataSetList != null && _screenTransform != null && _inspDataSetList.Count > 0)
+        //        {
+        //            var nearestFile = GetFilenameNearestPoint(e);
+        //            labelNearestFilename.Text = "File: " + nearestFile;
+        //            switch (_dataSelection)
+        //            {
+
+        //                case DataSelection.SETRADIUS:
+        //                    SetRadiusMouseClick(e);
+        //                    DisplayData();
+        //                    break;
+        //                case DataSelection.SELECTMIDPOINT:
+        //                    SetMidpointClick(e);
+        //                    CorrectToMidpoint();
+        //                    DisplayData();
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logFile.SaveMessage(ex);
+        //        MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+        //    }
+        //}
         private void PictureBox1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             try
@@ -1868,9 +1860,8 @@ namespace BarrelInspectionProcessorForm
                         {
                             DrawWindow(_mouseDownScr, _mouseLocation, _dataSelection);
                         }
-                        
-
-                    }                  
+                    }  
+                   
                 }
             }
             catch (Exception ex)
@@ -1884,6 +1875,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
+                _mouseDown = false;
                 if (_inspDataSetList != null && _screenTransform != null && _inspDataSetList.Count > 0)
                 {
                     _mouseUpLocation = e.Location;
@@ -1896,15 +1888,17 @@ namespace BarrelInspectionProcessorForm
                 MessageBox.Show(ex.Message + ":" + ex.StackTrace);
             }
         }
+        bool _mouseDown;
         private void PictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             try
             {
+                _mouseDown = true;
                 if (_inspDataSetList != null && _screenTransform != null && _inspDataSetList.Count > 0)
                 {
+
+
                    
-                       
-                    
                     _mouseDownCount++;
                     
                     var prevMouseDownScr = _mouseDownScr;
@@ -2147,11 +2141,11 @@ namespace BarrelInspectionProcessorForm
 
             }
         }
-        private void ToolStripButtonFileSave_Click(object sender, EventArgs e)
+        private async void ToolStripButtonFileSave_Click(object sender, EventArgs e)
         {
             try
             {
-                SaveAllOutputFiles(saveCSV:true,saveDXF:true);
+                await SaveAllOutputFiles(saveCSV:true,saveDXF:true);
             }
             catch (Exception ex)
             {
@@ -2187,10 +2181,7 @@ namespace BarrelInspectionProcessorForm
             ROTATE,
             MIRROR,
             WINDOWDATA,
-            FITCIRCLE,
-            SHIFTDATA,
-            REMOVETHIS,
-            REMOVEOTHERS,            
+            FITCIRCLE,                    
             NONE
         }
         private DataSelection _dataSelection;
@@ -2246,7 +2237,7 @@ namespace BarrelInspectionProcessorForm
        
         #endregion
         #region MainMenu
-        void SaveAllOutputFiles(bool saveCSV,bool saveDXF)
+        async Task SaveAllOutputFiles(bool saveCSV,bool saveDXF)
         {
             try
             {
@@ -2289,13 +2280,13 @@ namespace BarrelInspectionProcessorForm
                             {
                                 if(saveCSV)
                                 {
-                                    DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData,
+                                   DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData,
                                    fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                                 if(saveDXF)
                                 {
-                                    DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData,
+                                   DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, spiralData.CorrectedSpiralData,
                                     _barrel.DimensionData.LandNominalDiam / 2.0, fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
@@ -2306,7 +2297,7 @@ namespace BarrelInspectionProcessorForm
                             {
                                 if (saveCSV)
                                 {
-                                    DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, ringData.CorrectedCylData,
+                                     DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, ringData.CorrectedCylData,
                                     fileNames[i], new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
@@ -2395,7 +2386,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-               SaveAllOutputFiles(saveCSV: true, saveDXF: true);
+              await SaveAllOutputFiles(saveCSV: true, saveDXF: true);
             }
             catch (Exception ex)
             {
@@ -2404,51 +2395,51 @@ namespace BarrelInspectionProcessorForm
 
             }
         }
-        void SaveDepths()
-        {
-            try
-            {
-                //if (_grooveMeasurements != null)
-                //{
-                //    var sfd = new SaveFileDialog
-                //    {
-                //        Filter = "(*.csv)|*.csv",
-                //        FileName = DataFileBuilder.BuildFileName(_inputFileNames[0], "_depths", ".csv"),
-                //        DefaultExt = ".csv",
-                //        Title = "Depth Measurement File",
-                //        AddExtension = true
-                //    };
+        //void SaveDepths()
+        //{
+        //    try
+        //    {
+        //        if (_grooveMeasurements != null)
+        //        {
+        //            var sfd = new SaveFileDialog
+        //            {
+        //                Filter = "(*.csv)|*.csv",
+        //                FileName = DataFileBuilder.BuildFileName(_inputFileNames[0], "_depths", ".csv"),
+        //                DefaultExt = ".csv",
+        //                Title = "Depth Measurement File",
+        //                AddExtension = true
+        //            };
 
-                //    if (sfd.ShowDialog() == DialogResult.OK)
-                //    {
-                //        labelStatus.Text = "Saving Groove CSV File";
-                //        _grooveMeasurements.SaveMeasurements(sfd.FileName, _inputFileNames[0], true, true);
-                //        labelStatus.Text = "Finished Saving File";
-                //    }
-                //}
-            }
-            catch (Exception)
-            {
+        //            if (sfd.ShowDialog() == DialogResult.OK)
+        //            {
+        //                labelStatus.Text = "Saving Groove CSV File";
+        //                _grooveMeasurements.SaveMeasurements(sfd.FileName, _inputFileNames[0], true, true);
+        //                labelStatus.Text = "Finished Saving File";
+        //            }
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
-        private void SaveDepthDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                SaveDepths();
-            }
-            catch (Exception ex)
-            {
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+        //}
+        //private void SaveDepthDataToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        SaveDepths();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logFile.SaveMessage(ex);
+        //        MessageBox.Show(ex.Message + ":" + ex.StackTrace);
 
-            }
+        //    }
 
 
-        }
+        //}
         List<InspDataSet> _inspDataSetList;
        
         private void SaveDXFProfileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3120,30 +3111,14 @@ namespace BarrelInspectionProcessorForm
             Properties.Settings.Default.Save();
             _logFile.GetFileName();            
         }
-        #region context_menu
-        private void shiftDataXToolStripMenuItem_Click(object sender, EventArgs e)
+        bool _overlayMinMax;
+        private void checkBoxOverLayCad_CheckedChanged(object sender, EventArgs e)
         {
-            _dataSelection = DataSelection.SHIFTDATA;
-        }
-        private void removeDatasetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            _dataSelection = DataSelection.REMOVETHIS;
-
-        }
-
-        private void removeAllButThisToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            _dataSelection = DataSelection.REMOVEOTHERS;
-        }      
-
-        private void clearAllDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-           var diaResult =  MessageBox.Show("Are you sure you want to clear all Data?", "Clear Data", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly, "", "");
-            if(diaResult == DialogResult.OK)
+            _overlayMinMax = checkBoxOverLayCad.Checked;
+            if(_overlayMinMax)
             {
-                ResetLists(mergeFile: false);
+               // OpenDxfFile()
             }
         }
-        #endregion
     }
 }

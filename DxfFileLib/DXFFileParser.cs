@@ -1,10 +1,27 @@
 ﻿using System.Collections.Generic;
 using GeometryLib;
 using System;
+using FileIOLib;
 namespace DwgConverterLib
 {
     public class DxfFileParser
     {
+        static public DataLib.DisplayData AsDisplayData(List<DwgEntity>dwgEntities, double segmentLength,ViewPlane viewPlane)
+        {
+            try
+            {
+                var pointList = BuildPointList(dwgEntities, segmentLength);
+                var cartData = new DataLib.CartData();
+                cartData.AddRange(pointList);
+                return cartData.AsDisplayData(viewPlane);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
         static public List<Vector3> BuildPointList(List<DwgEntity> entityList, double segmentLength)       
         {
             try
@@ -57,54 +74,86 @@ namespace DwgConverterLib
             }
             
         }
+        static public List<DwgEntity> Parse(string fileName)
+        {
+            try
+            {
+                var stringList = FileIO.ReadDataTextFile(fileName);
+                return Parse(stringList);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
         /// <summary>
         /// parses dxf file into list of DwgEntity objects
         /// </summary>
         /// <returns></returns>
         static public List<DwgEntity> Parse(List<string> text)
         {
-            List<DwgEntity> entities = new List<DwgEntity>();
-
-            int i = 0;
-            int entityNumber = 1;
-            List<string> fileSection = new List<string>();
-            while (i < text.Count)
+            try
             {
-                string str = text[i];
-                if (str == "AcDbPoint")
-                {
-                    entities.Add(new DXFPoint(getFileSection(text, i , 7),entityNumber++));
-                }
-                if (str == "AcDbLine")
-                {
-                    entities.Add(new DXFLine(getFileSection(text, i - 2, 15),entityNumber++));
-                    
-                }
-                if (str == "AcDbCircle")
-                {
+                List<DwgEntity> entities = new List<DwgEntity>();
 
-                    if (text[i + 10] == "AcDbArc")
+                int i = 0;
+                int entityNumber = 1;
+                List<string> fileSection = new List<string>();
+                while (i < text.Count)
+                {
+                    string str = text[i];
+                    if (str == "AcDbPoint")
                     {
-                        entities.Add(new DXFArc(getFileSection(text, i , 26) ,entityNumber++));
+                        entities.Add(new DXFPoint(getFileSection(text, i, 7), entityNumber++));
                     }
-                    else
+                    if (str == "AcDbLine")
                     {
-                        entities.Add(new DXFCircle(getFileSection(text, i , 24), entityNumber++));
+                        entities.Add(new DXFLine(getFileSection(text, i - 2, 15), entityNumber++));
+
                     }
+                    if (str == "AcDbCircle")
+                    {
+
+                        if (text[i + 10] == "AcDbArc")
+                        {
+                            entities.Add(new DXFArc(getFileSection(text, i, 26), entityNumber++));
+                        }
+                        else
+                        {
+                            entities.Add(new DXFCircle(getFileSection(text, i, 24), entityNumber++));
+                        }
+                    }
+                    i++;
                 }
-                i++;
+                return entities;
             }
-            return entities;
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
         static private List<string> getFileSection(List<string> file, int startingIndex, int sectionLength)
         {
-            List<string> section = new List<string>();
-            int index = startingIndex;
-            while (index < file.Count && index < startingIndex + sectionLength)
+            try
             {
-                section.Add(file[index++]);                
+                List<string> section = new List<string>();
+                int index = startingIndex;
+                while (index < file.Count && index < startingIndex + sectionLength)
+                {
+                    section.Add(file[index++]);
+                }
+                return section;
             }
-            return section;
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
     }
 }

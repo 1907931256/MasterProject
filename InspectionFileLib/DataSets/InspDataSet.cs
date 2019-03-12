@@ -101,13 +101,11 @@ namespace InspectionLib
     }
 
     public class InspDataSet
-    {
-        //public Barrel Barrel { get; protected set; }
+    {        
         public ScanFormat DataFormat { get; protected set; }
         public string Filename { get; protected set; }
         public InspDataSet(string filename)
-        {           
-            //Barrel = barrel;
+        {  
             Filename = filename;
         }
     }

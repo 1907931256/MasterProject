@@ -5,6 +5,9 @@ using System.Text;
 using GeometryLib;
 using ToolpathLib;
 using CNCLib;
+using System.Drawing;
+using DataLib;
+
 namespace BarrelLib
 {
     /// <summary>
@@ -20,7 +23,17 @@ namespace BarrelLib
         List<DwgEntity> dwgEntities;
         int entityCount;
         public TwistProfile twist { get; set; }
-       
+        DisplayData displayData;
+
+        public DisplayData AsDisplayData( )        
+        {            
+            return displayData;
+        }
+        
+        public DisplayData TrimTo(RectangleF window)
+        {
+            return displayData.TrimTo(window);
+        }
         /// <summary>
         /// returns radius of cross section at current machine position
         /// </summary>
@@ -116,21 +129,21 @@ namespace BarrelLib
             ext = BoundingBoxBuilder.Union(boundingBoxList.ToArray());
             return ext;
         }
-        public XSectionProfile()
+        XSectionType xSectionType;
+        public XSectionProfile(string filename,  XSectionType type)
         {
-            
-            dwgEntities = new List<DwgEntity>();
-            entityCount = 0;
             twist = new TwistProfile();
-            _boundingBox = new BoundingBox();
+            new  XSectionProfile(filename, twist, type);
         }
-        public XSectionProfile(List<DwgEntity> entitiesIn, TwistProfile twistIn, XSectionType type)
+        public XSectionProfile(string filename, TwistProfile twistIn, XSectionType type)
         {
-            
+            xSectionType = type;
             twist = twistIn;
-            dwgEntities = entitiesIn;
+            dwgEntities = DwgConverterLib.DxfFileParser.Parse(filename);
             entityCount = dwgEntities.Count;
-            _boundingBox = getBoundingBox(entitiesIn);
+            _boundingBox = getBoundingBox(dwgEntities);
+            double segmentLength = .001;
+            displayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, segmentLength, ViewPlane.THETAR);
         }
     }
 }

@@ -212,6 +212,7 @@ namespace InspectionLib
         }
         public KeyenceDualSiDataSet(InspectionScript inspScript, string CsvFileName)
         {
+            probeData = new List<KeyenceSiDataSet>();
             if (inspScript is CylInspScript cylScript)
             {
                 double phaseDifference = (cylScript.ProbeSetup[1].ProbePhaseRad - cylScript.ProbeSetup[0].ProbePhaseRad) / (2 * Math.PI);
@@ -221,10 +222,7 @@ namespace InspectionLib
                 probeData.Add(new KeyenceSiDataSet(cylScript, CsvFileName, 2));
             }
         }
-        public KeyenceDualSiDataSet()
-        {
-            probeData = new List< KeyenceSiDataSet>();            
-        }
+       
     }
     /// <summary>
     /// holds raw sensor data 
@@ -291,7 +289,7 @@ namespace InspectionLib
         }
         
        
-        void ProcessFile(int probeNumber)
+        void ProcessFile(int dataColumn)
         {
             try
             {
@@ -304,7 +302,10 @@ namespace InspectionLib
                 {
                     throw new Exception("File does not contain data.");
                 }
-               
+                if( dataColumn>_colCount-1)
+                {
+                    throw new Exception("No data in specified column. Likely incorrect probe count or type.");
+                }
 
                 InputUnits = MeasurementUnit.GetMeasurementUnit(words);
 
@@ -312,10 +313,10 @@ namespace InspectionLib
                 {
                     InputUnits = new MeasurementUnit(LengthUnit.MICRON);
                 }                
-                data.AddRange(ExtractProbeData(words,probeNumber));
+                data.AddRange(ExtractProbeData(words,dataColumn));
                 
                
-                double scalingFactor = OutputUnits.ConversionFactor / InputUnits.ConversionFactor;
+                double scalingFactor = InputUnits.ConversionFactor/OutputUnits.ConversionFactor;
                 ScaleData(scalingFactor);
                 
             }
@@ -359,7 +360,8 @@ namespace InspectionLib
             try
             {
                 initialize(script, CsvFileName);
-                ProcessFile(_firstDataCol+probeNumber-1);
+                int dataColumn = _firstDataCol + probeNumber - 1;
+                ProcessFile(dataColumn);
             }
             catch (Exception)
             {

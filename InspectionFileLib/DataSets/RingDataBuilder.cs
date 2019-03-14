@@ -37,7 +37,7 @@ namespace InspectionLib
                     var points = new CylData(ringScript.InputDataFileName);
                     double probeSpacing = ringScript.CalDataSet.ProbeSpacingInch;
                     int pointCt = Math.Min(ringScript.PointsPerRevolution, data.GetUpperBound(0));
-
+                    var probeSign = script.ProbeSetup[0].DirectionSign;
                     double minDiam = double.MaxValue;
                     for (int i = 0; i < pointCt; i++)
                     {
@@ -50,12 +50,15 @@ namespace InspectionLib
                         {
                             minDiam = sum;
                         }
-                        var pt1 = new PointCyl((probeSpacing + sum) / 2.0, theta, z, i);
+                        double r = probeSign * (probeSpacing + sum) / 2.0;
+                        var pt1 = new PointCyl(r, theta, z, i);
 
                         points.Add(pt1);
 
                     }
                     points.NominalMinDiam = minDiam + ringScript.CalDataSet.ProbeSpacingInch;
+                   // var trans = new Vector3(0, -1 * script.CalDataSet.NominalRadius, 0);
+                  // points.Translate(trans);
                     return points;
                 }
                 else
@@ -84,7 +87,7 @@ namespace InspectionLib
                 var dataSet = new RingDataSet(script.InputDataFileName);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution,grooveCount);
-                dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction);
+                dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction,script.CalDataSet.NominalRadius);
                 dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CorrectedCylData, script.PointsPerRevolution,grooveCount);
                 return dataSet;
             }

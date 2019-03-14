@@ -30,11 +30,19 @@ namespace ProbeController
         {           
            return MinValue(units) + MeasuringRange(units);           
         }
+        public int DirectionSign
+        {
+            get
+            {
+                return _direction;
+            }
+        }
         public double ProbePhaseRad { get; set; }
         public ProbeType Type { get; private set; } 
         public MeasurementUnit Units {get;set;}
         double _minValue;
         double _measureRange;
+        int _direction;
         MeasurementUnit defaultUnits;
         public static ProbeType GetProbeType(string probeType)
         {
@@ -46,12 +54,7 @@ namespace ProbeController
                 type = ProbeType.LJ_V7060;
             return type;
         }
-        //public Probe()
-        //{
-        //    this.Type = ProbeType.SI_F10;
-        //    ProbePhaseRad = 0;
-        //    SetupProbe();
-        //}
+        
         public Probe (ProbeType probeType,MeasurementUnit measurementUnit,double phaseAngleRad)
         {
             Units = measurementUnit;
@@ -66,11 +69,13 @@ namespace ProbeController
                 case ProbeType.LJ_V7060:
                     _minValue = -8000;
                     _measureRange = 16000;
+                    _direction = -1;
                     defaultUnits = new MeasurementUnit(LengthUnit.MICRON);
                     break;
                 case ProbeType.SI_F10:
                     _minValue = 0;
                     _measureRange = 1050;
+                    _direction=1;
                     defaultUnits = new MeasurementUnit(LengthUnit.MICRON);
                     break;
 

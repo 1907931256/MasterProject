@@ -139,19 +139,50 @@ namespace GeometryLib
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
+        public static double ToDegs0To360(double ThetaRadians)
+        {
+            try
+            {
+                var degs = 180 * ThetaRadians / Math.PI;                
+                while (degs < 0)
+                {
+                    degs += 360;
+                }
+                degs %= 360;
+                return degs;
+            }
+            catch (Exception)
+            {
 
                 throw;
             }
 
-
         }
         public static double ToDegs(double ThetaRadians)
         {
-            return 180 * ThetaRadians / Math.PI;
+            try
+            {
+                var degs = 180 * ThetaRadians / Math.PI;
+
+                if(degs<0)
+                {
+                    degs += 360;
+                }
+                return degs;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
         public static double ToRadians(double ThetaDegs)
         {
-            double radians = Math.PI * ThetaDegs /180  ;
+            double radians = Math.PI * ThetaDegs /180 ;
             //radians %= 2 * Math.PI;
             return radians;
 

@@ -239,7 +239,7 @@ namespace DataLib
                     {
                         case ViewPlane.THETAR:
                             var ptc = new PointCyl(v);
-                            pts.Add(new PointF((float)ptc.ThetaRad, (float)ptc.R));
+                            pts.Add(new PointF((float)ptc.ThetaDeg(), (float)ptc.R));
                             break;
                         case ViewPlane.XZ:
                             pts.Add(new PointF((float)v.X, (float)v.Z));

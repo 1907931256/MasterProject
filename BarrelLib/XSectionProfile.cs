@@ -23,16 +23,24 @@ namespace BarrelLib
         List<DwgEntity> dwgEntities;
        
         public TwistProfile twist { get; set; }
-        DisplayData displayData;
+        DisplayData cartDisplayData;
 
-        public DisplayData AsDisplayData( )        
+        public DisplayData AsCartDisplayData( )        
         {            
-            return displayData;
+            return cartDisplayData;
         }
         
-        public DisplayData AsTrimmedDisplayData(RectangleF window,bool sortByX)
+        public DisplayData AsTrimmedCartDisplayData(RectangleF window)
         {
-            return displayData.TrimTo(window,sortByX);
+            return cartDisplayData.TrimTo(window);
+        }
+        public DisplayData AsCylDisplayData()
+        {
+            return cylDisplayData;
+        }
+        public DisplayData AsTrimmedCylDisplayData(RectangleF window)
+        {
+            return cylDisplayData.TrimTo(window);
         }
         /// <summary>
         /// returns radius of cross section at current machine position
@@ -130,15 +138,25 @@ namespace BarrelLib
             return ext;
         }
         XSectionType xSectionType;
+        DisplayData cylDisplayData;
         void init(string filename, TwistProfile twistIn, XSectionType type)
         {
             xSectionType = type;
             twist = twistIn;
             dwgEntities = DwgConverterLib.DxfFileParser.Parse(filename);
-            displayData = new DisplayData(filename);
+            
             _boundingBox = getBoundingBox(dwgEntities);
             double segmentLength = .001;
-            displayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, segmentLength, ViewPlane.XY);
+            cartDisplayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, segmentLength, ViewPlane.XY);
+            cartDisplayData.FileName = filename;
+            cylDisplayData = new DisplayData(filename);
+            foreach(var pt in cartDisplayData)
+            {
+                PointCyl ptc = new PointCyl(new Vector3(pt.X, pt.Y, 0));
+                PointF ptf = new PointF((float)ptc.ThetaDeg(), (float)ptc.R);
+                cylDisplayData.Add(ptf);
+            }
+            cylDisplayData.FileName = filename;
         }
         public XSectionProfile( BarrelType barrelType,string filename,  XSectionType type)
         {

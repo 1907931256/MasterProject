@@ -74,7 +74,7 @@ namespace DataLib
                 throw;
             }
         }
-        public DisplayData TrimTo(RectangleF window,bool sortByX)
+        public DisplayData TrimTo(RectangleF window)
         {
             try
             {
@@ -100,11 +100,10 @@ namespace DataLib
                         }
                     }
                 }
-                var ptArr = ptList.ToArray();                
-                if (sortByX)
-                {
-                    Array.Sort(xList.ToArray(), ptArr);
-                }               
+                var ptArr = ptList.ToArray();               
+               
+                Array.Sort(xList.ToArray(), ptArr);
+                              
                 trimmedDisplay.AddRange(ptArr);
                 return trimmedDisplay;
             }

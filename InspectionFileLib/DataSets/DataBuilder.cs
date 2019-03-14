@@ -131,10 +131,10 @@ namespace InspectionLib
             }
 
         }
-        static protected double GetCorrectionRadius(CylData singleRing)
+        static protected double GetCorrectionRadius(CylData singleRing, double nominalRadius)
         {
             double minR = GetMinAveRadius(singleRing, 5);
-            double rCorrection = (singleRing.NominalMinDiam / 2.0) - minR;
+            double rCorrection = nominalRadius - minR;
             return rCorrection;
         }
         /// <summary>
@@ -266,24 +266,24 @@ namespace InspectionLib
                 double thMin = Math.Min(ring[0].ThetaRad, ring[ring.Count - 1].ThetaRad);
                
                 var minPt = GetMinRadiusPt(ring);
-               // int grooveCount = _barrel.DimensionData.GrooveCount;
+               
                
                 int searchHalfWindow = (int)((pointsPerRevolution / grooveCount) / 2.0);
              
 
-                double dth = pi2 / grooveCount;
+                double dth = Math.PI*2.0 / grooveCount;
                 var landLocations = new List<double>();
 
                 landLocations.Add(minPt.ThetaRad);
                 for (int i = 1; i < grooveCount; i++)
                 {
-                    double land = (minPt.ThetaRad + (i * dth));// % pi2;
+                    double land = (minPt.ThetaRad + (i * dth));// % Math.PI*2.0;
                    
 
                     if(land <= thMax && land >= thMin)
                     {
                         landLocations.Add(land);
-                        if (Math.Abs(land % pi2) < .02)
+                        if (Math.Abs(land % (Math.PI*2.0)) < .02)
                         {
                             landLocations.Add(0.0);
                         }
@@ -361,10 +361,10 @@ namespace InspectionLib
         {
             try
             {
-                double th = pointArr[pointArr.Count - 1].ThetaRad - pi2;
+                double th = pointArr[pointArr.Count - 1].ThetaRad - Math.PI*2.0;
                 lands.Add(new PointCyl(pointArr[pointArr.Count - 1].R, th, pointArr[pointArr.Count - 1].Z, pointArr[pointArr.Count - 1].ID));
 
-                th = pointArr[0].ThetaRad + pi2;
+                th = pointArr[0].ThetaRad + Math.PI*2.0;
                 lands.Add(new PointCyl(pointArr[0].R, th, pointArr[0].Z, pointArr[0].ID));
             }
             catch (Exception)
@@ -373,7 +373,7 @@ namespace InspectionLib
                 throw;
             } 
         }
-        static protected CylData CorrectRing(CylData singleRing, CylData landPointArr, ProbeDirection probeDirection)
+        static protected CylData CorrectRing(CylData singleRing, CylData landPointArr, ProbeDirection probeDirection,double nominalRadius)
         {
             try
             {
@@ -396,7 +396,7 @@ namespace InspectionLib
                 eccData.SortByTheta();               
                 eccData.NominalMinDiam = singleRing.NominalMinDiam;
 
-                double rCorrection = GetCorrectionRadius(eccData);
+                double rCorrection =  GetCorrectionRadius(eccData,nominalRadius) ;
                 var correctedData = CorrectRadius(eccData,rCorrection, probeDirection);
                 return correctedData;
             }
@@ -405,40 +405,10 @@ namespace InspectionLib
                 throw;
             }
         }
-        //protected double _nominalRadius;
-        //atic protected DataOutputOptions _options;
-        static protected string _fileNoExt;
-
-        /// <summary>
-        /// initializing 
-        /// </summary>
-        /// <param name="options"></param>
-        /// <param name="fileName"></param>
-        //static protected void Init(DataOutputOptions options)
-        //{
-        //    try
-        //    {
-        //        _options = options;
-        //        //_inputFileName = fileName;
-        //        //_nominalRadius = _barrel.DimensionData.ActualLandDiam / 2.0;
-        //       // _fileNoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);                
-        //       // _id = DateTime.Now.ToBinary();
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-        //}
-        static protected double pi2;
-      
+       
+       
         public DataBuilder()
         {
-            pi2 = Math.PI * 2;
-            //_barrel = barrel;
-            _boundingBox = new BoundingBox();
-          
-            
         }
 
     }

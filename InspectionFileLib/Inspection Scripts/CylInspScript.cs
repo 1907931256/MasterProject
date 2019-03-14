@@ -20,6 +20,7 @@ namespace InspectionLib
         {
             StartLocation = start;
             EndLocation = end;
+             
             IncrementInch = incrementInch;
         }
     }
@@ -50,8 +51,10 @@ namespace InspectionLib
             var sign = Math.Sign(EndLocation.X - StartLocation.X);
             AxialIncrement = sign * axialInc;
             
-            var ThetaDir = Math.Sign(EndLocation.Adeg - StartLocation.Adeg);
-            AngleIncrement = ThetaDir * Math.PI * 2 / PointsPerRevolution;
+            var scanDir = Math.Sign(EndLocation.Adeg - StartLocation.Adeg);
+            if (scanDir == 0)
+                scanDir = 1;
+            AngleIncrement = scanDir * Math.PI * 2 / PointsPerRevolution;
         }
     }
 
@@ -70,8 +73,10 @@ namespace InspectionLib
             PointsPerRevolution = pointsPerRev;
             StartLocation = start;
             EndLocation = end;
-            var ThetaDir = Math.Sign(EndLocation.Adeg - StartLocation.Adeg);
-            AngleIncrement = ThetaDir * Math.PI * 2 / PointsPerRevolution;
+            var scanDir = Math.Sign(EndLocation.Adeg - StartLocation.Adeg);
+            if (scanDir == 0)
+                scanDir = 1;
+            AngleIncrement = scanDir * Math.PI * 2 / PointsPerRevolution;
         }
     }
     public class SpiralInspScript: CylInspScript
@@ -82,8 +87,10 @@ namespace InspectionLib
             , XAMachPostion start, XAMachPostion end, int pointsPerRev,double spiralPitchInch)
             : base(scanFormat, outputUnit, probeSetup, calDataSet,start,end,pointsPerRev)
         {
-            int sign = Math.Sign(EndLocation.X - StartLocation.X);
-            PitchInch = sign * spiralPitchInch;
+            var scanDir = Math.Sign(EndLocation.X - StartLocation.X);
+            if (scanDir == 0)
+                scanDir = 1;
+            PitchInch = scanDir * spiralPitchInch;
         }
     }
     public class AxialInspScript: InspectionScript
@@ -98,8 +105,10 @@ namespace InspectionLib
         {
             StartLocation = start;
             EndLocation = end;
-            int sign = Math.Sign(EndLocation.X - StartLocation.X);
-            AxialIncrement = sign * axialInc;
+            int scanDir = Math.Sign(EndLocation.X - StartLocation.X);
+            if (scanDir == 0)
+                scanDir = 1;
+            AxialIncrement = scanDir * axialInc;
             
         }
     }
@@ -118,8 +127,10 @@ namespace InspectionLib
             TwistProfile = twistProfile;
             StartLocation = start;
             EndLocation = end;
-            int sign = Math.Sign(EndLocation.X - StartLocation.X);
-            AxialIncrement = sign * axialInc;
+            int scanDir = Math.Sign(EndLocation.X - StartLocation.X);
+            if (scanDir == 0)
+                scanDir = 1;
+            AxialIncrement = scanDir * axialInc;
         }
     }
 

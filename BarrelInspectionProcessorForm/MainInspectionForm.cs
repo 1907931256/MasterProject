@@ -736,6 +736,7 @@ namespace BarrelInspectionProcessorForm
                             InputVerification.TryGetValue(textBoxRingCal, "x>0", out ringCalDiameterInch);
                             calDataSet = CalDataBuilder.BuildCalData(_inspScript, ringCalDiameterInch, _calFilename);
                             _barrel.DimensionData.ActualLandDiam = calDataSet.NominalRadius * 2;
+                            
                         }
                         else
                         {
@@ -871,6 +872,7 @@ namespace BarrelInspectionProcessorForm
             {          
 
                 BuildScriptFromInputs(dataFilename);
+                BuildToleranceDataSet();
                 var centerline = new PointCyl(0, 0, 0);
                 double[] rawSiData= new double[1] { 0 };
                 Vector2[] rawLJData = new Vector2[1] { new Vector2() };
@@ -1241,7 +1243,54 @@ namespace BarrelInspectionProcessorForm
         }
         Barrel _barrel;
         BarrelType _barrelType;
-        
+        void BuildToleranceDataSet()
+        {
+            _toleranceDisplayDataList = new List<DisplayData>();
+            if (_barrel.ContainsMinProfile)
+            {
+
+                DisplayData minData;
+                if(_probeConfig == ProbeConfig.DUAL_SI_F10 || _probeConfig== ProbeConfig.SINGLE_SI_F10)
+                {
+                    minData = _barrel.MinProfile.AsCylDisplayData();
+                }
+                else
+                {
+                    minData = _barrel.MinProfile.AsCartDisplayData();
+                }
+                    
+                minData.Color = System.Drawing.Color.Blue;
+                _toleranceDisplayDataList.Add(minData);
+            }
+            if (_barrel.ContainsMaxProfile)
+            {
+                DisplayData maxData; 
+                if (_probeConfig == ProbeConfig.DUAL_SI_F10 || _probeConfig == ProbeConfig.SINGLE_SI_F10)
+                {
+                    maxData = _barrel.MaxProfile.AsCylDisplayData();
+                }
+                else
+                {
+                    maxData = _barrel.MaxProfile.AsCartDisplayData();
+                }
+                maxData.Color = System.Drawing.Color.Red;
+                _toleranceDisplayDataList.Add(maxData);
+            }
+            if (_barrel.ContainsNomProfile)
+            {
+                DisplayData nomData;
+                if (_probeConfig == ProbeConfig.DUAL_SI_F10 || _probeConfig == ProbeConfig.SINGLE_SI_F10)
+                {
+                    nomData = _barrel.NomProfile.AsCylDisplayData();
+                }
+                else
+                {
+                    nomData = _barrel.NomProfile.AsCartDisplayData();
+                }
+                nomData.Color = System.Drawing.Color.Green;
+                _toleranceDisplayDataList.Add(nomData);
+            }
+        }
         private void ComboBoxBarrel_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -1249,26 +1298,7 @@ namespace BarrelInspectionProcessorForm
                 _barrelType = Barrel.GetBarrelType(comboBoxBarrel.SelectedItem.ToString());
                 _barrel = new Barrel(_barrelType);
                 textBoxNomDiam.Text = _barrel.DimensionData.LandNominalDiam.ToString("f4");
-                textBoxRingCal.Text = _barrel.DimensionData.RingCalibrationDiam.ToString("f4");
-                _toleranceDisplayDataList = new List<DisplayData>();
-                if(_barrel.ContainsMinProfile)
-                {
-                    var minData = _barrel.MinProfile.AsDisplayData();
-                    minData.Color = System.Drawing.Color.Blue;
-                    _toleranceDisplayDataList.Add(minData);
-                }
-                if(_barrel.ContainsMaxProfile)
-                {
-                    var maxData = _barrel.MaxProfile.AsDisplayData();
-                    maxData.Color = System.Drawing.Color.Red;
-                    _toleranceDisplayDataList.Add(maxData);
-                }
-                if(_barrel.ContainsNomProfile)
-                {
-                    var nomData = _barrel.NomProfile.AsDisplayData();
-                    nomData.Color = System.Drawing.Color.Green;
-                    _toleranceDisplayDataList.Add(nomData);
-                }
+                textBoxRingCal.Text = _barrel.DimensionData.RingCalibrationDiam.ToString("f4");               
                
             }           
             catch (Exception ex)
@@ -1524,35 +1554,26 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                double sizeX = 0;
-                var sizeY = GetGridRange(rect.Height);
                 int xGridCount;
                 int yGridCount = 10;
-                if (_scanFormat == ScanFormat.AXIAL ||  _scanFormat== ScanFormat.SINGLE)
+                int hDecimalPlaces = decimalPlaces;
+                int vDecimalPlaces = decimalPlaces;               
+                if(_scanFormat == ScanFormat.RING)
                 {
-                    xGridCount = 10;
-                    sizeX = GetGridRange(rect.Width);
+                    xGridCount = _barrel.DimensionData.GrooveCount;
+                    vDecimalPlaces = 0;
                 }
                 else
                 {
-                    xGridCount = _barrel.DimensionData.GrooveCount;
-                    sizeX = rect.Width;
+                    xGridCount = 10;
                 }
-                float midX =(float)( (rect.Left + rect.Right) / 2.0);
-                float midY = (float)((rect.Top + rect.Bottom) / 2.0);
-
-                RectangleF gridRect = new RectangleF();
-                gridRect.X = (float)(midX - sizeX / 2.0);
-                gridRect.Y = (float)(midY - sizeY / 2.0);
-                gridRect.Height =(float) sizeY;
-                gridRect.Width = (float) sizeX;
-                double dxGrid = sizeX / xGridCount;
-                double dyGrid = sizeY / yGridCount;
+                double dxGrid = rect.Width / xGridCount;
+                double dyGrid = rect.Height / yGridCount;
                 var font = new Font(this.Font, FontStyle.Regular);
                 //VERTICAL LINE grids
-                DrawVGrid(xGridCount, dxGrid, font, gridRect, decimalPlaces);
+                DrawVGrid(xGridCount, dxGrid, font, rect, vDecimalPlaces);
                 //horizontal line grids
-                DrawHGrid(yGridCount, dyGrid, font, gridRect, decimalPlaces);
+                DrawHGrid(yGridCount, dyGrid, font, rect, hDecimalPlaces);
             }
             catch (Exception)
             {
@@ -1664,7 +1685,30 @@ namespace BarrelInspectionProcessorForm
                     ymax = r.Bottom;
 
             }
-            return new RectangleF(xmin, ymin, xmax - xmin, ymax - ymin);
+
+            var height = GetGridRange(ymax - ymin);
+            
+            
+            double sizeX = 0;
+            var sizeY = GetGridRange(ymax - ymin);           
+            
+            if(_scanFormat== ScanFormat.RING)
+            {                
+                sizeX = xmax - xmin;
+            }
+            else
+            {
+                sizeX = GetGridRange(xmax - xmin);
+            }
+            float midX = (float)((xmax + xmin) / 2.0);
+            float midY = (float)((ymax + ymin) / 2.0);
+
+            RectangleF gridRect = new RectangleF();
+            gridRect.X = (float)(midX - sizeX / 2.0);
+            gridRect.Y = (float)(midY - sizeY / 2.0);
+            gridRect.Height = (float)sizeY;
+            gridRect.Width = (float)sizeX;
+            return gridRect;
         }
        
         DisplayData BuildScreenPts(DisplayData displayData)
@@ -1691,8 +1735,7 @@ namespace BarrelInspectionProcessorForm
             try
             {
                 
-                var screenPtsList = new List<DisplayData>();
-               
+                var screenPtsList = new List<DisplayData>();               
                 
                 foreach (DisplayData displayData in  displayDataList)                {
                    
@@ -1715,7 +1758,7 @@ namespace BarrelInspectionProcessorForm
         { 
             try
             {
-                float borderPercent = .10f;
+                float borderPercent = .04f;
                 int decimalPlaces = 4;
                 bool stretchToFit = true;
                 if (_inspDataSetList[0] is SpiralDataSet spiralData)
@@ -1723,8 +1766,7 @@ namespace BarrelInspectionProcessorForm
                     Load3DView(spiralData.CorrectedSpiralData);
                 }
                 else
-                {
-                    
+                {                    
 
                     var mRect = GetRectangle(displayData, borderPercent, decimalPlaces);
 
@@ -1733,16 +1775,15 @@ namespace BarrelInspectionProcessorForm
                         var trimmedTolDisplayData = new List<DisplayData>();
                         foreach(var ddata in _toleranceDisplayDataList)
                         {
-                            trimmedTolDisplayData.Add(ddata.TrimTo(mRect,true));
+                            trimmedTolDisplayData.Add(ddata.TrimTo(mRect));
                             displayData.AddRange(trimmedTolDisplayData);
-                        }
-                        mRect = GetRectangle(displayData, borderPercent, decimalPlaces);
+                        }                         
                     }
-
-                    _screenTransform = new ScreenTransform(mRect, pictureBox1.DisplayRectangle, borderPercent, stretchToFit);
+                    var gridRect = GetRectangle(displayData, borderPercent, decimalPlaces);
+                    _screenTransform = new ScreenTransform(gridRect, pictureBox1.DisplayRectangle, borderPercent, stretchToFit);
                     SetupDisplay();
                     var screenPtsList = BuildScreenPtList(displayData );
-                    DrawGrid(mRect,decimalPlaces);
+                    DrawGrid(gridRect, decimalPlaces);
                     foreach (DisplayData dd in screenPtsList)
                     {
                         var pen = new System.Drawing.Pen(dd.Color);

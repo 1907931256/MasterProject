@@ -48,7 +48,7 @@ namespace InspectionLib
                 int revCount = 0;
                 int pointIndex = 0;
                 double thetaStart = Math.Abs(uncorrectedData[0].ThetaRad);
-                double thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
+                double thetaEnd = Math.Abs(thetaStart + (thetaDirection * Math.PI*2.0));
                 var pointList = new CylData(uncorrectedData.FileName);
                 var uncorrectedGridData = new CylGridData();
 
@@ -72,7 +72,7 @@ namespace InspectionLib
                         uncorrectedGridData.Add(pointList);
                         pointList = new CylData(uncorrectedData.FileName);
                         thetaStart = thetaEnd;
-                        thetaEnd = Math.Abs(thetaStart + (thetaDirection * pi2));
+                        thetaEnd = Math.Abs(thetaStart + (thetaDirection * Math.PI*2.0));
                     }
                 }
                 return uncorrectedGridData;
@@ -104,7 +104,7 @@ namespace InspectionLib
                     var landPointArr = RingDataBuilder.GetLandPoints(row, script.PointsPerRevolution,grooveCount);
                     //find polynomial fit for lands and correct for eccentricity        
                     
-                    var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction);
+                    var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction,script.CalDataSet.NominalRadius);
                     dataSet.CorrectedSpiralData.Add(correctedRing);
                     int p = (int)(100 * i / totalrings);
                     progress.Report(p);

@@ -17,10 +17,12 @@ namespace InspectionLib
         {
             try
             {
-                var dataSet = new CartDataSet(script.InputDataFileName);               
-                dataSet.CartData = DataUtilities.ConvertToCartData(rawDataSet,script.Location.X);
-                dataSet.CartData.Translate(new Vector3(0, -1 * script.CalDataSet.NominalRadius, 0));
-                return dataSet;
+                         
+                var cartData = DataUtilities.ConvertToCartData(rawDataSet,script.Location.X);
+                cartData.Translate(new Vector3(0, -1 * script.CalDataSet.NominalRadius, 0));
+                var dataset = new CartDataSet(script.InputDataFileName);
+                dataset.CartData = cartData;
+                return dataset;
             }
             catch (Exception)
             {

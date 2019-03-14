@@ -10,7 +10,7 @@ namespace DwgConverterLib
         {
             try
             {
-                var pointList = BuildPointList(dwgEntities, segmentLength);
+                var pointList = BuildPointList(dwgEntities, segmentLength);                
                 var cartData = new DataLib.CartData();
                 cartData.AddRange(pointList);
                 return cartData.AsDisplayData(viewPlane);

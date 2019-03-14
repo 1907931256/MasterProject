@@ -35,11 +35,7 @@ namespace FileIOLib
                             file.Add(line);
                         }
                     }
-                }
-                else
-                {
-                    throw new System.IO.FileNotFoundException(fileName + " Not Found");
-                }
+                }               
                 return file;
             }
             catch (Exception )

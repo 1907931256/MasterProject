@@ -18,9 +18,9 @@ namespace DataLib
         {
             return new RGBColor(125, 125, 125, 255);
         }
-        public static RGBColor MapGreenRedColor(double value,double minValue, double maxValue)
+        public static RGBColor MapGreenRedColor(double value, double maxValue)
         {
-            if (Math.Abs(value)<Math.Abs(minValue) || (Math.Abs(value) > Math.Abs(maxValue) ))
+            if (Math.Abs(value) > Math.Abs(maxValue) )
             {
                 return new RGBColor(255, 125, 125, 255);
             }

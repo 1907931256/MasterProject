@@ -81,9 +81,21 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="Barrel_Profiles\155mm_Profile_Max.dxf" />
-    <None Include="Barrel_Profiles\155mm_Profile_Min.dxf" />
-    <None Include="Barrel_Profiles\155mm_Profile_Nom.dxf" />
+    <None Include="Barrel_Profiles\155mm_Profile_Max.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\155mm_Profile_Min.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\155mm_Profile_Nom.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\50Cal_Profile_Max.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\50Cal_Profile_Min.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

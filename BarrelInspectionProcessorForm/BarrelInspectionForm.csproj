@@ -96,6 +96,12 @@
     <Compile Include="ImportFileDialog.Designer.cs">
       <DependentUpon>ImportFileDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="LogViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogViewForm.Designer.cs">
+      <DependentUpon>LogViewForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainInspectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,6 +129,9 @@
     <EmbeddedResource Include="ImportFileDialog.resx">
       <DependentUpon>ImportFileDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LogViewForm.resx">
+      <DependentUpon>LogViewForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainInspectionForm.resx">
       <DependentUpon>MainInspectionForm.cs</DependentUpon>
       <LastGenOutput>MainInspectionForm1.Designer.cs</LastGenOutput>
@@ -143,6 +152,21 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Barrel_Profiles\155mm_Profile_Max.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\155mm_Profile_Min.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\155mm_Profile_Nom.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\50Cal_Profile_Max.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Barrel_Profiles\50Cal_Profile_Min.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -218,4 +242,7 @@
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(ProjectDir)Barrel_Profiles" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

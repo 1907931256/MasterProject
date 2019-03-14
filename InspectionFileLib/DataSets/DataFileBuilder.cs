@@ -41,23 +41,23 @@ namespace InspectionLib
             string creationTime = System.DateTime.Now.ToShortTimeString();
             outputFileHeader.Add(inputFilename);
             outputFileHeader.Add(creationDate + "," + creationTime);
-
-            string line = "S/N:" + barrel.ManufactureData.SerialNumber;
+            string line = "";
+           // line = "S/N:" + barrel.ManufactureData.SerialNumber;
             outputFileHeader.Add(line);
             line = "TYPE:" + barrel.Type.ToString();
-            outputFileHeader.Add(line);
-            line = "STATUS:" + barrel.ManufactureData.CurrentManufStep;
-            outputFileHeader.Add(line);
+           // outputFileHeader.Add(line);
+            //line = "STATUS:" + barrel.ManufactureData.CurrentManufStep;
+            //outputFileHeader.Add(line);
             line = "Land Diameter:" + barrel.DimensionData.ActualLandDiam.ToString("F5");
-            outputFileHeader.Add(line);
-            if (barrel.ManufactureData.MiscData.Count > 0)
-            {
-                outputFileHeader.Add("NOTES:");
-                foreach (string note in barrel.ManufactureData.MiscData)
-                {
-                    outputFileHeader.Add(note);
-                }
-            }
+           outputFileHeader.Add(line);
+           // if (barrel.ManufactureData.MiscData.Count > 0)
+           // {
+            //    outputFileHeader.Add("NOTES:");
+            //    foreach (string note in barrel.ManufactureData.MiscData)
+           //     {
+           //         outputFileHeader.Add(note);
+          //      }
+          //  }
             
             return outputFileHeader;
         }

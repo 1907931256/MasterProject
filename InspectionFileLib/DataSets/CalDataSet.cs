@@ -11,11 +11,11 @@ namespace InspectionLib
         public double ProbeSpacingInch { get; private set; }
         public double NominalRadius { get; private set; }
 
-        public CalDataSet()
-        {
-            ProbeSpacingInch = 0;
-            NominalRadius = 0;
-        }
+        //public CalDataSet()
+        //{
+        //    ProbeSpacingInch = 0;
+        //    NominalRadius = 0;
+        //}
 
         public CalDataSet(double nominalRadius)
         {

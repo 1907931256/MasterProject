@@ -30,11 +30,9 @@ namespace WinFormsLib
         }
 
         static public void FillComboBox(ComboBox control, string[] items)
-        {
-            int selectedIndex = 0;
+        {            
             control.Items.Clear();
-            control.Items.AddRange(items);
-            control.SelectedIndex = selectedIndex;
+            control.Items.AddRange(items);            
             control.Refresh();
         }
         static public void FillComboBox(ComboBox control, string[] items,int selectedIndex)
@@ -46,11 +44,9 @@ namespace WinFormsLib
             control.Refresh();
         }
         static public void FillListBox(ListBox control, string[] items)
-        {
-            int selectedIndex = 0;
+        {            
             control.Items.Clear();
-            control.Items.AddRange(items);
-            control.SelectedIndex = selectedIndex;
+            control.Items.AddRange(items);            
             control.Refresh();
         }
         static public void FillListBox(ListBox control, string[] items, int selectedIndex)

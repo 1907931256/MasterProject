@@ -21,7 +21,7 @@ namespace BarrelLib
         public double GrooveMaxDiam { get { return _grooveMaxDiam ; } }
         public double FirstGrooveThetaOffset { get { return _firstGrooveThetaOffset; }}
         public double LandNominalDiam {get{  return _landNomDiam; } }
-        public double GrooveNominalDiam { get { return _grooveNomDiam ; } }
+        public double NominalGrooveDiam { get { return _grooveNomDiam ; } }
         public double GrooveMaxWidthTheta {get{ return _grooveMaxWidthTheta;  } }
         public double GrooveMinWidthTheta { get {  return _grooveMinWidthTheta;     } }
         public double GrooveMaxWidth { get{   return _grooveMaxWidth;} }

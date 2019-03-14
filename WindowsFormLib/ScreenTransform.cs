@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using GeometryLib;
-
+using System.Collections.Generic;
 namespace WinFormsLib
 {
     
@@ -11,7 +11,9 @@ namespace WinFormsLib
         double _xScale;
         double _yScale;
         RectangleF _scrRect;       
-        
+        public RectangleF ScreenRectangle { get { return _scrRect; } }
+        public RectangleF ModelRectangle { get { return _mRect; } }
+        public RectangleF BoundingRectangle { get { return new RectangleF(new PointF(_mRect.Left, _mRect.Bottom), _mRect.Size); } }
         public PointF GetModelCoords(Point screenPt)
         {
             float x = (float)((screenPt.X - _xScrnPad) / _xScale + _mRect.Left);
@@ -68,28 +70,28 @@ namespace WinFormsLib
                 _yScale = _xScale;
             }
 
-            _xScale *= _padFraction;
-            _yScale *= _padFraction;
-            _xScrnPad = (float)(((1.0-_padFraction) * _screenRect.Width) / 2.0);
-            _yScrnPad = (float)(((1.0-_padFraction) * _screenRect.Height) / 2.0);
+            _xScale *= 1-2*_borderFraction;
+            _yScale *= 1-2*_borderFraction;
+            _xScrnPad = (float)(_borderFraction * _screenRect.Width );
+            _yScrnPad = (float)(_borderFraction * _screenRect.Height );
 
         }
 
         RectangleF _modelRect;
         RectangleF _screenRect;
-        double _padFraction;
+        double _borderFraction;
         
         bool _stretch;
         float _xScrnPad;
         float _yScrnPad;
 
-      
-        public ScreenTransform(RectangleF modelRect, RectangleF screenRect,double padFractionSize, bool strechToFit)
+       
+        public ScreenTransform(RectangleF modelRect, RectangleF screenRect,double borderFraction, bool strechToFit)
         {
             _modelRect = modelRect;
             _screenRect = screenRect;           
             _stretch = strechToFit;
-            _padFraction = padFractionSize;
+            _borderFraction = borderFraction;
             CalcTransform();
         }
         public ScreenTransform(RectangleF modelRect, RectangleF screenRect, bool stretchToFit)
@@ -97,7 +99,7 @@ namespace WinFormsLib
             _modelRect = modelRect;
             _screenRect = screenRect;            
             _stretch = stretchToFit;
-            _padFraction = 1.0;
+            _borderFraction = 0.0;
             CalcTransform();
 
         }

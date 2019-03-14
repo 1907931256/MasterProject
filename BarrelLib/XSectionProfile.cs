@@ -21,7 +21,7 @@ namespace BarrelLib
 
         private BoundingBox _boundingBox;
         List<DwgEntity> dwgEntities;
-        int entityCount;
+       
         public TwistProfile twist { get; set; }
         DisplayData displayData;
 
@@ -30,9 +30,9 @@ namespace BarrelLib
             return displayData;
         }
         
-        public DisplayData TrimTo(RectangleF window)
+        public DisplayData AsTrimmedDisplayData(RectangleF window,bool sortByX)
         {
-            return displayData.TrimTo(window);
+            return displayData.TrimTo(window,sortByX);
         }
         /// <summary>
         /// returns radius of cross section at current machine position
@@ -130,20 +130,24 @@ namespace BarrelLib
             return ext;
         }
         XSectionType xSectionType;
-        public XSectionProfile(string filename,  XSectionType type)
-        {
-            twist = new TwistProfile();
-            new  XSectionProfile(filename, twist, type);
-        }
-        public XSectionProfile(string filename, TwistProfile twistIn, XSectionType type)
+        void init(string filename, TwistProfile twistIn, XSectionType type)
         {
             xSectionType = type;
             twist = twistIn;
             dwgEntities = DwgConverterLib.DxfFileParser.Parse(filename);
-            entityCount = dwgEntities.Count;
+            displayData = new DisplayData(filename);
             _boundingBox = getBoundingBox(dwgEntities);
             double segmentLength = .001;
-            displayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, segmentLength, ViewPlane.THETAR);
+            displayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, segmentLength, ViewPlane.XY);
+        }
+        public XSectionProfile( BarrelType barrelType,string filename,  XSectionType type)
+        {
+            twist = new TwistProfile(barrelType);
+            init(filename, twist, type);
+        }
+        public XSectionProfile( BarrelType barrelType,string filename, TwistProfile twistIn, XSectionType type)
+        {
+            init(filename, twistIn, type);
         }
     }
 }

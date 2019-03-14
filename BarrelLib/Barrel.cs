@@ -50,6 +50,13 @@ namespace BarrelLib
             bd = new PointCyl(dd.LandNominalDiam / 2.0, 0, dd.Length);
             Add(bd);
         }
+        public BoreProfile(DimensionData dd)
+        {            
+            var bd = new PointCyl(dd.LandNominalDiam / 2.0, 0, 0);
+            Add(bd);
+            bd = new PointCyl(dd.LandNominalDiam / 2.0, 0, dd.Length);
+            Add(bd);
+        }
         public BoreProfile(BarrelType barrelType)
         {
             var dd = new DimensionData(barrelType);
@@ -100,32 +107,114 @@ namespace BarrelLib
         public BarrelType Type { get; private set; }
         public BoreDiameterType BoreDiameterType { get; set; }
 
-        public MachiningData MachiningData { get; set; }
-        public ManufacturingData ManufactureData { get; set; }
-        public LifetimeData LifetimeData { get; set; } 
+        //public MachiningData MachiningData { get; set; }
+        //public ManufacturingData ManufactureData { get; set; }
+        //public LifetimeData LifetimeData { get; set; } 
         public DimensionData DimensionData{ get; set; }
         public BoreProfile BoreProfile { get; set; }      
         public TwistProfile TwistProfile{ get; set; }
-        public XSectionProfile MinProfile{ get; set; }
-        public XSectionProfile NomProfile { get; set; }
-        public XSectionProfile MaxProfile { get; set; }
-        public string MinProfileFilename { get; set; }
-        public string MaxProfileFilename { get; set; }
-        public string NomProfileFilename { get; set; }
-
-        public List<DwgEntity> MinEntitiesAt(double thetaRad)
+        public XSectionProfile MinProfile{ get { return _minProfile; } }
+        public XSectionProfile NomProfile { get { return _nomProfile; } }
+        public XSectionProfile MaxProfile { get { return _maxProfile; } }
+        public string MinProfileFilename
         {
-                return MinProfile.rotateEntities(thetaRad);
+            get
+            {
+                return _minProfName;
+            }
+            set
+            {
+                _minProfName = value;
+                _minProfile =  BuildProfile(_minProfName, XSectionType.Min);
+                if (_minProfile!= null && _minProfile.Entities != null)
+                {
+                    _containsMinProfile = true;
+                }
+                else
+                {
+                    _containsMinProfile = false;
+                }
+            }
         }
-        public List<DwgEntity> MaxEntitiesAt(double thetaRad) 
-        {           
-                return MaxProfile.rotateEntities(thetaRad);           
+        public string MaxProfileFilename
+        {
+            get
+            {
+                return _maxProfName;
+            }
+            set
+            {
+                _maxProfName = value;
+                _maxProfile = BuildProfile(_maxProfName, XSectionType.Max);        
+                if(_maxProfile!= null && _maxProfile.Entities!=null)
+                {
+                    _containsMaxProfile = true;
+                }
+                else
+                {
+                    _containsMaxProfile = false;
+                }
+
+            }
         }
-        public List<DwgEntity> NomEntitiesAt(double thetaRad) 
-        {           
-                return NomProfile.rotateEntities(thetaRad);            
+        
+        public string NomProfileFilename
+        {
+            get
+            {
+                return _nomProfName;
+            }
+            set
+            {
+                _nomProfName = value;
+                _nomProfile = BuildProfile(_nomProfName, XSectionType.Nominal);
+                if (_nomProfile != null && _nomProfile.Entities != null)
+                {
+                    _containsNomProfile = true;
+                }
+                else
+                {
+                    _containsNomProfile = false;
+                }
+            }
         }
-      
+        XSectionProfile BuildProfile(string _profName, XSectionType xSectionType)
+        {
+            XSectionProfile profile;
+            if (_profName != "" && System.IO.File.Exists(_profName))
+            {
+                profile = new XSectionProfile(Type, _profName, xSectionType);
+            }
+            else
+            {
+                profile = null;
+            }
+            return profile;
+        }
+        public bool ContainsMinProfile { get { return _containsMinProfile; } }
+        public bool ContainsMaxProfile { get { return _containsMaxProfile; } }
+        public bool ContainsNomProfile { get { return _containsNomProfile; } }
+        XSectionProfile _minProfile;
+        XSectionProfile _maxProfile;
+        XSectionProfile _nomProfile;
+        string _minProfName;
+        string _maxProfName;
+        string _nomProfName;
+
+        
+        //public List<DwgEntity> MinEntitiesAt(double thetaRad)
+        //{
+        //        return MinProfile.rotateEntities(thetaRad);
+        //}
+        //public List<DwgEntity> MaxEntitiesAt(double thetaRad) 
+        //{           
+        //        return MaxProfile.rotateEntities(thetaRad);           
+        //}
+        //public List<DwgEntity> NomEntitiesAt(double thetaRad) 
+        //{           
+        //        return NomProfile.rotateEntities(thetaRad);            
+        //}
+
         public int GetGrooveNumber(double z,double thetaRad)
         {
             return DimensionData.GetGrooveNumber(z, thetaRad);
@@ -134,27 +223,27 @@ namespace BarrelLib
         public double MaxRadius(double z, double thetaRad)
         {
             double r =  0;
-            //if (_containsProfiles)
-            //    r = _maxProfile.RadiusAt(z, thetaRad);
-            //else
+            if (_containsMaxProfile)
+                r = _maxProfile.RadiusAt(z, thetaRad);
+            else
                 r = DimensionData.MaxRadiusAt(z, thetaRad);
             return r;
         } 
         public double NomRadius(double z, double thetaRad)
         {
             double r = 0;
-            //if (_containsProfiles)
-            //    r = _nomProfile.RadiusAt(z, thetaRad);
-            //else
+            if (_containsNomProfile)
+                r = _nomProfile.RadiusAt(z, thetaRad);
+            else
                 r = DimensionData.NomRadiusAt(z, thetaRad);
             return r;
         }
         public double MinRadius(double z, double thetaRad)
         {
             double r = 0;
-            //if (_containsProfiles)
-            //    r = _minProfile.RadiusAt(z, thetaRad);
-            //else
+            if (_containsMinProfile)
+                r = _minProfile.RadiusAt(z, thetaRad);
+            else
                 r = DimensionData.MinRadiusAt(z, thetaRad);
             return r;
         }
@@ -170,68 +259,90 @@ namespace BarrelLib
         
         public static BarrelType GetBarrelType(string name)
         {
-            BarrelType bt = BarrelType.UNKNOWN;
-            var barrelTypes=  Enum.GetNames(typeof(BarrelType));
-            foreach(var type in barrelTypes)
+            try
             {
-                if(name.Contains(type))
+                BarrelType bt = BarrelType.UNKNOWN;
+                var barrelTypes = Enum.GetNames(typeof(BarrelType));
+                foreach (var type in barrelTypes)
                 {
-                    bt= (BarrelType)Enum.Parse(typeof(BarrelType), type);
-                    break;
+                    if (name.Contains(type))
+                    {
+                        bt = (BarrelType)Enum.Parse(typeof(BarrelType), type);
+                        break;
+                    }
                 }
+                return bt;
             }
-            return bt;
-        }
-        void initialize( )
-        {
-            ManufactureData = new ManufacturingData();
-            LifetimeData = new LifetimeData();
-            DimensionData = new DimensionData(Type);
-            TwistProfile = new TwistProfile(Type);
-            BoreProfile = new BoreProfile(Type);
-            MachiningData = new MachiningData();
-            switch(Type)
+            catch (Exception)
             {
-                case BarrelType.M2_50_Cal:
-                    BuildM2_50_Cal();
-                    break;
-                case BarrelType.M_50mm:
-                    break;
-                case BarrelType.M240_762mm:
-                    break;
-                case BarrelType.M242_25mm:
-                    break;
-                case BarrelType.M284_155mm:
-                    BuildM284_155mm();
-                    break;
+
+                throw;
             }
-            MinProfile = new XSectionProfile(MinProfileFilename,XSectionType.Min);
-            NomProfile = new XSectionProfile(NomProfileFilename,XSectionType.Nominal);
-            MaxProfile = new XSectionProfile(MaxProfileFilename,XSectionType.Max);           
+           
         }
+        void Initialize( )
+        {
+            try
+            {
+                //ManufactureData = new ManufacturingData();
+                //LifetimeData = new LifetimeData();
+                DimensionData = new DimensionData(Type);
+                TwistProfile = new TwistProfile(Type);
+                BoreProfile = new BoreProfile(DimensionData);
+                //MachiningData = new MachiningData();
+                switch (Type)
+                {
+                    case BarrelType.M2_50_Cal:
+                        BuildM2_50_Cal();
+                        break;
+                    case BarrelType.M_50mm:
+                        break;
+                    case BarrelType.M240_762mm:
+                        break;
+                    case BarrelType.M242_25mm:
+                        break;
+                    case BarrelType.M284_155mm:
+                        BuildM284_155mm();
+                        break;
+                }
+               
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+      
+        bool _containsMaxProfile;
+        bool _containsMinProfile;
+        bool _containsNomProfile;
+
         void BuildM284_155mm()
         {
-            MinProfileFilename = barrelFolderName + "M284_155mm_Profile_Min.dxf";
-            NomProfileFilename = barrelFolderName + "M284_155mm_Profile_Nom.dxf";
-            MaxProfileFilename = barrelFolderName + "M284_155mm_Profile_Max.dxf";
+            MinProfileFilename = barrelFolderName + "155mm_Profile_Min.dxf";
+            NomProfileFilename = barrelFolderName + "155mm_Profile_Nom.dxf";
+            MaxProfileFilename = barrelFolderName + "155mm_Profile_Max.dxf";           
         }
         void BuildM2_50_Cal()
         {
-            MinProfileFilename = barrelFolderName + "M2_50Cal_Profile_Min.dxf";
-            NomProfileFilename = barrelFolderName + "M2_50Cal_Profile_Nom.dxf";
-            MaxProfileFilename = barrelFolderName + "M2_50Cal_Profile_Max.dxf";
+            MinProfileFilename = barrelFolderName + "50Cal_Profile_Min.dxf";
+            NomProfileFilename = "";
+            MaxProfileFilename = barrelFolderName + "50Cal_Profile_Max.dxf";
+            
         }
-        public Barrel()
-        {
-            Type = BarrelType.M2_50_Cal;
-            initialize();
-        }
+        //public Barrel()
+        //{
+        //    Type = BarrelType.M2_50_Cal;
+        //    initialize();
+        //}
         string barrelFolderName;
         public Barrel(BarrelType type)
         {
-            barrelFolderName = "/Barrel_Profiles/";
+            barrelFolderName = "Barrel_Profiles/";
             Type = type;
-            initialize();
+            Initialize();
         }
     }
 }

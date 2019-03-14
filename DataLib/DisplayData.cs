@@ -10,6 +10,7 @@ namespace DataLib
     public class DisplayData : List<PointF>
     {
         public string FileName { get; set; }
+        public Color Color { get; set; }
         public string ShortFileName
         {
             get
@@ -73,19 +74,38 @@ namespace DataLib
                 throw;
             }
         }
-        public DisplayData TrimTo(RectangleF window)
+        public DisplayData TrimTo(RectangleF window,bool sortByX)
         {
             try
             {
                                 
                 var trimmedDisplay = new DisplayData(this.FileName);
+                trimmedDisplay.Color = this.Color;
+                var xList = new List<double>();
+                var ptList = new List<PointF>();
+
                 foreach (PointF pt in this)
                 {
-                    if(window.Contains(pt.X,pt.Y))
+                    if(pt.X>=window.Left && pt.X<=window.Right )
                     {
-                        trimmedDisplay.Add(new PointF(pt.X, pt.Y));
+                        if ( window.Bottom<=0  && window.Top<=0 && pt.Y<0)
+                        {                           
+                           ptList.Add(new PointF(pt.X, pt.Y));
+                           xList.Add(pt.X);                                                     
+                        }
+                        if(window.Bottom >= 0 && window.Top >= 0 && pt.Y > 0)
+                        {
+                            ptList.Add(new PointF(pt.X, pt.Y));
+                            xList.Add(pt.X);
+                        }
                     }
                 }
+                var ptArr = ptList.ToArray();                
+                if (sortByX)
+                {
+                    Array.Sort(xList.ToArray(), ptArr);
+                }               
+                trimmedDisplay.AddRange(ptArr);
                 return trimmedDisplay;
             }
             catch (Exception)
@@ -159,6 +179,7 @@ namespace DataLib
         public DisplayData(string filename)
         {
             FileName = filename;
+            Color = Color.Gray;
         }
     }
    

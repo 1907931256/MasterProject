@@ -208,16 +208,9 @@ namespace BarrelLib
                 case BarrelType.M240_762mm:
                     setM240Twist();
                     break;
-                    
             }
            
-        }
-        public TwistProfile()
-        {
-            _type = TwistType.Uniform;
-            _twist = new List<GeometryLib.PointCyl>();
-            setM2Twist();
-        }
+        }        
         void setM284Twist()
         {
             _type = TwistType.Uniform;

@@ -144,6 +144,7 @@
             this.textBoxGrooveList = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.checkBoxOverLayCad = new System.Windows.Forms.CheckBox();
             this.buttonMeasureDepths = new System.Windows.Forms.Button();
             this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.checkBoxUseFilename = new System.Windows.Forms.CheckBox();
@@ -156,7 +157,6 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.checkBoxOverLayCad = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -402,7 +402,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(500, 390);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            //this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseClick);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
             this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseUp);
@@ -787,8 +786,9 @@
             // viewLogFileToolStripMenuItem
             // 
             this.viewLogFileToolStripMenuItem.Name = "viewLogFileToolStripMenuItem";
-            this.viewLogFileToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.viewLogFileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.viewLogFileToolStripMenuItem.Text = "View Log File";
+            this.viewLogFileToolStripMenuItem.Click += new System.EventHandler(this.viewLogFileToolStripMenuItem_Click_1);
             // 
             // labelStatus
             // 
@@ -1181,6 +1181,17 @@
             this.tabPage3.Text = "Data processing";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // checkBoxOverLayCad
+            // 
+            this.checkBoxOverLayCad.AutoSize = true;
+            this.checkBoxOverLayCad.Location = new System.Drawing.Point(7, 240);
+            this.checkBoxOverLayCad.Name = "checkBoxOverLayCad";
+            this.checkBoxOverLayCad.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxOverLayCad.TabIndex = 47;
+            this.checkBoxOverLayCad.Text = "Overlay Min Max ";
+            this.checkBoxOverLayCad.UseVisualStyleBackColor = true;
+            this.checkBoxOverLayCad.CheckedChanged += new System.EventHandler(this.checkBoxOverLayCad_CheckedChanged);
+            // 
             // buttonMeasureDepths
             // 
             this.buttonMeasureDepths.Location = new System.Drawing.Point(7, 110);
@@ -1286,17 +1297,6 @@
             this.progressBarProcessing.Name = "progressBarProcessing";
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
-            // 
-            // checkBoxOverLayCad
-            // 
-            this.checkBoxOverLayCad.AutoSize = true;
-            this.checkBoxOverLayCad.Location = new System.Drawing.Point(7, 240);
-            this.checkBoxOverLayCad.Name = "checkBoxOverLayCad";
-            this.checkBoxOverLayCad.Size = new System.Drawing.Size(108, 17);
-            this.checkBoxOverLayCad.TabIndex = 47;
-            this.checkBoxOverLayCad.Text = "Overlay Min Max ";
-            this.checkBoxOverLayCad.UseVisualStyleBackColor = true;
-            this.checkBoxOverLayCad.CheckedChanged += new System.EventHandler(this.checkBoxOverLayCad_CheckedChanged);
             // 
             // MainInspectionForm
             // 

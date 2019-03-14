@@ -46,7 +46,15 @@ namespace DataLib
            
 
         }
-        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double fitRadius,double unrollRadius) 
+        public void Unroll(double unrollRadius)
+        {
+            double scaling = 1.0;
+            var unrolledData = DataConverter.UnrollCylinderRing(this, scaling, unrollRadius);
+            Clear();
+            AddRange(unrolledData);
+        }
+        
+        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double fitRadius ) 
         {
             try
             {
@@ -62,28 +70,14 @@ namespace DataLib
                 }
                 var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y, 0);
                 Translate(translation);
-                var pt1Trans = pt1.Translate(translation);
-                var pt2Trans = pt2.Translate(translation);
-                double scaling = 1.0;
-                var pt1Unr = DataConverter.UnrollCylPt(new PointCyl(pt1Trans), Math.PI / 2.0, scaling, unrollRadius);
-                var pt2Unr = DataConverter.UnrollCylPt(new PointCyl(pt2Trans), Math.PI / 2.0, scaling, unrollRadius);
-
-
-                var unrolledData = DataConverter.UnrollCylinderRing(this, scaling, unrollRadius);
-
-                Clear();
-                AddRange(unrolledData);
-                RotateDataToLine(pt1Unr, pt2Unr);
-                CenterToXMidpoint();
+                
             }
             catch (Exception)
             {
-
                 throw;
             }
-           
-            
         }
+
         public void RotateDataToLine(Vector3 pt1, Vector3 pt2)
         {
             try
@@ -243,6 +237,10 @@ namespace DataLib
                 {
                     switch (viewPlane)
                     {
+                        case ViewPlane.THETAR:
+                            var ptc = new PointCyl(v);
+                            pts.Add(new PointF((float)ptc.ThetaRad, (float)ptc.R));
+                            break;
                         case ViewPlane.XZ:
                             pts.Add(new PointF((float)v.X, (float)v.Z));
                             break;

@@ -49,7 +49,7 @@ namespace InspectionLib
         }
         static RGBColor MapGreenRedColor(Barrel barrel, PointCyl pt)
         {
-            return ColorCoder.MapGreenRedColor(pt.R, barrel.MinRadius(pt.Z, pt.ThetaRad), barrel.MaxRadius(pt.Z, pt.ThetaRad));
+            return ColorCoder.MapGreenRedColor(pt.R,  barrel.MaxRadius(pt.Z, pt.ThetaRad));
         }
         
         static RGBColor MapRainbowColor(Barrel barrel, PointCyl pt)

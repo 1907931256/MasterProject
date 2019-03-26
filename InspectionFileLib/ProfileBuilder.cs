@@ -21,9 +21,9 @@ namespace InspectionLib
                 var profile = new BarrelInspProfile();
                 var groovePointList = new List<CylData>();
                 var aveLandPointList = new List<CylData>();               
-                var aveGrooveProfile = new CylData(inspDataSets[0].Filename);
-                var minLandProfile = new CylData(inspDataSets[0].Filename);
-                var aveLandProfile = new CylData(inspDataSets[0].Filename);
+                var aveGrooveProfile = new CylData(inspDataSets[0].FileName);
+                var minLandProfile = new CylData(inspDataSets[0].FileName);
+                var aveLandProfile = new CylData(inspDataSets[0].FileName);
                 
                 
                 foreach(InspDataSet dataset in inspDataSets)
@@ -32,8 +32,8 @@ namespace InspectionLib
                     {
                         var inspData =ringData.CorrectedCylData;
 
-                        var groovePoints = new CylData(inspDataSets[0].Filename);
-                        var landPoints = new CylData(inspDataSets[0].Filename);                        
+                        var groovePoints = new CylData(inspDataSets[0].FileName);
+                        var landPoints = new CylData(inspDataSets[0].FileName);                        
                         int pointCt = ringData.CorrectedCylData.Count;
                         int deltaIndex = pointCt / grooveCount;
 

@@ -234,7 +234,73 @@ namespace DataLib
         /// <returns></returns>
     }
     public class DataConverter
-    { 
+    {
+        public static CylData CenterToThetaRadMidpoint(CylData data)
+        {
+            int midCount = (int)Math.Round(data.Count / 2.0);
+            var minMax = data.GetMinMaxR();
+            var midRData = (minMax.Item1 + minMax.Item2) / 2.0;
+            double x1 = 0;
+            for (int i = 1; i < midCount; i++)
+            {
+                if ((data[i - 1].R < midRData && data[i].R > midRData)
+                    || (data[i - 1].R > midRData && data[i].R < midRData))
+                {
+                    x1 = (data[i - 1].ThetaRad + data[i].ThetaRad) / 2.0;
+                    break;
+                }
+            }
+            double x2 = 0;
+            for (int i = midCount; i < data.Count; i++)
+            {
+                if ((data[i - 1].R < midRData && data[i].R > midRData)
+                    || (data[i - 1].R > midRData && data[i].R < midRData))
+                {
+                    x2 = (data[i - 1].ThetaRad + data[i].ThetaRad) / 2.0;
+                    break;
+                }
+            }
+            double midThetaRad = (x1 + x2) / 2.0;
+            var transData = new CylData(data.FileName);
+            foreach (var pt in data)
+            {
+                transData.Add(new PointCyl(pt.R,pt.ThetaRad - midThetaRad,pt.Z));
+            }
+            return transData;
+        }
+        public static DisplayData CenterToXMidpoint(DisplayData data)
+        {
+            int midCount = (int)Math.Round(data.Count / 2.0);
+            var minMax = data.GetMinMaxY();
+            var midYData = (minMax.Item1 + minMax.Item2) / 2.0;
+            double x1 = 0;
+            for (int i = 1; i < midCount; i++)
+            {
+                if ((data[i - 1].Y < midYData && data[i].Y > midYData)
+                    || (data[i - 1].Y > midYData && data[i].Y < midYData))
+                {
+                    x1 = (data[i - 1].X + data[i].X) / 2.0;
+                    break;
+                }
+            }
+            double x2 = 0;
+            for (int i = midCount; i < data.Count; i++)
+            {
+                if ((data[i - 1].Y < midYData && data[i].Y > midYData)
+                    || (data[i - 1].Y > midYData && data[i].Y < midYData))
+                {
+                    x2 = (data[i - 1].X + data[i].X) / 2.0;
+                    break;
+                }
+            }
+            double midX = (x1 + x2) / 2.0;
+            var transData = new DisplayData(data.FileName);
+            foreach (var pt in data)
+            {
+                transData.Add(new System.Drawing.PointF((float)(pt.X - midX), pt.Y ));
+            }
+            return transData;
+        }
         public static CylData AsCylData(CartData cartData)
         {
             try

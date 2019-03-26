@@ -46,15 +46,15 @@ namespace DataLib
            
 
         }
-        public void Unroll(double unrollRadius)
+        public CartData Unroll(double unrollRadius)
         {
             double scaling = 1.0;
-            var unrolledData = DataConverter.UnrollCylinderRing(this, scaling, unrollRadius);
-            Clear();
-            AddRange(unrolledData);
+
+            return DataConverter.UnrollCylinderRing(this.AsCylData(), scaling, unrollRadius);
+            
         }
         
-        public void FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double fitRadius ) 
+        public CylData FitToCircleKnownR(Vector3 pt1, Vector3 pt2, double fitRadius ) 
         {
             try
             {
@@ -69,7 +69,15 @@ namespace DataLib
                     center = centers[1];
                 }
                 var translation = new Vector3(-1.0 * center.X, -1.0 * center.Y, 0);
-                Translate(translation);
+                CylData cylData = new CylData(this.FileName);
+                foreach ( var pt  in this)
+                {
+                    var pttrans = pt.Translate(translation);
+                    PointCyl pointCyl = new PointCyl(pttrans);
+                    
+                    cylData.Add(pointCyl);
+                }
+                return cylData;
                 
             }
             catch (Exception)

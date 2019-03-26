@@ -20,6 +20,23 @@ namespace DataLib
         }
         static string filename;
         static PointF minPt;
+        public Tuple<double, double> GetMinMaxY()
+        {
+            double maxYData = double.MinValue;
+            double minYData = double.MaxValue;
+            foreach (var pt in this)
+            {
+                if (pt.Y > maxYData)
+                {
+                    maxYData = pt.Y;
+                }
+                if (pt.Y < minYData)
+                {
+                    minYData = pt.Y;
+                }
+            }
+            return new Tuple<double, double>(minYData, maxYData);
+        }
         static void findNearest(PointF mousePt, List<DisplayData> displayDataList)
         {
             try
@@ -170,11 +187,7 @@ namespace DataLib
             }
                
         }
-        //public DisplayData()
-        //{
-        //    FileName = "";
-
-        //}
+       
         public DisplayData(string filename)
         {
             FileName = filename;

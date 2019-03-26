@@ -16,7 +16,7 @@ namespace InspectionLib
         public CylData CorrectedCylData { get; set; }
         public RasterDataSet(string filename) : base( filename)
         {
-            CorrectedCylData = new CylData(Filename);             
+            CorrectedCylData = new CylData(FileName);             
         }
     }
     public class AxialDataSet:InspDataSet
@@ -25,8 +25,8 @@ namespace InspectionLib
         public CylData UncorrectedCylData { get; set; }
         public AxialDataSet( string filename) : base( filename)
         {
-            CorrectedCylData = new CylData(Filename);
-            UncorrectedCylData = new CylData(Filename);
+            CorrectedCylData = new CylData(FileName);
+            UncorrectedCylData = new CylData(FileName);
         }
     }
    
@@ -75,10 +75,18 @@ namespace InspectionLib
         }
         public RingDataSet( string filename) : base( filename)
         {
-            CorrectedCylData = new CylData(Filename);
-            UncorrectedCylData = new CylData(Filename);
+            CorrectedCylData = new CylData(FileName);
+            UncorrectedCylData = new CylData(FileName);
             RawLandPoints = new CylData(filename);
             CorrectedLandPoints = new CylData(filename);
+        }
+    }
+    public class CylDataSet :InspDataSet
+    {
+        public CylData CylData { get; set; }
+        public CylDataSet(string filename) : base( filename)
+        {
+            CylData = new CylData(filename);
         }
     }
     public class CartDataSet:InspDataSet
@@ -102,11 +110,11 @@ namespace InspectionLib
 
     public class InspDataSet
     {        
-        public ScanFormat DataFormat { get; protected set; }
-        public string Filename { get; protected set; }
+        public ScanFormat DataFormat { get;  set; }
+        public string FileName { get;  set; }
         public InspDataSet(string filename)
         {  
-            Filename = filename;
+            FileName = filename;
         }
     }
 }

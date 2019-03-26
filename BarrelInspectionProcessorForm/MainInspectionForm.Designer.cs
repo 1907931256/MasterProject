@@ -221,7 +221,7 @@
             this.comboBoxProbeDirection.Items.AddRange(new object[] {
             "BORE I.D.",
             "ROD O.D."});
-            this.comboBoxProbeDirection.Location = new System.Drawing.Point(224, 3);
+            this.comboBoxProbeDirection.Location = new System.Drawing.Point(96, 3);
             this.comboBoxProbeDirection.Name = "comboBoxProbeDirection";
             this.comboBoxProbeDirection.Size = new System.Drawing.Size(82, 21);
             this.comboBoxProbeDirection.TabIndex = 7;
@@ -275,7 +275,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(137, 6);
+            this.label7.Location = new System.Drawing.Point(9, 6);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(80, 13);
@@ -786,7 +786,7 @@
             // viewLogFileToolStripMenuItem
             // 
             this.viewLogFileToolStripMenuItem.Name = "viewLogFileToolStripMenuItem";
-            this.viewLogFileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewLogFileToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.viewLogFileToolStripMenuItem.Text = "View Log File";
             this.viewLogFileToolStripMenuItem.Click += new System.EventHandler(this.viewLogFileToolStripMenuItem_Click_1);
             // 

@@ -88,6 +88,23 @@ namespace DataLib
             }
             SortByTheta();
         }
+        public Tuple<double, double> GetMinMaxR()
+        {
+            double maxYData = double.MinValue;
+            double minYData = double.MaxValue;
+            foreach (var pt in this)
+            {
+                if (pt.R > maxYData)
+                {
+                    maxYData = pt.R;
+                }
+                if (pt.R < minYData)
+                {
+                    minYData = pt.R;
+                }
+            }
+            return new Tuple<double, double>(minYData, maxYData);
+        }
         public void SortByR()
         {
             var rList = new List<double>();

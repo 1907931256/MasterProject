@@ -153,7 +153,7 @@ namespace BarrelLib
             foreach(var pt in cartDisplayData)
             {
                 PointCyl ptc = new PointCyl(new Vector3(pt.X, pt.Y, 0));
-                PointF ptf = new PointF((float)ptc.ThetaDeg(), (float)ptc.R);
+                PointF ptf = new PointF((float)ptc.ThetaDeg , (float)ptc.R);
                 cylDisplayData.Add(ptf);
             }
             cylDisplayData.FileName = filename;

@@ -24,7 +24,7 @@ namespace DataLib
                         break;
                     case ViewPlane.THETAR:
                     default:
-                        pts.Add(new PointF((float)v.ThetaDeg(), (float)v.R));
+                        pts.Add(new PointF((float)v.ThetaDeg , (float)v.R));
                         break;                    
                 }
                 
@@ -163,10 +163,6 @@ namespace DataLib
         }
         BoundingBox _boundingBox;
 
-        //public CylData()
-        //{
-        //    FileName = "";
-        //}
         public CylData(string filename)
         {
             FileName = filename;

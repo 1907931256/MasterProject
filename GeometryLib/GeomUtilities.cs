@@ -142,7 +142,7 @@ namespace GeometryLib
                 throw;
             }
         }
-        public static double ToDegs0To360(double ThetaRadians)
+        public static double ToDegsPosOnly(double ThetaRadians)
         {
             try
             {
@@ -166,11 +166,6 @@ namespace GeometryLib
             try
             {
                 var degs = 180 * ThetaRadians / Math.PI;
-
-                if(degs<0)
-                {
-                    degs += 360;
-                }
                 return degs;
             }
             catch (Exception)

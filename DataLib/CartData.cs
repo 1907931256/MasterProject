@@ -143,7 +143,7 @@ namespace DataLib
                 pt.Y *= -1;
             }           
         }
-        public void CenterToXMidpoint()
+        public CartData CenterToMidpoint()
         {
             int midCount = (int)Math.Round(this.Count / 2.0);
             var minMax = GetMinMaxY();
@@ -174,6 +174,7 @@ namespace DataLib
             {
                 transData.Add(new Vector3(pt.X - midX, pt.Y, pt.Z));
             }
+            return transData;
         }
         public CylData AsCylData()
         {
@@ -195,6 +196,48 @@ namespace DataLib
                 throw;
             }
            
+        }
+        public void SortByZ()
+        {
+            var sortList = new List<double>();
+            var ptList = new List<Vector3>();
+            foreach (var pt in this)
+            {
+                sortList.Add(pt.Z);
+                ptList.Add(pt);
+            }
+            var arr = ptList.ToArray();
+            Array.Sort(sortList.ToArray(), arr);
+            this.Clear();
+            this.AddRange(arr);
+        }
+        public void SortByY()
+        {
+            var sortList = new List<double>();
+            var ptList = new List<Vector3>();
+            foreach (var pt in this)
+            {
+                sortList.Add(pt.Y);
+                ptList.Add(pt);
+            }
+            var arr = ptList.ToArray();
+            Array.Sort(sortList.ToArray(), arr);
+            this.Clear();
+            this.AddRange(arr);
+        }
+        public void SortByX()
+        {
+            var sortList = new List<double>();
+            var ptList = new List<Vector3>();
+            foreach (var pt in this)
+            {
+                sortList.Add(pt.X);
+                ptList.Add(pt);
+            }
+            var arr = ptList.ToArray();
+            Array.Sort(sortList.ToArray(), arr);
+            this.Clear();
+            this.AddRange(arr);
         }
         public void Translate(Vector3 translation)
         {
@@ -247,7 +290,7 @@ namespace DataLib
                     {
                         case ViewPlane.THETAR:
                             var ptc = new PointCyl(v);
-                            pts.Add(new PointF((float)ptc.ThetaDeg(), (float)ptc.R));
+                            pts.Add(new PointF((float)ptc.ThetaDeg , (float)ptc.R));
                             break;
                         case ViewPlane.XZ:
                             pts.Add(new PointF((float)v.X, (float)v.Z));

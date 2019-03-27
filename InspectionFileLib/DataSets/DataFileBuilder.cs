@@ -314,10 +314,10 @@ namespace InspectionLib
                 
                 var filePoints = new List<string>();
                 filePoints.AddRange(headings);
-                filePoints.Add("ID,Theta(Radians),R(in),Z(in)");
+                filePoints.Add("ID,Theta(Degs),R(in),Z(in)");
                 foreach (var pt in ring)
                 {
-                    string line = string.Concat(pt.ID.ToString() + "," + pt.ThetaRad.ToString(), ",", pt.R.ToString(), ",", pt.Z.ToString());
+                    string line = string.Concat(pt.ID.ToString() + "," + pt.ThetaDeg .ToString(), ",", pt.R.ToString(), ",", pt.Z.ToString());
                     filePoints.Add(line);
                 }                
                 FileIOLib.FileIO.Save(filePoints, fileName);

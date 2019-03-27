@@ -906,7 +906,7 @@
             this.toolStripButtonRotate.Name = "toolStripButtonRotate";
             this.toolStripButtonRotate.Size = new System.Drawing.Size(30, 30);
             this.toolStripButtonRotate.Text = "Rotate";
-            this.toolStripButtonRotate.Click += new System.EventHandler(this.toolStripButtonRotate_Click);
+            this.toolStripButtonRotate.Click += new System.EventHandler(this.ToolStripButtonRotate_Click);
             // 
             // toolStripButtonMirror
             // 
@@ -916,7 +916,7 @@
             this.toolStripButtonMirror.Name = "toolStripButtonMirror";
             this.toolStripButtonMirror.Size = new System.Drawing.Size(30, 30);
             this.toolStripButtonMirror.Text = "Mirror Y Axis";
-            this.toolStripButtonMirror.Click += new System.EventHandler(this.toolStripButtonMirror_Click);
+            this.toolStripButtonMirror.Click += new System.EventHandler(this.ToolStripButtonMirror_Click);
             // 
             // toolStripButtonWinData
             // 
@@ -926,7 +926,7 @@
             this.toolStripButtonWinData.Name = "toolStripButtonWinData";
             this.toolStripButtonWinData.Size = new System.Drawing.Size(30, 30);
             this.toolStripButtonWinData.Text = "Window Data";
-            this.toolStripButtonWinData.Click += new System.EventHandler(this.toolStripButtonWinData_Click);
+            this.toolStripButtonWinData.Click += new System.EventHandler(this.ToolStripButtonWinData_Click);
             // 
             // toolStripButtonFitToCircle
             // 
@@ -937,7 +937,7 @@
             this.toolStripButtonFitToCircle.Size = new System.Drawing.Size(30, 30);
             this.toolStripButtonFitToCircle.Text = "Fit to Circle";
             this.toolStripButtonFitToCircle.ToolTipText = "Fit to Circle";
-            this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.toolStripButtonFitToCircle_Click);
+            this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.ToolStripButtonFitToCircle_Click);
             // 
             // toolStripButtonShiftData
             // 

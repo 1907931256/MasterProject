@@ -3,30 +3,103 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ToolpathLib;
-using GeometryLib;
-using SurfaceModel;
-using System.Threading;
-using AbMachModel;
-using FileIOLib;
 using DwgConverterLib;
+using GeometryLib;
+using DataLib;
 using System.Drawing;
-
-namespace AbMachModel
+using FileIOLib;
+namespace SurfaceModel
 {
-    public class XSectionProfile : List<Vector2>
+    public class XSection:List<Vector2>
     {
 
-        public double MeshSize { get; private set; }
-        public Vector2 Origin { get; private set; }
-        public double Width { get; private set; }
+        public List<DwgEntity> Entities { get; protected set; }
+        public BoundingBox BoundingBox { get { return _boundingBox; } }
+        public double MeshSize { get; protected set; }
+        public Vector2 Origin { get; protected set; }
+        public double Width { get; protected set; }
 
-        private int GetIndex(double xLocation)
+
+        protected BoundingBox _boundingBox;
+        protected List<DwgEntity> dwgEntities;
+        protected DisplayData cylDisplayData;
+        protected DisplayData cartDisplayData;
+
+        public DisplayData AsCartDisplayData()
+        {
+            return cartDisplayData;
+        }
+
+        public DisplayData AsTrimmedCartDisplayData(RectangleF window)
+        {
+            return cartDisplayData.TrimTo(window);
+        }
+        public DisplayData AsCylDisplayData()
+        {
+            return cylDisplayData;
+        }
+        public DisplayData AsTrimmedCylDisplayData(RectangleF window)
+        {
+            return cylDisplayData.TrimTo(window);
+        }
+       
+
+        /// <summary>
+        /// return list of entities rotated at current positon
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public List<DwgEntity> rotateEntities(double thetaRadians)
+        {
+
+            List<DwgEntity> rotEntities = new List<DwgEntity>();
+            Vector3 origin = new Vector3(0, 0, 0);
+            foreach (DwgEntity entity in dwgEntities)
+            {
+                if (entity is Arc)
+                {
+                    Arc arc = entity as Arc;
+                    rotEntities.Add(arc.RotateZ(origin, thetaRadians));
+                }
+                if (entity is Line)
+                {
+                    Line line = entity as Line;
+                    rotEntities.Add(line.RotateZ(origin, thetaRadians));
+                }
+            }
+            return rotEntities;
+        }
+        BoundingBox getBoundingBox(List<DwgEntity> entities)
+        {
+            BoundingBox ext = new BoundingBox();
+            var boundingBoxList = new List<BoundingBox>();
+            foreach (DwgEntity entity in entities)
+            {
+                if (entity is Line)
+                {
+                    Line line = entity as Line;
+
+                    boundingBoxList.Add(line.BoundingBox());
+                }
+                if (entity is Arc)
+                {
+                    Arc arc = entity as Arc;
+
+                    boundingBoxList.Add(arc.BoundingBox());
+                }
+            }
+            ext = BoundingBoxBuilder.Union(boundingBoxList.ToArray());
+            return ext;
+        }
+
+      
+
+        protected int GetIndex(double xLocation)
         {
             int xi = (int)Math.Round((xLocation - Origin.X) / MeshSize);
             return xi;
         }
-        private bool CheckIndex(int index)
+        protected bool CheckIndex(int index)
         {
             if (index >= 0 && index < this.Count)
                 return true;
@@ -51,7 +124,7 @@ namespace AbMachModel
             double a = Math.Atan(mb.Item2);
             return a;
         }
-        Tuple<double, double> GetMinMax()
+        protected Tuple<double, double> GetMinMax()
         {
             double max = double.MinValue;
             double min = double.MaxValue;
@@ -99,7 +172,7 @@ namespace AbMachModel
                 throw;
             }
         }
-        public DataLib.CartData AsCartData()
+        public  CartData AsCartData()
         {
             var cartData = new DataLib.CartData();
             foreach (var pt in this)
@@ -110,7 +183,7 @@ namespace AbMachModel
         }
         public List<Vector2> ParseFile(string scanFilename, double minYValue, double maxYValue)
         {
-            var stringArr = FileIOLib.CSVFileParser.ParseFile(scanFilename);
+            var stringArr = CSVFileParser.ParseFile(scanFilename);
             var vectorList = new List<Vector2>();
             for (int i = 0; i < stringArr.GetLength(0); i++)
             {
@@ -271,15 +344,7 @@ namespace AbMachModel
             //}
             return curvature;
         }
-        void BuildProfile()
-        {
-            double x = Origin.X;
-            while (x < Origin.X + Width)
-            {
-                Add(new Vector2(x, Origin.Y));
-                x += MeshSize;
-            }
-        }
+       
 
 
         void SortByX()
@@ -295,7 +360,7 @@ namespace AbMachModel
             this.Clear();
             this.AddRange(ptArr.ToList());
         }
-        public void AddProfile(XSectionProfile profile)
+        public void AddProfile(XSection  profile)
         {
             int maxCount = Math.Min(Count, profile.Count);
             if (profile.MeshSize > MeshSize)
@@ -334,16 +399,38 @@ namespace AbMachModel
                 }
             }
         }
-        public XSectionProfile(Vector2 origin, double width, double meshSize)
+        protected void BuildDefProfile()
+        {
+            double x = Origin.X;
+            while (x < Origin.X + Width)
+            {
+                Add(new Vector2(x, Origin.Y));
+                x += MeshSize;
+            }
+        }
+        protected void BuildFromDXF(string dxfFilename)
+        {
+            dwgEntities = DwgConverterLib.DxfFileParser.Parse(dxfFilename);
+            cartDisplayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, MeshSize, ViewPlane.XY);
+            cartDisplayData.FileName = dxfFilename;
+            cylDisplayData = new DisplayData(dxfFilename);
+            foreach (var pt in cartDisplayData)
+            {
+                PointCyl ptc = new PointCyl(new Vector3(pt.X, pt.Y, 0));
+                PointF ptf = new PointF((float)ptc.ThetaDeg, (float)ptc.R);
+                cylDisplayData.Add(ptf);
+            }
+            cylDisplayData.FileName = dxfFilename;
+        }
+        public XSection (Vector2 origin, double width, double meshSize)
         {
             Origin = origin;
             MeshSize = meshSize;
             Width = width;
-            BuildProfile();
-
+            BuildDefProfile();
         }
-
-        public XSectionProfile(string XsectionCsvFile, int firstDataRow, int firstDataColumn)
+       
+        public XSection(string XsectionCsvFile, int firstDataRow, int firstDataColumn)
         {
             double[,] pointArr = CSVFileParser.ToArray(XsectionCsvFile, firstDataRow);
 
@@ -358,7 +445,7 @@ namespace AbMachModel
             MeshSize = this[1].X - this[0].X;
             Width = this[Count - 1].X - Origin.X;
         }
-        public XSectionProfile(XSectionProfile startingProfile)
+        public XSection (XSection  startingProfile)
         {
             Origin = startingProfile.Origin;
             MeshSize = startingProfile.MeshSize;
@@ -369,5 +456,11 @@ namespace AbMachModel
             }
             SortByX();
         }
-    }
+        public XSection(string DXFFilename,double meshSize)
+        {
+            MeshSize = meshSize;
+            BuildFromDXF(DXFFilename);
+        }
+    }  
+
 }

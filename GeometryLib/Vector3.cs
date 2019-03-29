@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 namespace GeometryLib
 {
     public class Vector3 : DwgEntity, IGeometryRoutines<Vector3>
     {
+       
         public double X {
             get
             {
@@ -51,7 +51,7 @@ namespace GeometryLib
             {
                 if (length == 0)
                 {
-                    length =(double) Math.Sqrt((double)(x*x + y*y + z*z));
+                    length =Math.Sqrt(x*x + y*y + z*z);
                 }
                 return length;                                  
             }
@@ -111,7 +111,7 @@ namespace GeometryLib
        
         public double DistanceTo(Vector3 p2)
         {
-            return (double)Math.Sqrt(Math.Pow((double)(p2.X - x), 2) + Math.Pow((double)(p2.Y - y), 2) + Math.Pow((double)(p2.Z - z), 2));
+            return  Math.Sqrt(Math.Pow(p2.X - x, 2) + Math.Pow(p2.Y - y, 2) + Math.Pow(p2.Z - z, 2));
         }
         public double Distance2To(Vector3 p2)
         {
@@ -265,6 +265,8 @@ namespace GeometryLib
         }
         public Vector3(double xIn, double yIn, double zIn, RGBColor c)
         {
+           
+            
             x = xIn;
             y = yIn;
             z = zIn;

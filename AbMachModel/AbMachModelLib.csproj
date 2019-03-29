@@ -109,7 +109,6 @@
     <Compile Include="SurfaceInputType.cs" />
     <Compile Include="XSecJet.cs" />
     <Compile Include="XSectionGrid.cs" />
-    <Compile Include="XSectionProfile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

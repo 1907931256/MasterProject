@@ -63,6 +63,9 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MathNet.Numerics.4.0.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
@@ -81,6 +84,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,6 +106,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Surface2DBuilder.cs" />
     <Compile Include="TriMesh.cs" />
+    <Compile Include="XSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DataLib\DataLib.csproj">
@@ -110,10 +117,17 @@
       <Project>{5324ba86-469d-4e51-88cc-5a53b662d65d}</Project>
       <Name>DwgConverterLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\File IO Library\FileIO\FileIOLib.csproj">
+      <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>
+      <Name>FileIOLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GeometryLib\GeometryLib.csproj">
       <Project>{9ad06540-598d-4c01-ab09-4e68ca4fad28}</Project>
       <Name>GeometryLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

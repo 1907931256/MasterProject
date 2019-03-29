@@ -50,7 +50,7 @@ namespace DataLib
         {
             double scaling = 1.0;
 
-            return DataConverter.UnrollCylinderRing(this.AsCylData(), scaling, unrollRadius);
+            return DataUtil.UnrollCylinderRing(this.AsCylData(), scaling, unrollRadius);
             
         }
         
@@ -320,7 +320,7 @@ namespace DataLib
             {                
                 if (_boundingBox == null)
                 {
-                    _boundingBox = DataUtilities.GetBB(this);
+                    _boundingBox = DataUtil.GetBB(this);
 
                 }
                 return _boundingBox;

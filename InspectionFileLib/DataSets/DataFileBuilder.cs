@@ -124,7 +124,7 @@ namespace InspectionLib
                 var outputFilename = BuildFileName(fileName,"_flat", ".ply");
                 var colorCodedData = DataColorCode.ColorCodeData(barrel, options, correctedRingList, options.SurfaceColorCode);
 
-                var v3FlatStripList = DataConverter.UnrollCylinder(colorCodedData, options.SurfaceFileScaleFactor, unrollRadius);
+                var v3FlatStripList = DataUtil.UnrollCylinder(colorCodedData, options.SurfaceFileScaleFactor, unrollRadius);
                  SavePly(v3FlatStripList, outputFilename, progress);
                 
             }
@@ -161,7 +161,7 @@ namespace InspectionLib
                 var _flatStlFile = new StlFile();
                 
                 
-                var v3flatptList = DataConverter.UnrollCylinder(correctedRingList, options.SurfaceFileScaleFactor, unrollRadius);
+                var v3flatptList = DataUtil.UnrollCylinder(correctedRingList, options.SurfaceFileScaleFactor, unrollRadius);
                 var trimesh = new TriMesh();
                 trimesh.BuildFromGrid(v3flatptList);
                 StlFile.SaveBinary(trimesh, fileName);

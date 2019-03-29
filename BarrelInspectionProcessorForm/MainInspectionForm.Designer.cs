@@ -25,8 +25,8 @@
                     _redPen.Dispose();
                 if(_greenPen!=null)
                     _greenPen.Dispose();
-                if(_imgBrush!=null)
-                    _imgBrush.Dispose();
+                if(_baseImageBrush!=null)
+                    _baseImageBrush.Dispose();
                 if (_orangePen != null)
                     _orangePen.Dispose();
                 if (_lightGreenPen != null)
@@ -76,8 +76,7 @@
             this.labelNearestFilename = new System.Windows.Forms.Label();
             this.labelDxMeasured = new System.Windows.Forms.Label();
             this.labelDyMeasured = new System.Windows.Forms.Label();
-            this.labelRadiusMeasured = new System.Windows.Forms.Label();
-            this.labelZPosition = new System.Windows.Forms.Label();
+            this.labelRadius1 = new System.Windows.Forms.Label();
             this.labelXPosition = new System.Windows.Forms.Label();
             this.labelYPosition = new System.Windows.Forms.Label();
             this.buttonSetRadius = new System.Windows.Forms.Button();
@@ -124,7 +123,7 @@
             this.toolStripButtonMirror = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonWinData = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonFitToCircle = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonShiftData = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonMeasureVert = new System.Windows.Forms.ToolStripButton();
             this.tabControlParams = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.labelCalStatus = new System.Windows.Forms.Label();
@@ -157,6 +156,7 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
+            this.labelRadius2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -442,11 +442,11 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.labelRadius2);
             this.panel2.Controls.Add(this.labelNearestFilename);
             this.panel2.Controls.Add(this.labelDxMeasured);
             this.panel2.Controls.Add(this.labelDyMeasured);
-            this.panel2.Controls.Add(this.labelRadiusMeasured);
-            this.panel2.Controls.Add(this.labelZPosition);
+            this.panel2.Controls.Add(this.labelRadius1);
             this.panel2.Controls.Add(this.labelXPosition);
             this.panel2.Controls.Add(this.labelYPosition);
             this.panel2.Location = new System.Drawing.Point(7, 181);
@@ -468,7 +468,7 @@
             // labelDxMeasured
             // 
             this.labelDxMeasured.AutoSize = true;
-            this.labelDxMeasured.Location = new System.Drawing.Point(4, 104);
+            this.labelDxMeasured.Location = new System.Drawing.Point(5, 61);
             this.labelDxMeasured.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelDxMeasured.Name = "labelDxMeasured";
             this.labelDxMeasured.Size = new System.Drawing.Size(105, 13);
@@ -478,37 +478,27 @@
             // labelDyMeasured
             // 
             this.labelDyMeasured.AutoSize = true;
-            this.labelDyMeasured.Location = new System.Drawing.Point(4, 129);
+            this.labelDyMeasured.Location = new System.Drawing.Point(5, 77);
             this.labelDyMeasured.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelDyMeasured.Name = "labelDyMeasured";
             this.labelDyMeasured.Size = new System.Drawing.Size(105, 13);
             this.labelDyMeasured.TabIndex = 1;
             this.labelDyMeasured.Text = "Dy: 0.000000 inches";
             // 
-            // labelRadiusMeasured
+            // labelRadius1
             // 
-            this.labelRadiusMeasured.AutoSize = true;
-            this.labelRadiusMeasured.Location = new System.Drawing.Point(4, 154);
-            this.labelRadiusMeasured.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelRadiusMeasured.Name = "labelRadiusMeasured";
-            this.labelRadiusMeasured.Size = new System.Drawing.Size(125, 13);
-            this.labelRadiusMeasured.TabIndex = 0;
-            this.labelRadiusMeasured.Text = "Radius: 0.000000 inches";
-            // 
-            // labelZPosition
-            // 
-            this.labelZPosition.AutoSize = true;
-            this.labelZPosition.Location = new System.Drawing.Point(4, 79);
-            this.labelZPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelZPosition.Name = "labelZPosition";
-            this.labelZPosition.Size = new System.Drawing.Size(114, 13);
-            this.labelZPosition.TabIndex = 0;
-            this.labelZPosition.Text = "Axial: 0.000000 inches";
+            this.labelRadius1.AutoSize = true;
+            this.labelRadius1.Location = new System.Drawing.Point(5, 93);
+            this.labelRadius1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelRadius1.Name = "labelRadius1";
+            this.labelRadius1.Size = new System.Drawing.Size(106, 13);
+            this.labelRadius1.TabIndex = 0;
+            this.labelRadius1.Text = "R1: 0.000000 inches";
             // 
             // labelXPosition
             // 
             this.labelXPosition.AutoSize = true;
-            this.labelXPosition.Location = new System.Drawing.Point(4, 54);
+            this.labelXPosition.Location = new System.Drawing.Point(5, 45);
             this.labelXPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelXPosition.Name = "labelXPosition";
             this.labelXPosition.Size = new System.Drawing.Size(111, 13);
@@ -518,7 +508,7 @@
             // labelYPosition
             // 
             this.labelYPosition.AutoSize = true;
-            this.labelYPosition.Location = new System.Drawing.Point(4, 29);
+            this.labelYPosition.Location = new System.Drawing.Point(5, 29);
             this.labelYPosition.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelYPosition.Name = "labelYPosition";
             this.labelYPosition.Size = new System.Drawing.Size(100, 13);
@@ -843,7 +833,7 @@
             this.toolStripButtonMirror,
             this.toolStripButtonWinData,
             this.toolStripButtonFitToCircle,
-            this.toolStripButtonShiftData});
+            this.toolStripButtonMeasureVert});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1120, 33);
@@ -939,14 +929,15 @@
             this.toolStripButtonFitToCircle.ToolTipText = "Fit to Circle";
             this.toolStripButtonFitToCircle.Click += new System.EventHandler(this.ToolStripButtonFitToCircle_Click);
             // 
-            // toolStripButtonShiftData
+            // toolStripButtonMeasureVert
             // 
-            this.toolStripButtonShiftData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonShiftData.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonShiftData.Image")));
-            this.toolStripButtonShiftData.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonShiftData.Name = "toolStripButtonShiftData";
-            this.toolStripButtonShiftData.Size = new System.Drawing.Size(30, 30);
-            this.toolStripButtonShiftData.Text = "toolStripButton1";
+            this.toolStripButtonMeasureVert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonMeasureVert.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonMeasureVert.Image")));
+            this.toolStripButtonMeasureVert.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonMeasureVert.Name = "toolStripButtonMeasureVert";
+            this.toolStripButtonMeasureVert.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonMeasureVert.Text = "Measure Vertical";
+            this.toolStripButtonMeasureVert.Click += new System.EventHandler(this.toolStripButtonMeasureVert_Click);
             // 
             // tabControlParams
             // 
@@ -1298,6 +1289,16 @@
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
+            // labelRadius2
+            // 
+            this.labelRadius2.AutoSize = true;
+            this.labelRadius2.Location = new System.Drawing.Point(5, 109);
+            this.labelRadius2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelRadius2.Name = "labelRadius2";
+            this.labelRadius2.Size = new System.Drawing.Size(106, 13);
+            this.labelRadius2.TabIndex = 4;
+            this.labelRadius2.Text = "R2: 0.000000 inches";
+            // 
             // MainInspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1370,8 +1371,7 @@
         private System.Windows.Forms.RadioButton radioButtonPtsperRev;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label labelRadiusMeasured;
-        private System.Windows.Forms.Label labelZPosition;
+        private System.Windows.Forms.Label labelRadius1;
         private System.Windows.Forms.Label labelXPosition;
         private System.Windows.Forms.Label labelYPosition;
         private System.Windows.Forms.Label labelDxMeasured;
@@ -1458,9 +1458,10 @@
         private System.Windows.Forms.ToolStripMenuItem shiftDataXToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeDatasetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeAllButThisToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButtonShiftData;
+        private System.Windows.Forms.ToolStripButton toolStripButtonMeasureVert;
         private System.Windows.Forms.ToolStripMenuItem clearAllDataToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBoxOverLayCad;
+        private System.Windows.Forms.Label labelRadius2;
     }
 }
 

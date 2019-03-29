@@ -113,9 +113,9 @@ namespace BarrelLib
         public DimensionData DimensionData{ get; set; }
         public BoreProfile BoreProfile { get; set; }      
         public TwistProfile TwistProfile{ get; set; }
-        public XSectionProfile MinProfile{ get { return _minProfile; } }
-        public XSectionProfile NomProfile { get { return _nomProfile; } }
-        public XSectionProfile MaxProfile { get { return _maxProfile; } }
+        public BarrelProfile MinProfile{ get { return _minProfile; } }
+        public BarrelProfile NomProfile { get { return _nomProfile; } }
+        public BarrelProfile MaxProfile { get { return _maxProfile; } }
         public string MinProfileFilename
         {
             get
@@ -125,7 +125,7 @@ namespace BarrelLib
             set
             {
                 _minProfName = value;
-                _minProfile =  BuildProfile(_minProfName, XSectionType.Min);
+                _minProfile =  BuildProfile(_minProfName, BarrelProfileType.Min);
                 if (_minProfile!= null && _minProfile.Entities != null)
                 {
                     _containsMinProfile = true;
@@ -145,7 +145,7 @@ namespace BarrelLib
             set
             {
                 _maxProfName = value;
-                _maxProfile = BuildProfile(_maxProfName, XSectionType.Max);        
+                _maxProfile = BuildProfile(_maxProfName, BarrelProfileType.Max);        
                 if(_maxProfile!= null && _maxProfile.Entities!=null)
                 {
                     _containsMaxProfile = true;
@@ -167,7 +167,7 @@ namespace BarrelLib
             set
             {
                 _nomProfName = value;
-                _nomProfile = BuildProfile(_nomProfName, XSectionType.Nominal);
+                _nomProfile = BuildProfile(_nomProfName, BarrelProfileType.Nominal);
                 if (_nomProfile != null && _nomProfile.Entities != null)
                 {
                     _containsNomProfile = true;
@@ -178,12 +178,12 @@ namespace BarrelLib
                 }
             }
         }
-        XSectionProfile BuildProfile(string _profName, XSectionType xSectionType)
+        BarrelProfile BuildProfile(string dxfFileName, BarrelProfileType xSectionType )
         {
-            XSectionProfile profile;
-            if (_profName != "" && System.IO.File.Exists(_profName))
+            BarrelProfile profile;
+            if (dxfFileName != "" && System.IO.File.Exists(dxfFileName))
             {
-                profile = new XSectionProfile(Type, _profName, xSectionType);
+                profile = new BarrelProfile(Type, dxfFileName, xSectionType, _meshSize);
             }
             else
             {
@@ -194,13 +194,13 @@ namespace BarrelLib
         public bool ContainsMinProfile { get { return _containsMinProfile; } }
         public bool ContainsMaxProfile { get { return _containsMaxProfile; } }
         public bool ContainsNomProfile { get { return _containsNomProfile; } }
-        XSectionProfile _minProfile;
-        XSectionProfile _maxProfile;
-        XSectionProfile _nomProfile;
+        BarrelProfile _minProfile;
+        BarrelProfile _maxProfile;
+        BarrelProfile _nomProfile;
         string _minProfName;
         string _maxProfName;
         string _nomProfName;
-
+        
         
         //public List<DwgEntity> MinEntitiesAt(double thetaRad)
         //{
@@ -280,6 +280,7 @@ namespace BarrelLib
             }
            
         }
+        double _meshSize;
         void Initialize( )
         {
             try
@@ -290,6 +291,7 @@ namespace BarrelLib
                 TwistProfile = new TwistProfile(Type);
                 BoreProfile = new BoreProfile(DimensionData);
                 //MachiningData = new MachiningData();
+                _meshSize = .0005;
                 switch (Type)
                 {
                     case BarrelType.M2_50_Cal:
@@ -332,11 +334,7 @@ namespace BarrelLib
             MaxProfileFilename = barrelFolderName + "50Cal_Profile_Max.dxf";
             
         }
-        //public Barrel()
-        //{
-        //    Type = BarrelType.M2_50_Cal;
-        //    initialize();
-        //}
+         
         string barrelFolderName;
         public Barrel(BarrelType type)
         {

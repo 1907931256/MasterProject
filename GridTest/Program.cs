@@ -7,6 +7,7 @@ using AbMachModel;
 using GeometryLib;
 using ToolpathLib;
 using System.Drawing;
+using SurfaceModel;
 namespace GridTest
 {
     class Program
@@ -65,15 +66,16 @@ namespace GridTest
                 Console.WriteLine("building grid");
 
 
-                var profile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                var profile = new XSection(gridOrigin, gridWidth, meshSize);
                 
-                var tempProfile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                var tempProfile = new XSection(gridOrigin, gridWidth, meshSize);
                 var jetRayList = new List<Ray2>();
                 //string targetProfileFilename = "190201_03 _TOP_33_60deg_out.csv";
                 string targetProfileFilename = "190201-04 - TOP-33-BOT-10-COR-04 - 60deg_out.csv";
+                string startProfileFilename = "top_channel_model_profile.csv";
                // string targetDepthProfile = "190207-11 - 0.040Dm-60deg-Xpos-16pass_out-target.csv";
-                var targetProfile  = new XSectionProfile(targetProfileFilename, 7,1);
-                var startProfile = new XSectionProfile("top_channel_model_profile.csv", 0, 0);
+                var targetProfile  = new XSection(targetProfileFilename, 7,1);
+                var startProfile = new XSection(startProfileFilename, 0, 0);
                 double startDepth = startProfile.GetValue(inspectionLoc);
                 Console.WriteLine("startDepth: " + startDepth.ToString());
 
@@ -135,7 +137,7 @@ namespace GridTest
                         Console.WriteLine("Inner Iteration: " + innerIterator.ToString());
                         Console.WriteLine("MRR: " + baseMrr.ToString());
                         critAngle = Math.PI * critAngDeg / 180.0;
-                        profile = new XSectionProfile(startProfile);
+                        profile = new XSection (startProfile);
                         int run = 0;
                         double inspectionDepth = 0;
                         while (run < runCount )
@@ -143,7 +145,7 @@ namespace GridTest
                             //index across jet locations in jet-path array 
                             for (int pathIndex = 0; pathIndex < jetArr.GetLength(0); pathIndex++)
                             {
-                                tempProfile = new XSectionProfile(gridOrigin, gridWidth, meshSize);
+                                tempProfile = new XSection (gridOrigin, gridWidth, meshSize);
                                 for (int jetLocIndex = 0; jetLocIndex < jetArr.GetLength(1); jetLocIndex++)
                                 {
                                     var jetRay = jetArr[pathIndex, jetLocIndex];
@@ -217,15 +219,12 @@ namespace GridTest
                             {
                                 depthData.Add(new Vector3(pt.X,pt.Y,0));
                             }
-                            DataLib.CartData targetData = new DataLib.CartData(targetProfileFilename);
-                            foreach(var pt in targetProfile)
-                            {
-                                targetData.Add(new Vector3(pt.X, pt.Y, 0));
-                            }
-                            pathList.AdjustFeedrates(depthData, targetData, MeasureWidth);
+                             
+                           
+                            pathList.AdjustFeedrates(depthData, startProfile.AsCartData(), targetProfile.AsCartData(), MeasureWidth);
                             
                             jetArr = BuildJetArray(pathList, jet, meshSize, nominalFeedrate);
-                            FileIOLib.FileIO.Save(pathList.AsCSVFile(), directory + "pathlist" + timeCode + ".csv");
+                            FileIOLib.FileIO.Save(pathList.AsCSVFile(startProfileFilename,targetProfileFilename), directory + "pathlist" + timeCode + ".csv");
                         }
                         innerIterator++;
                     }
@@ -286,7 +285,7 @@ namespace GridTest
 
             }
         }
-        static Error CalcError(XSectionProfile profile, XSectionProfile targetProfile,int run,int runTotal)
+        static Error CalcError(XSection  profile, XSection targetProfile,int run,int runTotal)
         {
             Error error = new Error();
             int i = 0;

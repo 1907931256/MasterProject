@@ -23,21 +23,21 @@ namespace AbMachModel
         XSecPathList path;
         RunInfo runInfo;
         XSecModelParams parameters;
-        XSectionProfile profile;
-        XSectionProfile targetProf;
-        XSectionProfile startProf;
-        XSectionProfile tempProf;
+        XSection profile;
+        XSection targetProf;
+        XSection startProf;
+        XSection tempProf;
 
         
-        public ChannelModel(XSectionProfile targetProfile, XSecJet xSecJet, XSecPathList path,
-             XSecModelParams parameters)
-        {
-            jet = xSecJet;
-            this.path = path;           
-            this.parameters = parameters;
-            targetProf = targetProfile;
-        }
-        public ChannelModel(XSectionProfile targetProfile, XSectionProfile startProfile, XSecJet xSecJet, XSecPathList path,
+        //public ChannelModel(XSectionProfile targetProfile, XSecJet xSecJet, XSecPathList path,
+        //     XSecModelParams parameters)
+        //{
+        //    jet = xSecJet;
+        //    this.path = path;           
+        //    this.parameters = parameters;
+        //    targetProf = targetProfile;
+        //}
+        public ChannelModel(XSection targetProfile, XSection startProfile, XSecJet xSecJet, XSecPathList path,
               XSecModelParams parameters)
         {
             jet = xSecJet;
@@ -125,8 +125,9 @@ namespace AbMachModel
         }
         XSecJetPath GetNewJetArrayFeedrates(double measureWidth, string directory,string timeCode)
         {
-            path.AdjustFeedrates(profile.AsCartData(), targetProf.AsCartData(), measureWidth);
-            FileIOLib.FileIO.Save(path.AsCSVFile(), directory + "pathlist" + timeCode + ".csv");
+            path.AdjustFeedrates(profile.AsCartData(),startProf.AsCartData(), targetProf.AsCartData(), measureWidth);
+            string filename = directory + "pathlist" + timeCode + ".csv";
+            FileIOLib.FileIO.Save(path.AsCSVFile( filename, ""),filename);
             var jetArray = new XSecJetPath(jet, path, parameters.MeshSize, parameters.RemovalRate.NominalSurfaceSpeed);
             return jetArray;
         }
@@ -141,14 +142,14 @@ namespace AbMachModel
             {
                 double curvatureSearchWindow = .014;
                 int run = 0;
-                profile = new XSectionProfile(startProf);
+                profile = new XSection(startProf);
                 while (run < parameters.RunTotal && !ct.IsCancellationRequested)
                 {
                     //index acroos jet path locations in jet path array
                     for (int pathIndex = 0; pathIndex < jetArr.PathCount; pathIndex++)
                     {
                         //index across jet locations in jet-path array 
-                        var tempProf = new XSectionProfile(gridOrigin, gridWidth, parameters.MeshSize);
+                        var tempProf = new XSection(gridOrigin, gridWidth, parameters.MeshSize);
                         for (int jetLocIndex = 0; jetLocIndex < jetArr.JetCount; jetLocIndex++)
                         {
                                 var jetRay = jetArr.GetJetRay(pathIndex, jetLocIndex);

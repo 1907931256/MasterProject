@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BarrelLib
 {
-    public enum XSectionType
+    public enum BarrelProfileType
     {
         Min,
         Max,

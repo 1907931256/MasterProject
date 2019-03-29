@@ -226,6 +226,10 @@
       <Project>{0b633261-c1b5-422f-a975-aa1df2878c71}</Project>
       <Name>ProbeController</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SurfaceModel\SurfaceModel\SurfaceModelLib.csproj">
+      <Project>{7dc24e8d-cfe2-457e-8c0e-8acdac65745b}</Project>
+      <Name>SurfaceModelLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToolpathLib\ToolpathLib.csproj">
       <Project>{f48e523e-0c85-4379-8e8a-06033c61c476}</Project>
       <Name>ToolpathLib</Name>

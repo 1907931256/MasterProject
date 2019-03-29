@@ -18,7 +18,7 @@ namespace InspectionLib
             try
             {
                          
-                var cartData = DataUtilities.ConvertToCartData(rawDataSet,script.Location.X);
+                var cartData = DataUtil.ConvertToCartData(rawDataSet,script.Location.X);
                 cartData.Translate(new Vector3(0, -1 * script.CalDataSet.NominalRadius, 0));
                 var dataset = new CartDataSet(script.InputDataFileName);
                 dataset.CartData = cartData;

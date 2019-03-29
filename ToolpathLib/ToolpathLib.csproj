@@ -102,6 +102,8 @@
     <Compile Include="PathEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Toolpath.cs" />
+    <Compile Include="XSectionPathEntity.cs" />
+    <Compile Include="XSectionPathList.cs" />
     <Compile Include="XSectPathBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

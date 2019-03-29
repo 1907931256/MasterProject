@@ -38,7 +38,7 @@ namespace DataLib
             {
                 if (_boundingBox == null)
                 {
-                    _boundingBox = DataUtilities.GetBB(this);
+                    _boundingBox = DataUtil.GetBB(this);
 
                 }
                 return _boundingBox;

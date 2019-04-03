@@ -10,89 +10,64 @@ namespace BarrelLib
     public class DimensionData
     {
         
-        public double Length { get { return _length; } }        
-        public double LandMinDiam{get{ return _landMinDiam;}}
-        public double LandMaxDiam { get { return _landMaxDiam; } }
-        public int GrooveCount{ get{ return _grooveCount;}}        
-        public double ActualLandDiam {get { return _landActualDiam; }  set  {  _landActualDiam = value;  }   }
-        public double LandMinWidth { get { return _landMinWidth; } }
-        public double LandMaxWidth { get { return _landMaxWidth; } }       
-        public double GrooveMinDiam { get { return _grooveMinDiam ; }}
-        public double GrooveMaxDiam { get { return _grooveMaxDiam ; } }
-        public double FirstGrooveThetaOffset { get { return _firstGrooveThetaOffset; }}
-        public double LandNominalDiam {get{  return _landNomDiam; } }
-        public double NominalGrooveDiam { get { return _grooveNomDiam ; } }
-        public double GrooveMaxWidthTheta {get{ return _grooveMaxWidthTheta;  } }
-        public double GrooveMinWidthTheta { get {  return _grooveMinWidthTheta;     } }
-        public double GrooveMaxWidth { get{   return _grooveMaxWidth;} }
-        public double GrooveMinWidth { get {   return _grooveMinWidth; } }
-        public double MaxCircumference { get { return _maxCircumference; } }
-        public double MinCircumference {  get { return _minCircumference; } }
-        public double NomCircumference { get { return _nomCircumference; } }
-        public double RingCalibrationDiam { get { return _ringCalDiam; } }
-        double _landActualDiam;
-        double pi2;
-        double _grooveMaxWidth;
-        double _grooveMinWidth;
-        double _minCircumference;
-        double _maxCircumference;
-        double _nomCircumference;
-        double _grooveMaxWidthTheta;
-        double _grooveMinWidthTheta;
-        double _ringCalDiam;
-        double _length;
-
-        double _landMaxDiam;
-        double _landMinDiam;
-        double _landNomDiam;
-
-        int _grooveCount;
-
-        double _grooveNomDiam;
-        double _grooveMinDiam;
-        double _grooveMaxDiam;
-      
-        double _landMinWidth;
-        double _landMaxWidth;
+        public double Length { get; set; }        
+        public double LandMinDiam{ get; set; }
+        public double LandMaxDiam { get; set; }
+        public int GrooveCount{ get; set; }        
+        public double LandActualDiam { get; set; }
+        public double LandMinWidth { get; set; }
+        public double LandMaxWidth { get; set; }       
+        public double GrooveMinDiam { get; set; }
+        public double GrooveMaxDiam { get; set; }
+        public double FirstGrooveThetaOffset { get; set; }
+        public double LandNominalDiam { get; set; }
+        public double GrooveNominalDiam { get; set; }
+        public double GrooveMaxWidthTheta { get; set; }
+        public double GrooveMinWidthTheta { get; set; }
+        public double GrooveMaxWidth { get; set; }
+        public double GrooveMinWidth { get; set; }
+        public double MaxCircumference { get; set; }
+        public double MinCircumference { get; set; }
+        public double NomCircumference { get; set; }
+        public double RingCalibrationDiam { get; set; }
         
-        double _firstGrooveThetaOffset;        
-        double _grooveSpacingTheta;       
         TwistProfile _twistProfile;
 
         void ReadFile(string fileName)
         {
           var b =   BarrelFile.Open(fileName);
-            _length = b.DimensionData.Length;
-            _grooveCount = b.DimensionData.GrooveCount;
-            _landMaxWidth = b.DimensionData.LandMaxWidth;
-            _landMaxDiam = b.DimensionData.LandMaxDiam;
-            _landMinDiam = b.DimensionData.LandMinDiam;
-            _grooveMaxDiam = b.DimensionData.GrooveMaxDiam;
-            _grooveMinDiam = b.DimensionData.GrooveMinDiam;
+            Length = b.DimensionData.Length;
+            GrooveCount = b.DimensionData.GrooveCount;
+            LandMaxWidth = b.DimensionData.LandMaxWidth;
+            LandMaxDiam = b.DimensionData.LandMaxDiam;
+            LandMinDiam = b.DimensionData.LandMinDiam;
+            GrooveMaxDiam = b.DimensionData.GrooveMaxDiam;
+            GrooveMinDiam = b.DimensionData.GrooveMinDiam;
         }
         Tuple<double, double> GetGrooveMinEnds(double z)
         {            
-            double thStart = (_firstGrooveThetaOffset + _twistProfile.ThetaRadAt(z))-_grooveHWMin;           
+            double thStart = (FirstGrooveThetaOffset + _twistProfile.ThetaRadAt(z))-_grooveHWMin;           
             double thEnd = thStart + (_twistProfile.DirectionSign * 2* _grooveHWMin);           
             var ends = new Tuple<double, double>(thStart, thEnd);
             return ends;
         }
         Tuple<double, double> GetGrooveMaxEnds(double z)
         {            
-            double thStart = (_firstGrooveThetaOffset + _twistProfile.ThetaRadAt(z)) - _grooveHWMax;
+            double thStart = (FirstGrooveThetaOffset + _twistProfile.ThetaRadAt(z)) - _grooveHWMax;
             double thEnd = thStart + (_twistProfile.DirectionSign * 2 * _grooveHWMax);           
             var ends = new Tuple<double, double>(thStart, thEnd);
             return ends;
         }
         public int GetGrooveNumber(double z, double thetaRad)
         {
+            var pi2 = Math.PI * 2.0;
             thetaRad %= pi2;
             var minEnds = GetGrooveMinEnds(z);
             var maxEnds = GetGrooveMaxEnds(z);
             var thWrap = thetaRad + pi2;
-            double dTh = pi2 / _grooveCount;
+            double dTh = pi2 / GrooveCount;
             int grooveNumber = -1;
-            for (int i = 0; i < _grooveCount; i++)
+            for (int i = 0; i < GrooveCount; i++)
             {
                 double minWStart = (minEnds.Item1 + (_twistProfile.DirectionSign * i * dTh)) % pi2;   
                 double minWEnd = (minEnds.Item2 + (_twistProfile.DirectionSign * i * dTh))% pi2;
@@ -148,11 +123,11 @@ namespace BarrelLib
             double r = 0;
             if (GetGrooveNumber(z, thetaRad)>=0)
             {
-                r = (_grooveNomDiam/ 2.0) ;
+                r = (GrooveNominalDiam/ 2.0) ;
             }
             else
             {
-                r = _landNomDiam / 2.0;
+                r = LandNominalDiam / 2.0;
             }
             return r;
         }
@@ -161,11 +136,11 @@ namespace BarrelLib
             double r = 0;
             if (GetGrooveNumber(z, thetaRad) >= 0)
             {
-                r = _grooveMaxDiam / 2.0;
+                r = GrooveMaxDiam / 2.0;
             }
             else
             {
-                r = _landMaxDiam / 2.0;
+                r = LandMaxDiam / 2.0;
             }
             return r;
         }
@@ -175,11 +150,11 @@ namespace BarrelLib
             double r = 0;
             if (GetGrooveNumber(z, thetaRad) >= 0)
             {
-                r = _grooveMinDiam / 2.0;
+                r = GrooveMinDiam / 2.0;
             }
             else
             {
-                r = _landMinDiam / 2.0;
+                r = LandMinDiam / 2.0;
             }
            
             return r;
@@ -192,28 +167,18 @@ namespace BarrelLib
         
         public DimensionData()
         {
-            pi2 = Math.PI * 2;
+            
             BuildM2Dims();
             _twistProfile = new TwistProfile(BarrelType.M2_50_Cal);
             InitValues();
         }
        void InitValues()
-        {
-            pi2 = Math.PI * 2;
-            _grooveSpacingTheta = Math.PI * 2 / _grooveCount;
-
-            _maxCircumference = Math.PI * _landMaxDiam;
-            _minCircumference = Math.PI * _landMinDiam;
-            
-           // _grooveMaxWidth = (_maxCircumference - (_landMinWidth * _grooveCount)) / _grooveCount;
-           // _grooveMinWidth = (_minCircumference - (_landMaxWidth * _grooveCount)) / _grooveCount;
-           // _grooveMaxWidthTheta = pi2 * (_grooveMaxWidth / _maxCircumference);
-           // _grooveMinWidthTheta = pi2 * (_grooveMinWidth / _minCircumference);
-           // _grooveHWMin = _grooveMinWidthTheta / 2.0;
-           // _grooveHWMax = _grooveMaxWidthTheta / 2.0;
-            _landNomDiam = (_landMaxDiam + _landMinDiam) / 2.0; 
-            _grooveNomDiam = (_grooveMinDiam + _grooveMaxDiam) / 2.0;
-            _nomCircumference = (_maxCircumference + _minCircumference) / 2.0;
+        {            
+            MaxCircumference = Math.PI * LandMaxDiam;
+            MinCircumference = Math.PI * LandMinDiam;
+            LandNominalDiam = (LandMaxDiam + LandMinDiam) / 2.0; 
+            GrooveNominalDiam = (GrooveMinDiam + GrooveMaxDiam) / 2.0;
+            NomCircumference = (MaxCircumference + MinCircumference) / 2.0;
         }
         public DimensionData(BarrelType type)
         {
@@ -242,80 +207,80 @@ namespace BarrelLib
         }
         void BuildM2Dims()
         {
-            _length = 48;
-            _ringCalDiam = .5;
-            _landMaxDiam = .501;
-            _landMinDiam = .4985;
-            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
-            _landActualDiam = _landNomDiam;
-            _grooveCount = 8;
-            _grooveMinDiam = .509;
-            _grooveMaxDiam = .513;            
-            _landMinWidth = .0537;
-            _landMaxWidth = .0589;            
-            _firstGrooveThetaOffset = 0;
+            Length = 48;
+            RingCalibrationDiam = .5;
+            LandMaxDiam = .501;
+            LandMinDiam = .4985;
+            LandNominalDiam = (LandMinDiam + LandMaxDiam) / 2.0;
+            LandActualDiam = LandNominalDiam;
+            GrooveCount = 8;
+            GrooveMinDiam = .509;
+            GrooveMaxDiam = .513;            
+            LandMinWidth = .0537;
+            LandMaxWidth = .0589;            
+            FirstGrooveThetaOffset = 0;
         }
         void BuildM284Dims()
         {
-            _length = 240;
-            _ringCalDiam = 6.0;
-            _landMaxDiam = 6.115;
-            _landMinDiam = 6.113;
-            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
-            _landActualDiam = _landNomDiam;
-            _grooveCount = 48;
-            _grooveMinDiam = 6.210;
-            _grooveMaxDiam = 6.205;
-            _landMinWidth = .1554;
-            _landMaxWidth = .1632;
-            _firstGrooveThetaOffset = 0;
+            Length = 240;
+            RingCalibrationDiam = 6.0;
+            LandMaxDiam = 6.115;
+            LandMinDiam = 6.113;
+            LandNominalDiam = (LandMinDiam + LandMaxDiam) / 2.0;
+            LandActualDiam = LandNominalDiam;
+            GrooveCount = 48;
+            GrooveMinDiam = 6.210;
+            GrooveMaxDiam = 6.205;
+            LandMinWidth = .1554;
+            LandMaxWidth = .1632;
+            FirstGrooveThetaOffset = 0;
         }
         void BuildM240Dims()
         {
-            _length = 48;
-            _ringCalDiam = .3;
-            _landMaxDiam = .3022;
-            _landMinDiam = .2996;
-            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
-            _landActualDiam = _landNomDiam;
-            _grooveCount = 4;
-            _grooveMinDiam = .3065;
-            _grooveMaxDiam = .3095;           
-            _landMinWidth = .0457;
-            _landMaxWidth = .060;
-            _firstGrooveThetaOffset = 0;
+            Length = 48;
+            RingCalibrationDiam = .3;
+            LandMaxDiam = .3022;
+            LandMinDiam = .2996;
+            LandNominalDiam = (LandMinDiam + LandMaxDiam) / 2.0;
+            LandActualDiam = LandNominalDiam;
+            GrooveCount = 4;
+            GrooveMinDiam = .3065;
+            GrooveMaxDiam = .3095;           
+            LandMinWidth = .0457;
+            LandMaxWidth = .060;
+            FirstGrooveThetaOffset = 0;
         }
         void Build50mmDims()
         {
-            _length = 48;
-            _ringCalDiam = 2.0;
-            _landMaxDiam = 1.969;
-            _landMinDiam = 1.972;
-            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
-            _landActualDiam = _landNomDiam;
-            _grooveCount = 24;
-            _grooveMinDiam = 2.007;
-            _grooveMaxDiam = 2.023;
-            _grooveMaxWidth = .1457;
-            _grooveMinWidth = .129;
-            _firstGrooveThetaOffset = 0;
+            Length = 48;
+            RingCalibrationDiam = 2.0;
+            LandMaxDiam = 1.969;
+            LandMinDiam = 1.972;
+            LandNominalDiam = (LandMinDiam + LandMaxDiam) / 2.0;
+            LandActualDiam = LandNominalDiam;
+            GrooveCount = 24;
+            GrooveMinDiam = 2.007;
+            GrooveMaxDiam = 2.023;
+            GrooveMaxWidth = .1457;
+            GrooveMinWidth = .129;
+            FirstGrooveThetaOffset = 0;
         }
         double _grooveHWMin;
         double _grooveHWMax;
         void BuildM242Dims()
-        {           
-            _length = 78;
-            _ringCalDiam = 1.0;
-            _landMaxDiam = .9882;
-            _landMinDiam = .985;
-            _landNomDiam = (_landMinDiam + _landMaxDiam) / 2.0;
-            _landActualDiam = _landNomDiam;
-            _grooveCount = 18;
-            _grooveMinDiam = 1.0236;
-            _grooveMaxDiam = 1.0315;           
-            _landMinWidth = .0578;
-            _landMaxWidth = .0718;           
-            _firstGrooveThetaOffset = 0;
+        {
+            Length = 78;
+            RingCalibrationDiam = 1.0;
+            LandMaxDiam = .9882;
+            LandMinDiam = .985;
+            LandNominalDiam = (LandMinDiam + LandMaxDiam) / 2.0;
+            LandActualDiam = LandNominalDiam;
+            GrooveCount = 18;
+            GrooveMinDiam = 1.0236;
+            GrooveMaxDiam = 1.0315;           
+            LandMinWidth = .0578;
+            LandMaxWidth = .0718;           
+            FirstGrooveThetaOffset = 0;
         }
     }
 }

@@ -33,9 +33,10 @@ namespace ToolpathLib
 
         public int PassExecOrder { get; set; }
         public int Direction { get; set; }
-        public double StartDepth { get; set; }
-        public double TargetDepth { get; set; }
-        public double CurrentDepth { get; set; }
+        public double StartRadius { get; set; }
+        public double TargetRadius { get; set; }
+        public double CurrentDepth { get { return CurrentRadius - StartRadius; } }
+        public double CurrentRadius { get; set; }
         public Vector2 SurfNormal { get; set; }
         public int CurrentRun { get; set; }
         public int TargetRunTotal { get; set; }

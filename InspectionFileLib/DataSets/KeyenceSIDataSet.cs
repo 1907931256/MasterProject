@@ -97,8 +97,11 @@ namespace InspectionLib
                         {
                             x *= scalingFactor;
                             y *= scalingFactor;
-
-                            points.Add(new GeometryLib.Vector2(x, y));                                                                                                            
+                            if(y  > _minValue && y < _maxValue)
+                            {
+                                points.Add(new GeometryLib.Vector2(x, y));
+                            }
+                                                                                                                                       
                         }
                     }
                 }

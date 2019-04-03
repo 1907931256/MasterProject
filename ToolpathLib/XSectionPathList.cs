@@ -14,9 +14,9 @@ namespace ToolpathLib
         {
             foreach (XSectionPathEntity xpe in this)
             {
-                if (xpe.TargetDepth != 0)
+                if (xpe.TargetRadius != 0)
                 {
-                    var newFeedrate = xpe.Feedrate * xpe.CurrentDepth / xpe.TargetDepth;
+                    var newFeedrate = xpe.Feedrate * xpe.CurrentDepth / xpe.TargetRadius;
                     xpe.Feedrate = newFeedrate;
                 }
             }
@@ -56,17 +56,17 @@ namespace ToolpathLib
                     {
                         double denom = (depthData[i].ThetaDeg - depthData[i - 1].ThetaDeg);
                         double m = 0;
-                        double depth = 0;
+                        double radius = 0;
                         if (denom != 0)
                         {
                             m = (depthData[i].R - depthData[i - 1].R) / denom;
-                            depth = m * (xpe.CrossLoc - depthData[i - 1].ThetaDeg) + depthData[i - 1].R;
+                            radius = m * (xpe.CrossLoc - depthData[i - 1].ThetaDeg) + depthData[i - 1].R;
                         }
                         else
                         {
-                            depth = (depthData[i].R + depthData[i - 1].R) / 2.0;
+                            radius = (depthData[i].R + depthData[i - 1].R) / 2.0;
                         }
-                        xpe.CurrentDepth = depth - xpe.StartDepth;
+                        xpe.CurrentRadius = radius;
                         break;
                     }
                 }
@@ -84,17 +84,17 @@ namespace ToolpathLib
                     {
                         double denom = (depthData[i].X - depthData[i - 1].X);
                         double m = 0;
-                        double depth = 0;
+                        double radius = 0;
                         if (denom != 0)
                         {
                             m = (depthData[i].Y - depthData[i - 1].Y) / denom;
-                            depth = m * (xpe.CrossLoc - depthData[i - 1].X) + depthData[i - 1].Y;
+                            radius = m * (xpe.CrossLoc - depthData[i - 1].X) + depthData[i - 1].Y;
                         }
                         else
                         {
-                            depth = (depthData[i].Y + depthData[i - 1].Y) / 2.0;
+                            radius = (depthData[i].Y + depthData[i - 1].Y) / 2.0;
                         }
-                        xpe.CurrentDepth = depth - xpe.StartDepth;
+                        xpe.CurrentRadius = radius  ;
 
                         break;
                     }
@@ -123,7 +123,7 @@ namespace ToolpathLib
                 {
                     xSum /= count;
                 }
-                xpe.CurrentDepth = xSum;
+                xpe.CurrentRadius= xSum;
                 //calc target 
                 count = 0;
                 xSum = 0;
@@ -139,7 +139,7 @@ namespace ToolpathLib
                 {
                     xSum /= count;
                 }
-                xpe.TargetDepth = xSum;
+                xpe.TargetRadius = xSum;
                 //calc start 
                 count = 0;
                 xSum = 0;
@@ -155,8 +155,8 @@ namespace ToolpathLib
                 {
                     xSum /= count;
                 }
-                xpe.StartDepth = xSum;
-                xpe.CurrentDepth -= xpe.StartDepth;
+                xpe.StartRadius = xSum;
+               
             }
         }
         public void MeasureDepthsAtJetLocations(CylData profileData, CylData startData, CylData targetData, double averagingWindow)
@@ -181,7 +181,7 @@ namespace ToolpathLib
                 {
                     xSum /= count;
                 }
-                xpe.CurrentDepth = xSum;
+                xpe.CurrentRadius = xSum;
                 //calc target depth
                 count = 0;
                 xSum = 0;
@@ -212,56 +212,10 @@ namespace ToolpathLib
                 {
                     xSum /= count;
                 }
-                xpe.StartDepth = xSum;
-                xpe.CurrentDepth -= xpe.StartDepth;
+                xpe.StartRadius = xSum;
+                 
             }
-        }
-        //public void MeasureDepthsAtJetLocations(CartData depthData,double averagingWindow)
-        //{
-        //    foreach (XSectionPathEntity xpe in this)
-        //    {
-        //        double xStart = xpe.CrossLoc-averagingWindow/2;
-        //        double xEnd = xpe.CrossLoc + averagingWindow / 2;
-        //        double xSum = 0;
-        //        int count = 0;
-        //        for (int i = 1; i < depthData.Count; i++)
-        //        {
-        //            if((depthData[i].X>xStart && depthData[i].X<=xEnd )||(depthData[i].X <= xStart && depthData[i].X > xEnd))
-        //            {
-        //                count++;
-        //                xSum += depthData[i].Y;
-        //            }
-        //        }
-        //        if(count>0)
-        //        {
-        //            xSum /= count;
-        //        }
-        //        xpe.CurrentDepth = xSum;
-        //    }
-        //}
-        //public void MeasureDepthsAtJetLocations(CylData depthData, double averagingWindow)
-        //{
-        //    foreach (XSectionPathEntity xpe in this)
-        //    {
-        //        double xStart = xpe.CrossLoc - averagingWindow / 2;
-        //        double xEnd = xpe.CrossLoc + averagingWindow / 2;
-        //        double xSum = 0;
-        //        int count = 0;
-        //        for (int i = 1; i < depthData.Count; i++)
-        //        {
-        //            if ((depthData[i].ThetaDeg > xStart && depthData[i].ThetaDeg <= xEnd) || (depthData[i].ThetaDeg <= xStart && depthData[i].ThetaDeg > xEnd))
-        //            {
-        //                count++;
-        //                xSum += depthData[i].R;
-        //            }
-        //        }
-        //        if (count > 0)
-        //        {
-        //            xSum /= count;
-        //        }
-        //        xpe.CurrentDepth = xSum;
-        //    }
-        //}
+        }      
         void SortByPassExcOrder()
         {
             var order = new List<int>();
@@ -280,11 +234,11 @@ namespace ToolpathLib
             var lines = new List<string>();
             lines.Add("input file: " + inputFilename);
             lines.Add("depth location file: " + depthLoctionFilename);
-            lines.Add("pathExOrder,xLocation(across channel),yLocation(along channel),feed, direction,Depth,StartDepth,TargetDepth");
+            lines.Add("PathExOrder,XLocation(across channel),YLocation(along channel),Feed, Direction,Depth,StartRadius,TargetRadius");
             foreach (XSectionPathEntity xpe in this)
             {
                 string line = xpe.PassExecOrder.ToString() + "," + xpe.CrossLoc.ToString() + "," + xpe.AlongLocation.ToString() + ","
-                    + xpe.Feedrate.ToString() + "," + xpe.Direction.ToString() + "," + xpe.CurrentDepth.ToString() + "," + xpe.StartDepth.ToString() + "," + xpe.TargetDepth.ToString();
+                    + xpe.Feedrate.ToString() + "," + xpe.Direction.ToString() + "," + xpe.CurrentDepth.ToString() + "," + xpe.StartRadius.ToString() + "," + xpe.TargetRadius.ToString();
                 lines.Add(line);
             }
             return lines;
@@ -324,9 +278,9 @@ namespace ToolpathLib
                         AlongLocation = ylocation,
                         Feedrate = feed,
                         Direction = direction,
-                        CurrentDepth = depth,
-                        TargetDepth = targetDepth,
-                        StartDepth = startDepth
+                        CurrentRadius = depth,                        
+                        TargetRadius = targetDepth,
+                        StartRadius = startDepth
                     };
                     Add(xpe);
                 }

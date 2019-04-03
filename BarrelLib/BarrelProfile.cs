@@ -17,7 +17,7 @@ namespace BarrelLib
     public class BarrelProfile :XSection
     {
         public TwistProfile Twist { get; private set; }
-
+       
         public double RadiusAt(double z, double thetaRaD)
         {
             double r = -1;           
@@ -29,7 +29,7 @@ namespace BarrelLib
             Line ray = new Line(pt1, pt2);
            
             Vector3 result = new Vector3();            
-            foreach (DwgEntity entity in dwgEntities)
+            foreach (DwgEntity entity in Entities)
             {
                 IntersectionRecord intersectionRecord;
                 if (entity is Arc arc) 

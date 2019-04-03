@@ -15,8 +15,11 @@ using System.Drawing;
 using DataLib;
 namespace AbMachModel
 {
+    
 
-
+    /// <summary>
+    /// cross section channel model 
+    /// </summary>
     public class ChannelModel
     {
         XSecJet jet;

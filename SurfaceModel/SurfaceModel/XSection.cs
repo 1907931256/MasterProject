@@ -21,7 +21,7 @@ namespace SurfaceModel
 
 
         protected BoundingBox _boundingBox;
-        protected List<DwgEntity> dwgEntities;
+         
         protected DisplayData cylDisplayData;
         protected DisplayData cartDisplayData;
 
@@ -54,7 +54,7 @@ namespace SurfaceModel
 
             List<DwgEntity> rotEntities = new List<DwgEntity>();
             Vector3 origin = new Vector3(0, 0, 0);
-            foreach (DwgEntity entity in dwgEntities)
+            foreach (DwgEntity entity in Entities)
             {
                 if (entity is Arc)
                 {
@@ -410,8 +410,8 @@ namespace SurfaceModel
         }
         protected void BuildFromDXF(string dxfFilename)
         {
-            dwgEntities = DwgConverterLib.DxfFileParser.Parse(dxfFilename);
-            cartDisplayData = DwgConverterLib.DxfFileParser.AsDisplayData(dwgEntities, MeshSize, ViewPlane.XY);
+            Entities = DwgConverterLib.DxfFileParser.Parse(dxfFilename);
+            cartDisplayData = DwgConverterLib.DxfFileParser.AsDisplayData(Entities, MeshSize, ViewPlane.XY);
             cartDisplayData.FileName = dxfFilename;
             cylDisplayData = new DisplayData(dxfFilename);
             foreach (var pt in cartDisplayData)

@@ -82,7 +82,6 @@
   <ItemGroup>
     <Compile Include="AngleError.cs" />
     <Compile Include="DataSets\AxialDataBuilder.cs" />
-    <Compile Include="DataSets\CalDataBuilder.cs" />
     <Compile Include="DataSets\CalDataSet.cs" />
     <Compile Include="Inspection Scripts\CylInspScript.cs" />
     <Compile Include="DataColorCode.cs" />
@@ -100,10 +99,6 @@
     <Compile Include="ProfileTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataSets\KeyenceSIDataSet.cs" />
-    <Compile Include="DataSets\RasterDataBuilder.cs" />
-    <Compile Include="DataSets\RingDataBuilder.cs" />
-    <Compile Include="DataSets\SingleLineDataBuilder.cs" />
-    <Compile Include="DataSets\SpiralDataBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AWJModelLib\AWJModelLib.csproj">

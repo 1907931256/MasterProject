@@ -108,6 +108,7 @@
     <Compile Include="RunInfo.cs" />
     <Compile Include="SurfaceInputType.cs" />
     <Compile Include="XSecJet.cs" />
+    <Compile Include="XSecJetPath.cs" />
     <Compile Include="XSectionGrid.cs" />
   </ItemGroup>
   <ItemGroup>

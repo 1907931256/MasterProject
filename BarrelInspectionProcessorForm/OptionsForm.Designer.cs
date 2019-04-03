@@ -55,10 +55,14 @@
             this.buttonBrowseBrchRaster = new System.Windows.Forms.Button();
             this.tabPageDataOptions = new System.Windows.Forms.TabPage();
             this.tabPageScanOptions = new System.Windows.Forms.TabPage();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.label5 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabControlOutputOptions.SuspendLayout();
             this.tabPageSaveOpts.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabPageFileLocs.SuspendLayout();
+            this.tabPageDataOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -346,6 +350,8 @@
             // 
             // tabPageDataOptions
             // 
+            this.tabPageDataOptions.Controls.Add(this.button1);
+            this.tabPageDataOptions.Controls.Add(this.label5);
             this.tabPageDataOptions.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataOptions.Name = "tabPageDataOptions";
             this.tabPageDataOptions.Size = new System.Drawing.Size(425, 283);
@@ -361,6 +367,24 @@
             this.tabPageScanOptions.TabIndex = 3;
             this.tabPageScanOptions.Text = "Scan Options";
             this.tabPageScanOptions.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(34, 30);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(52, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Plot Color";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(92, 25);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(57, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Select";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // OptionsForm
             // 
@@ -382,6 +406,8 @@
             this.panel1.PerformLayout();
             this.tabPageFileLocs.ResumeLayout(false);
             this.tabPageFileLocs.PerformLayout();
+            this.tabPageDataOptions.ResumeLayout(false);
+            this.tabPageDataOptions.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -415,5 +441,8 @@
         private System.Windows.Forms.RadioButton radioButtonRolled;
         private System.Windows.Forms.TabPage tabPageDataOptions;
         private System.Windows.Forms.TabPage tabPageScanOptions;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

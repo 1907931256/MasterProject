@@ -52,14 +52,50 @@ namespace KeyenceLJLib
 
 			return true;
 		}
-		
-		/// <summary>
-		/// Measurement value output
-		/// </summary>
-		/// <param name="datas">Measurement data</param>
-		/// <param name="fileName">File name</param>
-		/// <returns></returns>
-		static public bool ExportMeasureData(MeasureData[] datas, string fileName)
+        static public bool ExportAllProfiles(ProfileData[] datas,  string filePath)
+        {
+            try
+            {
+                    int profCt = 0;
+                    foreach (var profData in datas)
+                    {
+                        string fileName = filePath + "/data" + "-" + profCt.ToString() + "-" + profData.TriggerCnt.ToString() + ".csv";                        
+                     
+                        Encoding unicode = Encoding.GetEncoding("utf-16");
+                        using (StreamWriter sw = new StreamWriter(fileName, false, unicode))
+                        {
+                            try
+                            {
+                                if (datas[0] == null) return false;
+                                sw.WriteLine(profData.ToString());
+                            }
+                            finally
+                            {
+                                sw.Close();
+                            }
+                        }
+                        profCt++;
+                    }
+               
+                
+            }
+            catch (Exception ex)
+            {
+                // File save failure
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.Assert(false);
+                return false;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// Measurement value output
+        /// </summary>
+        /// <param name="datas">Measurement data</param>
+        /// <param name="fileName">File name</param>
+        /// <returns></returns>
+        static public bool ExportMeasureData(MeasureData[] datas, string fileName)
 		{
 			try
 			{

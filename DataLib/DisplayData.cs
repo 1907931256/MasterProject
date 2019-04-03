@@ -191,7 +191,7 @@ namespace DataLib
         public DisplayData(string filename)
         {
             FileName = filename;
-            Color = Color.Gray;
+            Color = Color.HotPink;
         }
     }
    

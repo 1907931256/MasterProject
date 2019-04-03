@@ -73,6 +73,7 @@
             this.removeAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearAllDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.labelRadius2 = new System.Windows.Forms.Label();
             this.labelNearestFilename = new System.Windows.Forms.Label();
             this.labelDxMeasured = new System.Windows.Forms.Label();
             this.labelDyMeasured = new System.Windows.Forms.Label();
@@ -156,7 +157,6 @@
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
-            this.labelRadius2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -392,7 +392,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.pictureBox1.BackColor = System.Drawing.Color.DimGray;
             this.pictureBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -454,6 +454,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(173, 310);
             this.panel2.TabIndex = 11;
+            // 
+            // labelRadius2
+            // 
+            this.labelRadius2.AutoSize = true;
+            this.labelRadius2.Location = new System.Drawing.Point(5, 109);
+            this.labelRadius2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelRadius2.Name = "labelRadius2";
+            this.labelRadius2.Size = new System.Drawing.Size(106, 13);
+            this.labelRadius2.TabIndex = 4;
+            this.labelRadius2.Text = "R2: 0.000000 inches";
             // 
             // labelNearestFilename
             // 
@@ -1288,16 +1298,6 @@
             this.progressBarProcessing.Name = "progressBarProcessing";
             this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
             this.progressBarProcessing.TabIndex = 26;
-            // 
-            // labelRadius2
-            // 
-            this.labelRadius2.AutoSize = true;
-            this.labelRadius2.Location = new System.Drawing.Point(5, 109);
-            this.labelRadius2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelRadius2.Name = "labelRadius2";
-            this.labelRadius2.Size = new System.Drawing.Size(106, 13);
-            this.labelRadius2.TabIndex = 4;
-            this.labelRadius2.Text = "R2: 0.000000 inches";
             // 
             // MainInspectionForm
             // 

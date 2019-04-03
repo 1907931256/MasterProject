@@ -183,7 +183,7 @@ namespace BarrelLib
             BarrelProfile profile;
             if (dxfFileName != "" && System.IO.File.Exists(dxfFileName))
             {
-                profile = new BarrelProfile(Type, dxfFileName, xSectionType, _meshSize);
+                profile = new BarrelProfile(Type, dxfFileName, xSectionType, _meshSize);                
             }
             else
             {

@@ -48,7 +48,7 @@ namespace InspectionLib
            // outputFileHeader.Add(line);
             //line = "STATUS:" + barrel.ManufactureData.CurrentManufStep;
             //outputFileHeader.Add(line);
-            line = "Land Diameter:" + barrel.DimensionData.ActualLandDiam.ToString("F5");
+            line = "Land Diameter:" + barrel.DimensionData.LandActualDiam.ToString("F5");
            outputFileHeader.Add(line);
            // if (barrel.ManufactureData.MiscData.Count > 0)
            // {

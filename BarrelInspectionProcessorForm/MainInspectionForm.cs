@@ -44,38 +44,56 @@ namespace BarrelInspectionProcessorForm
         string manufStepStr;
         private void SetComboBoxes()
         {
-            var barrelTypeList = Enum.GetNames(typeof(BarrelType)); //;new List<string>() { "M2_50_Cal", "M242_25mm", "M284_155mm", "M240_762mm","M_50mm", "Flat Plate" };
-            var scanFormatList = Enum.GetNames(typeof(ScanFormat));// new List<string>() { "RING", "SPIRAL", "AXIAL", "LAND", "GROOVE", "CAL", "SINGLE","RASTER" };
-            var probeDirectionList = new List<string>() { "BORE I.D.", "ROD O.D." };
-            var probeConfigList = Enum.GetNames(typeof(ProbeConfig));// new List<string>() { "SINGLE_SI_F10", "DUAL_SI_F10","SINGLE_LJ_V7060","LJ_V7060_SI_F10" };
-            var knownDiamList = new List<string>() { "Default Value", "Set Value", "Diameter Profile", "Ring Calibrated" };
-            var manufStepList = new List<string>(){ "Pre-Boring ","Boring In-process","Post Boring","Post Honing","Groove Machining In-Process",
+            try
+            {
+                var barrelNameList = Barrel.BarrelNameList;
+                var scanFormatList = Enum.GetNames(typeof(ScanFormat));// new List<string>() { "RING", "SPIRAL", "AXIAL", "LAND", "GROOVE", "CAL", "SINGLE","RASTER" };
+                var probeDirectionList = new List<string>() { "BORE I.D.", "ROD O.D." };
+                var probeConfigList = Enum.GetNames(typeof(ProbeConfig));// new List<string>() { "SINGLE_SI_F10", "DUAL_SI_F10","SINGLE_LJ_V7060","LJ_V7060_SI_F10" };
+                var knownDiamList = new List<string>() { "Default Value", "Set Value", "Diameter Profile", "Ring Calibrated" };
+                var manufStepList = new List<string>(){ "Pre-Boring ","Boring In-process","Post Boring","Post Honing","Groove Machining In-Process",
                                                     "Post Groove Machining","Post Final Honing","In Use"};
-            ComboListBoxHelper.FillComboBox(comboBoxMethod, scanFormatList.ToArray());
-            ComboListBoxHelper.FillComboBox(comboBoxBarrel, barrelTypeList.ToArray());
-            ComboListBoxHelper.FillComboBox(comboBoxDiameterType, knownDiamList.ToArray());
-            ComboListBoxHelper.FillComboBox(comboBoxProbeDirection, probeDirectionList.ToArray());
-            ComboListBoxHelper.FillComboBox(comboBoxProbeConifg, probeConfigList.ToArray());
-           
+                ComboListBoxHelper.FillComboBox(comboBoxMethod, scanFormatList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxBarrel, barrelNameList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxDiameterType, knownDiamList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxProbeDirection, probeDirectionList.ToArray());
+                ComboListBoxHelper.FillComboBox(comboBoxProbeConifg, probeConfigList.ToArray());
 
-            comboBoxBarrel.SelectedIndex = ComboListBoxHelper.GetIndexOf(barrelTypeStr, comboBoxBarrel.Items);
-            comboBoxMethod.SelectedIndex = ComboListBoxHelper.GetIndexOf(scanFormatStr, comboBoxMethod.Items);
-            comboBoxProbeDirection.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeDirectionStr, comboBoxProbeDirection.Items);
-            comboBoxProbeConifg.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeTypeStr, comboBoxProbeConifg.Items);
-            comboBoxDiameterType.SelectedIndex = ComboListBoxHelper.GetIndexOf(knownDiamTypeStr, comboBoxDiameterType.Items);
+
+                comboBoxBarrel.SelectedIndex = ComboListBoxHelper.GetIndexOf(barrelTypeStr, comboBoxBarrel.Items);
+                comboBoxMethod.SelectedIndex = ComboListBoxHelper.GetIndexOf(scanFormatStr, comboBoxMethod.Items);
+                comboBoxProbeDirection.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeDirectionStr, comboBoxProbeDirection.Items);
+                comboBoxProbeConifg.SelectedIndex = ComboListBoxHelper.GetIndexOf(probeTypeStr, comboBoxProbeConifg.Items);
+                comboBoxDiameterType.SelectedIndex = ComboListBoxHelper.GetIndexOf(knownDiamTypeStr, comboBoxDiameterType.Items);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
             
         }
         private void GetPropertyValues()
         {
-            barrelTypeStr = Properties.Settings.Default.barrelType;
-            scanFormatStr = Properties.Settings.Default.scanFormat;
-            probeDirectionStr = Properties.Settings.Default.probeDirection;
-            probeTypeStr = Properties.Settings.Default.probeType;
+            try
+            {
+                barrelTypeStr = Properties.Settings.Default.barrelType;
+                scanFormatStr = Properties.Settings.Default.scanFormat;
+                probeDirectionStr = Properties.Settings.Default.probeDirection;
+                probeTypeStr = Properties.Settings.Default.probeType;
+
+                knownDiamTypeStr = Properties.Settings.Default.diamCalType;
+                manufStepStr = Properties.Settings.Default.manufStep;
+                _useFilenameData = Properties.Settings.Default._useFileNameData;
+                checkBoxUseFilename.Checked = _useFilenameData;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             
-            knownDiamTypeStr = Properties.Settings.Default.diamCalType;
-            manufStepStr = Properties.Settings.Default.manufStep;
-            _useFilenameData = Properties.Settings.Default._useFileNameData;
-            checkBoxUseFilename.Checked = _useFilenameData;
         }
         private void SetPropertyValues()
         {
@@ -120,10 +138,10 @@ namespace BarrelInspectionProcessorForm
                     _dataOutOptions = new DataOutputOptions();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
             }
             
 
@@ -396,22 +414,12 @@ namespace BarrelInspectionProcessorForm
                 case 0:// Default Value
                     _knownDiamType = DiamCalType.DEFAULT;
                     _barrel.DimensionData.LandActualDiam = _barrel.DimensionData.LandNominalDiam;
-                    _barrel.BoreProfile = new BoreProfile(_barrel.DimensionData.LandNominalDiam / 2.0, _barrelType);
+                    _barrel.BoreProfile = new BoreProfile(_barrel.DimensionData.LandNominalDiam / 2.0, _barrel );
                     break;
                 case 1://Set Value                 
                     _knownDiamType = DiamCalType.USER;
                     _barrel.DimensionData.LandActualDiam = nomDiam;
-                    _barrel.BoreProfile = new BoreProfile(nomDiam / 2.0, _barrelType);
-
-                    break;
-                case 2://Diameter Profile
-                    _knownDiamType = DiamCalType.BOREPROFILE;
-                    string boreFilename = textBoxNomDiam.Text;
-                    if (boreFilename != "" && System.IO.File.Exists(boreFilename))
-                    {
-                        _barrel.BoreProfile = new BoreProfile(textBoxNomDiam.Text);
-
-                    }
+                    _barrel.BoreProfile = new BoreProfile(nomDiam / 2.0, _barrel );
                     break;
                 case 3://Ring Calibrated
                     _knownDiamType = DiamCalType.RINGCAL;
@@ -1188,7 +1196,7 @@ namespace BarrelInspectionProcessorForm
 
         }
         Barrel _barrel;
-        BarrelType _barrelType;
+        string _barrelName;
         void BuildToleranceDataSet()
         {
             _toleranceDisplayDataList = new List<DisplayData>();
@@ -1254,10 +1262,10 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                _barrelType = Barrel.GetBarrelType(comboBoxBarrel.SelectedItem.ToString());
-                _barrel = new Barrel(_barrelType);
+                _barrelName = comboBoxBarrel.SelectedItem.ToString();
+                _barrel = new Barrel(_barrelName);
                 textBoxNomDiam.Text = _barrel.DimensionData.LandNominalDiam.ToString("f4");
-                textBoxRingCal.Text = _barrel.DimensionData.RingCalibrationDiam.ToString("f4");               
+                textBoxRingCal.Text = _barrel.DimensionData.LandNominalDiam.ToString("f4");               
                
             }           
             catch (Exception ex)

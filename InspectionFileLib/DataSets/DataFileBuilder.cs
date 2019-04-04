@@ -44,7 +44,7 @@ namespace InspectionLib
             string line = "";
            // line = "S/N:" + barrel.ManufactureData.SerialNumber;
             outputFileHeader.Add(line);
-            line = "TYPE:" + barrel.Type.ToString();
+            line = "TYPE:" + barrel.Name;
            // outputFileHeader.Add(line);
             //line = "STATUS:" + barrel.ManufactureData.CurrentManufStep;
             //outputFileHeader.Add(line);

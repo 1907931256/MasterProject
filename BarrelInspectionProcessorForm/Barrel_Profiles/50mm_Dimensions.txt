@@ -1,0 +1,9 @@
+﻿Length = 120
+LandMaxDiam = 1.969
+LandMinDiam = 1.972
+GrooveCount = 24
+GrooveMinDiam = 2.007
+GrooveMaxDiam = 2.023
+GrooveMaxWidth = .1457
+GrooveMinWidth = .129
+FirstGrooveThetaOffset = 0

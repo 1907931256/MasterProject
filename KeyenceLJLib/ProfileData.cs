@@ -62,7 +62,10 @@ namespace KeyenceLJLib
 		{
 			get { return _profData; }
 		}
-
+        public DataLib.CartData AsCartData(double scalingMultiplier)
+        {
+           return GetCartData(scalingMultiplier);
+        }
 		/// <summary>
 		/// Profile Imformation
 		/// </summary>
@@ -199,7 +202,21 @@ namespace KeyenceLJLib
 
 			return sb.ToString();
 		}
+        DataLib.CartData GetCartData(double scalingMultiplier)
+        {
+            double posX = ProfInfo.lXStart;
+            double deltaX = ProfInfo.lXPitch;
+            var cartData = new DataLib.CartData();
+            int singleProfileCount = ProfInfo.wProfDataCnt;
+            int dataCount = (int)ProfInfo.byProfileCnt * (ProfInfo.byEnvelope + 1);
 
+            for (int i = 0; i < singleProfileCount; i++)
+            {
+                var v = new GeometryLib.Vector3(posX + deltaX * i, scalingMultiplier*_profData[i],0);
+                cartData.Add(v);               
+            }
+            return cartData;
+        }
 		/// <summary>
 		/// Create the X-position string from the profile information.
 		/// </summary>

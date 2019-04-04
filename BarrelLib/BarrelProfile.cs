@@ -17,7 +17,7 @@ namespace BarrelLib
     public class BarrelProfile :XSection
     {
         public TwistProfile Twist { get; private set; }
-       
+        
         public double RadiusAt(double z, double thetaRaD)
         {
             double r = -1;           
@@ -57,20 +57,15 @@ namespace BarrelLib
        
         
         BarrelProfileType xSectionType;
-        BarrelType barrelType;
+        Barrel  _barrel ;
         
-        public BarrelProfile( BarrelType barrelType,string dxfFilename,  BarrelProfileType type,double meshSize) : base(dxfFilename,meshSize)
+        public BarrelProfile( Barrel barrel,string dxfFilename,  BarrelProfileType type,double meshSize) : base(dxfFilename,meshSize)
         {
-            this.barrelType = barrelType;
-            Twist = new TwistProfile(barrelType);
+            this._barrel = barrel;
+            Twist = new TwistProfile(_barrel);
             xSectionType = type;
-           
+             
         }
-        public BarrelProfile( BarrelType barrelType,string dxfFilename, TwistProfile twistIn, BarrelProfileType type, double meshSize) : base(dxfFilename,meshSize)
-        {
-            this.barrelType = barrelType;
-            xSectionType = type;
-            Twist = twistIn;
-        }
+       
     }
 }

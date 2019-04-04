@@ -445,11 +445,94 @@ namespace KeyenceLJLib
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	public delegate void HighSpeedDataCallBack(IntPtr buffer, uint size, uint count, uint notify, uint user);
 
+    public class LJSetting
+    {
+        #region Field
+        /// <summary>
+        /// Specify to what level the sent settings will be reflected (LJV7IF_SETTING_DEPTH).
+        /// </summary>
+        private SettingDepth _depth;
 
-	/// <summary>
-	/// Function definitions
-	/// </summary>
-	public class NativeMethods
+        /// <summary>
+        /// Identify the item that is the target to send.
+        /// </summary>
+        private LJV7IF_TARGET_SETTING _targetSetting;
+
+        /// <summary>
+        /// Specify the buffer that stores the setting data to send.
+        /// </summary>
+        private byte[] _data;
+        #endregion
+
+        #region Property
+        /// <summary>
+        /// Specify to what level the sent settings will be reflected (LJV7IF_SETTING_DEPTH).
+        /// </summary>
+        public byte Depth
+        {
+            get { return  (byte)_depth; }
+        }
+
+        /// <summary>
+        /// Identify the item that is the target to send.
+        /// </summary>
+        public LJV7IF_TARGET_SETTING TargetSetting
+        {
+            get { return _targetSetting; }
+        }
+        public int DataLength
+        {
+            get { return Convert.ToInt32(_data.Length); }
+        }
+        /// <summary>
+        /// Specify the buffer that stores the setting data to send.
+        /// </summary>
+        public byte[] Data
+        {
+            get { return _data; }
+        }
+        #endregion
+        public LJSetting(string depth, string type, string category, string item, string target1, string target2, string target3, string target4, params string[] data)
+        {
+            _targetSetting = new LJV7IF_TARGET_SETTING();
+            _depth = (SettingDepth)Convert.ToByte(depth, 16);
+            _targetSetting.byType = Convert.ToByte(depth );
+            _targetSetting.byCategory = Convert.ToByte(category, 16);
+            _targetSetting.byItem = Convert.ToByte(item, 16);
+            _targetSetting.byTarget1 = Convert.ToByte(target1, 16);
+            _targetSetting.byTarget2 = Convert.ToByte(target2, 16);
+            _targetSetting.byTarget3 = Convert.ToByte(target3, 16);
+            _targetSetting.byTarget4 = Convert.ToByte(target4, 16);
+            var dataList = new System.Collections.Generic.List<byte>();
+            foreach(var val in data)
+            {
+               dataList.Add( Convert.ToByte(val, 16));
+            }
+            _data = dataList.ToArray();
+        }
+        public LJSetting(SettingDepth depth, SettingType type, byte category, byte item, byte target1, byte target2, byte target3, byte target4, params byte[] data)
+        {
+            _targetSetting = new LJV7IF_TARGET_SETTING();
+            _depth = depth ;
+            _targetSetting.byType =(byte) (type);
+            _targetSetting.byCategory = category;
+            _targetSetting.byItem = item;
+            _targetSetting.byTarget1 = target1;
+            _targetSetting.byTarget2 = target2;
+            _targetSetting.byTarget3 = target3;
+            _targetSetting.byTarget4 = target4;
+            var dataList = new System.Collections.Generic.List<byte>();
+            foreach (var val in data)
+            {
+                dataList.Add(val);
+            }
+            _data = dataList.ToArray();
+        }
+    }
+    /// <summary>
+    /// Function definitions
+    /// </summary>
+    public class NativeMethods
 	{
 		/// <summary>
 		/// Get measurement results (the data of all 16 OUTs, including those that are not being measured, is stored).

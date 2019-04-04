@@ -160,94 +160,65 @@ namespace BarrelLib
             }          
 
         }
-        public TwistProfile(string twistFileName)
-        {
-            OpenTXT(twistFileName);
-        }
-        double _length;
+        
         double _inchPerRev;
         int _twistDirection;
-        public TwistProfile(double length, double inchPerRevolution,DirectionEnum direction)
+       
+        void Build155mm()
         {
             _type = TwistType.Uniform;
-            _inchPerRev = inchPerRevolution;
-            Direction = direction;
-            _length = length;
-            if(Direction==DirectionEnum.LEFT_HAND)
-            {
-                _twistDirection = 1;
-            }
-            else
-            {
-                _twistDirection = -1;
-            }
-            int len = (int)Math.Ceiling(_length * 1000);
-            double dl = _length / 1000;
-            double dt = _twistDirection * (Math.PI * 2) / (inchPerRevolution * 1000);
-            _twist = new List<GeometryLib.PointCyl>();
-            for(int i=0;i<len;i++)
-            {
-               _twist[i] = new GeometryLib.PointCyl(1,i * dl, i * dt);
-            }
-        }
-        public TwistProfile(BarrelType type)
-        {
-            _type = TwistType.Uniform;
-            _twist = new List<GeometryLib.PointCyl>();
-            switch (type)
-            {
-                case BarrelType.M2_50_Cal:
-                    setM2Twist();
-                    break;
-                case BarrelType.M242_25mm:
-                    setM242Twist();
-                    break;                
-                case BarrelType.M284_155mm:
-                    setM284Twist();
-                    break;
-                case BarrelType.M240_762mm:
-                    setM240Twist();
-                    break;
-            }
-           
-        }        
-        void setM284Twist()
-        {
-            _type = TwistType.Uniform;
-            _length = 240;
+            
             _inchPerRev = 122;
             _twistDirection = -1;
         }
-        void setM242Twist()
+        void Build25mm()
         {
-            _type = TwistType.Progressive;
-            _length = 78;
+            _type = TwistType.Progressive;             
             _inchPerRev = 40;
             _twistDirection = -1;
         }
-        void setM240Twist()
+        void Build762mm()
         {
             _type = TwistType.Uniform;
-            _length = 30;
+            
             _inchPerRev = 12;
             _twistDirection = -1;
         }
-        void setM2Twist()
+        void Build50Cal()
         {
             _type = TwistType.Uniform;
-            _length = 48;
+             
             _inchPerRev = 15;
             _twistDirection = -1;
         }
-
-        public TwistProfile(GeometryLib.PointCyl[] points, TwistType type,DirectionEnum direction)
+        void Build50mm()
         {
 
-            _twist = points.ToList();
-            Direction = direction;
-            _type = type;
+        }
+        void Build30mm()
+        {
 
         }
+        void Init()
+        {
+            if (Name == "50Cal")
+                Build50Cal();
+            if (Name == "155mm")
+                Build155mm();
+            if (Name == "25mm")
+                Build25mm();
+            if (Name == "7.62mm")
+                Build762mm();
+            if (Name == "50mm")
+                Build50mm();
+            if (Name == "30mm")
+                Build30mm();
+        }
+        public TwistProfile(Barrel barrel)
+        {           
+            Init();
+        }
+       
     }
    
 }

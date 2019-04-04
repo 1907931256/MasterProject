@@ -44,16 +44,9 @@ namespace FileIOLib
             }
         }
         ///return <list> container of strings values from file with following format label delimiter value        
-        static public List<string> ReadParamsTextFile(string fileName, bool delimited, char[] delimiters)
+        static public List<string> ReadParamsTextFile(string fileName,  char[] delimiters)
         {
             List<string> file = new List<string>(0);
-
-            char[] sep = { ';', ',', '=' };
-
-            if (delimited && delimiters.Length > 0)
-            {
-                sep = delimiters;
-            }
             try{
                 if (fileName!= null && fileName != ""  && System.IO.File.Exists(fileName)) 
                 {
@@ -63,17 +56,10 @@ namespace FileIOLib
 
                         while ((line = sr.ReadLine()) != null)
                         {
-                            int index = line.IndexOfAny(sep);                            
+                            int index = line.IndexOfAny(delimiters);                            
                             if (line != "")
-                            {
-                                if (delimited && index >= 0)
-                                {
-                                    file.Add(line.Substring(index + 1));                              
-                                }
-                                if (!delimited)
-                                {
-                                    file.Add(line);
-                                }
+                            {                               
+                              file.Add(line.Substring(index + 1));
                             }
                         }
                     }

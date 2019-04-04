@@ -1,0 +1,10 @@
+﻿Name = 50Cal
+Length = 48
+LandMaxDiam = .501
+LandMinDiam = .4985
+GrooveCount = 8
+GrooveMinDiam = .509
+GrooveMaxDiam = .513
+LandMinWidth = .0537
+LandMaxWidth = .0589
+FirstGrooveThetaOffset = 0

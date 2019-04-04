@@ -48,7 +48,6 @@
     <Compile Include="ManufacturingData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwistProfile.cs" />
-    <Compile Include="TwistTypeEnum.cs" />
     <Compile Include="TwistValue.cs" />
     <Compile Include="BarrelProfile.cs" />
     <Compile Include="BarrelProfileType.cs" />
@@ -83,6 +82,8 @@
       <Name>ToolpathLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="50Cal_Dimensions.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

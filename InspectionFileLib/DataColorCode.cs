@@ -56,22 +56,5 @@ namespace InspectionLib
         {
             return ColorCoder.MapRainbowColor(pt.R, barrel.MinRadius(pt.Z, pt.ThetaRad), barrel.MaxRadius(pt.Z, pt.ThetaRad));            
         }
-
-        static RGBColor ColorbyGroove(Barrel barrel, PointCyl pt)
-        {
-            RGBColor c;
-            int gn = barrel.GetGrooveNumber(pt.Z, pt.ThetaRad);
-            if (gn >= 0)
-            {
-                c = new RGBColor(0.0f, 1.0f, 0.0f);
-            }
-            else
-            {
-                c = new RGBColor(0.0f, 0.0f, 1.0f);
-            }
-
-            return c;
-        }
-
     }
 }

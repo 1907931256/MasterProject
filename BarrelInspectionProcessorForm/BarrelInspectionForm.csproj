@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>BarrelInspectionProcessorForm</RootNamespace>
     <AssemblyName>BarrelInspectionProcessorForm2</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -30,7 +30,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -249,6 +249,10 @@
       <Project>{cc7eaa25-17db-4850-91f6-0b59bf335e2a}</Project>
       <Name>InspectionLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KeyenceLJLib\KeyenceLJLib.csproj">
+      <Project>{bad11684-79d4-4063-8551-e27efb5a7437}</Project>
+      <Name>KeyenceLJLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProbeController\ProbeController.csproj">
       <Project>{0b633261-c1b5-422f-a975-aa1df2878c71}</Project>
       <Name>ProbeController</Name>
@@ -290,6 +294,9 @@
     </Content>
     <Content Include="Barrel_Profiles\762mm_Dimensions.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LJV7_IF.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

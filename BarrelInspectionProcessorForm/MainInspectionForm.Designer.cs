@@ -74,12 +74,12 @@
             this.clearAllDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
             this.labelRadius2 = new System.Windows.Forms.Label();
-            this.labelNearestFilename = new System.Windows.Forms.Label();
             this.labelDxMeasured = new System.Windows.Forms.Label();
             this.labelDyMeasured = new System.Windows.Forms.Label();
             this.labelRadius1 = new System.Windows.Forms.Label();
             this.labelXPosition = new System.Windows.Forms.Label();
             this.labelYPosition = new System.Windows.Forms.Label();
+            this.labelNearestFilename = new System.Windows.Forms.Label();
             this.buttonSetRadius = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.textBoxCurrentRadius = new System.Windows.Forms.TextBox();
@@ -148,6 +148,13 @@
             this.buttonMeasureDepths = new System.Windows.Forms.Button();
             this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.checkBoxUseFilename = new System.Windows.Forms.CheckBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.buttonGetMultiProfile = new System.Windows.Forms.Button();
+            this.buttonGetSingleProfile = new System.Windows.Forms.Button();
+            this.buttonStopStorage = new System.Windows.Forms.Button();
+            this.buttonStartStorage = new System.Windows.Forms.Button();
+            this.buttonDisconnect = new System.Windows.Forms.Button();
+            this.buttonConnect = new System.Windows.Forms.Button();
             this.tabControlOutput = new System.Windows.Forms.TabControl();
             this.tabPageGraph = new System.Windows.Forms.TabPage();
             this.tabPageData = new System.Windows.Forms.TabPage();
@@ -168,6 +175,7 @@
             this.tabPage2.SuspendLayout();
             this.panelProbeInfo.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.tabControlOutput.SuspendLayout();
             this.tabPageGraph.SuspendLayout();
             this.tabPageData.SuspendLayout();
@@ -190,7 +198,7 @@
             this.buttonProcessFile.Location = new System.Drawing.Point(7, 37);
             this.buttonProcessFile.Margin = new System.Windows.Forms.Padding(2);
             this.buttonProcessFile.Name = "buttonProcessFile";
-            this.buttonProcessFile.Size = new System.Drawing.Size(95, 30);
+            this.buttonProcessFile.Size = new System.Drawing.Size(95, 25);
             this.buttonProcessFile.TabIndex = 3;
             this.buttonProcessFile.Text = "Process File";
             this.buttonProcessFile.UseVisualStyleBackColor = true;
@@ -392,14 +400,14 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.DimGray;
+            this.pictureBox1.BackColor = System.Drawing.Color.Silver;
             this.pictureBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(2, 2);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(500, 390);
+            this.pictureBox1.Size = new System.Drawing.Size(602, 512);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
@@ -443,16 +451,15 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.labelRadius2);
-            this.panel2.Controls.Add(this.labelNearestFilename);
             this.panel2.Controls.Add(this.labelDxMeasured);
             this.panel2.Controls.Add(this.labelDyMeasured);
             this.panel2.Controls.Add(this.labelRadius1);
             this.panel2.Controls.Add(this.labelXPosition);
             this.panel2.Controls.Add(this.labelYPosition);
-            this.panel2.Location = new System.Drawing.Point(7, 181);
+            this.panel2.Location = new System.Drawing.Point(7, 120);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(173, 310);
+            this.panel2.Size = new System.Drawing.Size(134, 310);
             this.panel2.TabIndex = 11;
             // 
             // labelRadius2
@@ -464,16 +471,6 @@
             this.labelRadius2.Size = new System.Drawing.Size(106, 13);
             this.labelRadius2.TabIndex = 4;
             this.labelRadius2.Text = "R2: 0.000000 inches";
-            // 
-            // labelNearestFilename
-            // 
-            this.labelNearestFilename.AutoSize = true;
-            this.labelNearestFilename.Location = new System.Drawing.Point(4, 8);
-            this.labelNearestFilename.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelNearestFilename.Name = "labelNearestFilename";
-            this.labelNearestFilename.Size = new System.Drawing.Size(26, 13);
-            this.labelNearestFilename.TabIndex = 3;
-            this.labelNearestFilename.Text = "File:";
             // 
             // labelDxMeasured
             // 
@@ -525,11 +522,21 @@
             this.labelYPosition.TabIndex = 0;
             this.labelYPosition.Text = "R: 0.000000 inches";
             // 
+            // labelNearestFilename
+            // 
+            this.labelNearestFilename.AutoSize = true;
+            this.labelNearestFilename.Location = new System.Drawing.Point(142, 59);
+            this.labelNearestFilename.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelNearestFilename.Name = "labelNearestFilename";
+            this.labelNearestFilename.Size = new System.Drawing.Size(26, 13);
+            this.labelNearestFilename.TabIndex = 3;
+            this.labelNearestFilename.Text = "File:";
+            // 
             // buttonSetRadius
             // 
             this.buttonSetRadius.Location = new System.Drawing.Point(7, 146);
             this.buttonSetRadius.Name = "buttonSetRadius";
-            this.buttonSetRadius.Size = new System.Drawing.Size(95, 30);
+            this.buttonSetRadius.Size = new System.Drawing.Size(95, 25);
             this.buttonSetRadius.TabIndex = 29;
             this.buttonSetRadius.Text = "Set Radius";
             this.buttonSetRadius.UseVisualStyleBackColor = true;
@@ -793,11 +800,11 @@
             // labelStatus
             // 
             this.labelStatus.AutoSize = true;
-            this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelStatus.Location = new System.Drawing.Point(4, 502);
+            this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelStatus.Location = new System.Drawing.Point(142, 76);
             this.labelStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(48, 16);
+            this.labelStatus.Size = new System.Drawing.Size(40, 13);
             this.labelStatus.TabIndex = 15;
             this.labelStatus.Text = "Status:";
             // 
@@ -954,10 +961,11 @@
             this.tabControlParams.Controls.Add(this.tabPage1);
             this.tabControlParams.Controls.Add(this.tabPage2);
             this.tabControlParams.Controls.Add(this.tabPage3);
+            this.tabControlParams.Controls.Add(this.tabPage5);
             this.tabControlParams.Location = new System.Drawing.Point(760, 23);
             this.tabControlParams.Name = "tabControlParams";
             this.tabControlParams.SelectedIndex = 0;
-            this.tabControlParams.Size = new System.Drawing.Size(323, 610);
+            this.tabControlParams.Size = new System.Drawing.Size(340, 610);
             this.tabControlParams.TabIndex = 24;
             // 
             // tabPage1
@@ -976,7 +984,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(315, 584);
+            this.tabPage1.Size = new System.Drawing.Size(332, 584);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Barrel Data";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1076,7 +1084,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(315, 584);
+            this.tabPage2.Size = new System.Drawing.Size(332, 584);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Inspection Params";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1177,7 +1185,7 @@
             this.tabPage3.Controls.Add(this.buttonProcessFile);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(315, 584);
+            this.tabPage3.Size = new System.Drawing.Size(332, 584);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Data processing";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1197,7 +1205,7 @@
             // 
             this.buttonMeasureDepths.Location = new System.Drawing.Point(7, 110);
             this.buttonMeasureDepths.Name = "buttonMeasureDepths";
-            this.buttonMeasureDepths.Size = new System.Drawing.Size(95, 30);
+            this.buttonMeasureDepths.Size = new System.Drawing.Size(95, 25);
             this.buttonMeasureDepths.TabIndex = 46;
             this.buttonMeasureDepths.Text = "Measure Depths";
             this.buttonMeasureDepths.UseVisualStyleBackColor = true;
@@ -1207,7 +1215,7 @@
             // 
             this.buttonBuildProfile.Location = new System.Drawing.Point(7, 74);
             this.buttonBuildProfile.Name = "buttonBuildProfile";
-            this.buttonBuildProfile.Size = new System.Drawing.Size(95, 30);
+            this.buttonBuildProfile.Size = new System.Drawing.Size(95, 25);
             this.buttonBuildProfile.TabIndex = 44;
             this.buttonBuildProfile.Text = "Build profile ";
             this.buttonBuildProfile.UseVisualStyleBackColor = true;
@@ -1225,16 +1233,104 @@
             this.checkBoxUseFilename.UseVisualStyleBackColor = true;
             this.checkBoxUseFilename.CheckedChanged += new System.EventHandler(this.checkBoxUseFilename_CheckedChanged_1);
             // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.buttonGetMultiProfile);
+            this.tabPage5.Controls.Add(this.buttonGetSingleProfile);
+            this.tabPage5.Controls.Add(this.buttonStopStorage);
+            this.tabPage5.Controls.Add(this.buttonStartStorage);
+            this.tabPage5.Controls.Add(this.buttonDisconnect);
+            this.tabPage5.Controls.Add(this.buttonConnect);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(332, 584);
+            this.tabPage5.TabIndex = 3;
+            this.tabPage5.Text = "Data Capture";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // buttonGetMultiProfile
+            // 
+            this.buttonGetMultiProfile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonGetMultiProfile.Location = new System.Drawing.Point(19, 168);
+            this.buttonGetMultiProfile.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonGetMultiProfile.Name = "buttonGetMultiProfile";
+            this.buttonGetMultiProfile.Size = new System.Drawing.Size(95, 25);
+            this.buttonGetMultiProfile.TabIndex = 9;
+            this.buttonGetMultiProfile.Text = "Get Multi Profiles";
+            this.buttonGetMultiProfile.UseVisualStyleBackColor = true;
+            this.buttonGetMultiProfile.Click += new System.EventHandler(this.buttonGetMultiProfile_Click);
+            // 
+            // buttonGetSingleProfile
+            // 
+            this.buttonGetSingleProfile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonGetSingleProfile.Location = new System.Drawing.Point(19, 140);
+            this.buttonGetSingleProfile.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonGetSingleProfile.Name = "buttonGetSingleProfile";
+            this.buttonGetSingleProfile.Size = new System.Drawing.Size(95, 25);
+            this.buttonGetSingleProfile.TabIndex = 8;
+            this.buttonGetSingleProfile.Text = "Get 1 Profile";
+            this.buttonGetSingleProfile.UseVisualStyleBackColor = true;
+            this.buttonGetSingleProfile.Click += new System.EventHandler(this.buttonGetSingleProfile_Click);
+            // 
+            // buttonStopStorage
+            // 
+            this.buttonStopStorage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonStopStorage.Location = new System.Drawing.Point(19, 112);
+            this.buttonStopStorage.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonStopStorage.Name = "buttonStopStorage";
+            this.buttonStopStorage.Size = new System.Drawing.Size(95, 25);
+            this.buttonStopStorage.TabIndex = 7;
+            this.buttonStopStorage.Text = "Stop Storage";
+            this.buttonStopStorage.UseVisualStyleBackColor = true;
+            this.buttonStopStorage.Click += new System.EventHandler(this.buttonStopStorage_Click);
+            // 
+            // buttonStartStorage
+            // 
+            this.buttonStartStorage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonStartStorage.Location = new System.Drawing.Point(19, 83);
+            this.buttonStartStorage.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonStartStorage.Name = "buttonStartStorage";
+            this.buttonStartStorage.Size = new System.Drawing.Size(95, 25);
+            this.buttonStartStorage.TabIndex = 6;
+            this.buttonStartStorage.Text = "Start Storage";
+            this.buttonStartStorage.UseVisualStyleBackColor = true;
+            this.buttonStartStorage.Click += new System.EventHandler(this.buttonStartStorage_Click);
+            // 
+            // buttonDisconnect
+            // 
+            this.buttonDisconnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonDisconnect.Location = new System.Drawing.Point(19, 54);
+            this.buttonDisconnect.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonDisconnect.Name = "buttonDisconnect";
+            this.buttonDisconnect.Size = new System.Drawing.Size(95, 25);
+            this.buttonDisconnect.TabIndex = 5;
+            this.buttonDisconnect.Text = "Disconnect";
+            this.buttonDisconnect.UseVisualStyleBackColor = true;
+            this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click);
+            // 
+            // buttonConnect
+            // 
+            this.buttonConnect.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonConnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonConnect.Location = new System.Drawing.Point(19, 25);
+            this.buttonConnect.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonConnect.Name = "buttonConnect";
+            this.buttonConnect.Size = new System.Drawing.Size(95, 25);
+            this.buttonConnect.TabIndex = 4;
+            this.buttonConnect.Text = "Connect";
+            this.buttonConnect.UseVisualStyleBackColor = false;
+            this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
+            // 
             // tabControlOutput
             // 
             this.tabControlOutput.Controls.Add(this.tabPageGraph);
             this.tabControlOutput.Controls.Add(this.tabPageData);
             this.tabControlOutput.Controls.Add(this.tabPage4);
-            this.tabControlOutput.Location = new System.Drawing.Point(184, 52);
+            this.tabControlOutput.Location = new System.Drawing.Point(145, 91);
             this.tabControlOutput.Margin = new System.Windows.Forms.Padding(2);
             this.tabControlOutput.Name = "tabControlOutput";
             this.tabControlOutput.SelectedIndex = 0;
-            this.tabControlOutput.Size = new System.Drawing.Size(512, 420);
+            this.tabControlOutput.Size = new System.Drawing.Size(614, 542);
             this.tabControlOutput.TabIndex = 25;
             // 
             // tabPageGraph
@@ -1244,7 +1340,7 @@
             this.tabPageGraph.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageGraph.Name = "tabPageGraph";
             this.tabPageGraph.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPageGraph.Size = new System.Drawing.Size(504, 394);
+            this.tabPageGraph.Size = new System.Drawing.Size(606, 516);
             this.tabPageGraph.TabIndex = 0;
             this.tabPageGraph.Text = "Profile";
             this.tabPageGraph.UseVisualStyleBackColor = true;
@@ -1256,7 +1352,7 @@
             this.tabPageData.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageData.Name = "tabPageData";
             this.tabPageData.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPageData.Size = new System.Drawing.Size(504, 394);
+            this.tabPageData.Size = new System.Drawing.Size(606, 516);
             this.tabPageData.TabIndex = 1;
             this.tabPageData.Text = "Data Output";
             this.tabPageData.UseVisualStyleBackColor = true;
@@ -1268,7 +1364,7 @@
             this.textBoxDataOut.Multiline = true;
             this.textBoxDataOut.Name = "textBoxDataOut";
             this.textBoxDataOut.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxDataOut.Size = new System.Drawing.Size(500, 390);
+            this.textBoxDataOut.Size = new System.Drawing.Size(602, 512);
             this.textBoxDataOut.TabIndex = 19;
             // 
             // tabPage4
@@ -1276,7 +1372,7 @@
             this.tabPage4.Controls.Add(this.elementHost1);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(504, 394);
+            this.tabPage4.Size = new System.Drawing.Size(606, 516);
             this.tabPage4.TabIndex = 2;
             this.tabPage4.Text = "3D View";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1287,16 +1383,16 @@
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.elementHost1.Location = new System.Drawing.Point(0, 0);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(504, 394);
+            this.elementHost1.Size = new System.Drawing.Size(606, 516);
             this.elementHost1.TabIndex = 0;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.userControl11;
             // 
             // progressBarProcessing
             // 
-            this.progressBarProcessing.Location = new System.Drawing.Point(9, 532);
+            this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
             this.progressBarProcessing.Name = "progressBarProcessing";
-            this.progressBarProcessing.Size = new System.Drawing.Size(171, 23);
+            this.progressBarProcessing.Size = new System.Drawing.Size(132, 23);
             this.progressBarProcessing.TabIndex = 26;
             // 
             // MainInspectionForm
@@ -1304,6 +1400,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1120, 635);
+            this.Controls.Add(this.labelNearestFilename);
             this.Controls.Add(this.progressBarProcessing);
             this.Controls.Add(this.tabControlOutput);
             this.Controls.Add(this.tabControlParams);
@@ -1339,6 +1436,7 @@
             this.panelProbeInfo.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
             this.tabControlOutput.ResumeLayout(false);
             this.tabPageGraph.ResumeLayout(false);
             this.tabPageData.ResumeLayout(false);
@@ -1462,6 +1560,13 @@
         private System.Windows.Forms.ToolStripMenuItem clearAllDataToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBoxOverLayCad;
         private System.Windows.Forms.Label labelRadius2;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Button buttonGetMultiProfile;
+        private System.Windows.Forms.Button buttonGetSingleProfile;
+        private System.Windows.Forms.Button buttonStopStorage;
+        private System.Windows.Forms.Button buttonStartStorage;
+        private System.Windows.Forms.Button buttonDisconnect;
+        private System.Windows.Forms.Button buttonConnect;
     }
 }
 

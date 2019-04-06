@@ -11,40 +11,27 @@ using BarrelLib;
 
 namespace InspectionLib
 {
-    public class RasterDataSet:InspDataSet
-    {
-        public CylData CorrectedCylData { get; set; }
-        public RasterDataSet(string filename) : base( filename)
-        {
-            CorrectedCylData = new CylData(FileName);             
-        }
-    }
-    public class AxialDataSet:InspDataSet
-    {
-        public CylData CorrectedCylData { get; set; }
-        public CylData UncorrectedCylData { get; set; }
-        public AxialDataSet( string filename) : base( filename)
-        {
-            CorrectedCylData = new CylData(FileName);
-            UncorrectedCylData = new CylData(FileName);
-        }
-    }
-   
+    
     public class SpiralDataSet:InspDataSet
     {
-        public CylGridData CorrectedSpiralData { get; set; }
+        public CylGridData SpiralData { get; set; }
         public CylGridData UncorrectedSpiralData { get; set; }
         public SpiralDataSet(string filename) : base( filename)
         {
-            CorrectedSpiralData = new CylGridData();
+            SpiralData = new CylGridData();
+            UncorrectedSpiralData = new CylGridData();
+        }
+        public SpiralDataSet()
+        { 
+            SpiralData = new CylGridData();
             UncorrectedSpiralData = new CylGridData();
         }
     }
-    public class RingDataSet : InspDataSet
+    public class RingDataSet : CylDataSet
     {
         public double NominalMinDiam { get; set; }
-        public CylData CorrectedCylData { get; set; }
-        public CylData UncorrectedCylData { get; set; }
+        //public CylData CylData { get; set; }
+        
         public CylData RawLandPoints { get; set; }
         public CylData CorrectedLandPoints { get; set; }
         double getRVariation(CylData pts)
@@ -74,19 +61,31 @@ namespace InspectionLib
             return getRVariation(RawLandPoints);
         }
         public RingDataSet( string filename) : base( filename)
-        {
-            CorrectedCylData = new CylData(FileName);
-            UncorrectedCylData = new CylData(FileName);
+        {          
+            
             RawLandPoints = new CylData(filename);
             CorrectedLandPoints = new CylData(filename);
+        }
+        public RingDataSet()
+        {
+
+            RawLandPoints = new CylData();
+            CorrectedLandPoints = new CylData();
         }
     }
     public class CylDataSet :InspDataSet
     {
         public CylData CylData { get; set; }
+        public CylData UncorrectedCylData { get; set; }
         public CylDataSet(string filename) : base( filename)
         {
             CylData = new CylData(filename);
+            UncorrectedCylData = new CylData(FileName);
+        }
+        public CylDataSet()
+        {
+            CylData = new CylData();
+            UncorrectedCylData = new CylData();
         }
     }
     public class CartDataSet:InspDataSet
@@ -95,9 +94,14 @@ namespace InspectionLib
         
         public CartDataSet( string filename) : base( filename)
         {
-            CartData = new CartData(filename);
-           
+            CartData = new CartData(filename);           
         }
+        public CartDataSet()
+        {
+            CartData = new CartData();
+        }
+
+
     }
     public class CartGridDataSet : InspDataSet
     {
@@ -112,6 +116,10 @@ namespace InspectionLib
     {        
         public ScanFormat DataFormat { get;  set; }
         public string FileName { get;  set; }
+        public InspDataSet()
+        {
+
+        }
         public InspDataSet(string filename)
         {  
             FileName = filename;

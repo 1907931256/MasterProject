@@ -167,5 +167,9 @@ namespace DataLib
         {
             FileName = filename;
         }
+        public CylData()
+        {
+            
+        }
     }
 }

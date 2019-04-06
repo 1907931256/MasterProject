@@ -410,14 +410,14 @@ namespace SurfaceModel
         }
         protected void BuildFromDXF(string dxfFilename)
         {
-            Entities = DwgConverterLib.DxfFileParser.Parse(dxfFilename);
-            cartDisplayData = DwgConverterLib.DxfFileParser.AsDisplayData(Entities, MeshSize, ViewPlane.XY);
+            Entities = DxfFileParser.Parse(dxfFilename);
+            cartDisplayData = DxfFileParser.AsDisplayData(Entities, MeshSize, ViewPlane.XY);
             cartDisplayData.FileName = dxfFilename;
             cylDisplayData = new DisplayData(dxfFilename);
             foreach (var pt in cartDisplayData)
             {
                 PointCyl ptc = new PointCyl(new Vector3(pt.X, pt.Y, 0));
-                PointF ptf = new PointF((float)ptc.ThetaDeg, (float)ptc.R);
+                PointF ptf = new PointF((float)ptc.ThetaDegPosOnly, (float)ptc.R);
                 cylDisplayData.Add(ptf);
             }
             cylDisplayData.FileName = dxfFilename;

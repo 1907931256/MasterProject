@@ -57,6 +57,10 @@
       <Project>{16378d09-19aa-45e1-b27c-3fbf6c33d19d}</Project>
       <Name>FileIOLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GeometryLib\GeometryLib.csproj">
+      <Project>{9ad06540-598d-4c01-ab09-4e68ca4fad28}</Project>
+      <Name>GeometryLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KeyenceLJLib\KeyenceLJLib.csproj">
       <Project>{bad11684-79d4-4063-8551-e27efb5a7437}</Project>
       <Name>KeyenceLJLib</Name>

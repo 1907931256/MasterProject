@@ -40,10 +40,10 @@ namespace InspectionLib
                 {
                     throw new Exception("Axial increment cannot equal zero.");
                 }
-                var dataSet = new AxialDataSet( script.InputDataFileName);               
+                var dataSet = new CylDataSet( script.InputDataFileName);               
                 for (int i = 0; i < len; i++)
                 {
-                    dataSet.CorrectedCylData.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
+                    dataSet.CylData.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
                 }
                
                 return dataSet;

@@ -451,7 +451,7 @@ namespace KeyenceLJLib
         /// <summary>
         /// Specify to what level the sent settings will be reflected (LJV7IF_SETTING_DEPTH).
         /// </summary>
-        private SettingDepth _depth;
+        private byte _depth;
 
         /// <summary>
         /// Identify the item that is the target to send.
@@ -470,7 +470,7 @@ namespace KeyenceLJLib
         /// </summary>
         public byte Depth
         {
-            get { return  (byte)_depth; }
+            get { return   _depth; }
         }
 
         /// <summary>
@@ -492,25 +492,8 @@ namespace KeyenceLJLib
             get { return _data; }
         }
         #endregion
-        public LJSetting(string depth, string type, string category, string item, string target1, string target2, string target3, string target4, params string[] data)
-        {
-            _targetSetting = new LJV7IF_TARGET_SETTING();
-            _depth = (SettingDepth)Convert.ToByte(depth, 16);
-            _targetSetting.byType = Convert.ToByte(depth );
-            _targetSetting.byCategory = Convert.ToByte(category, 16);
-            _targetSetting.byItem = Convert.ToByte(item, 16);
-            _targetSetting.byTarget1 = Convert.ToByte(target1, 16);
-            _targetSetting.byTarget2 = Convert.ToByte(target2, 16);
-            _targetSetting.byTarget3 = Convert.ToByte(target3, 16);
-            _targetSetting.byTarget4 = Convert.ToByte(target4, 16);
-            var dataList = new System.Collections.Generic.List<byte>();
-            foreach(var val in data)
-            {
-               dataList.Add( Convert.ToByte(val, 16));
-            }
-            _data = dataList.ToArray();
-        }
-        public LJSetting(SettingDepth depth, SettingType type, byte category, byte item, byte target1, byte target2, byte target3, byte target4, params byte[] data)
+       
+        public LJSetting(byte depth, byte type, byte category, byte item, byte target1, byte target2, byte target3, byte target4, params byte[] data)
         {
             _targetSetting = new LJV7IF_TARGET_SETTING();
             _depth = depth ;

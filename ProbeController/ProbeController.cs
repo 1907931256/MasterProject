@@ -93,24 +93,27 @@ namespace ProbeController
         /// <summary>Array of profile information structures</summary>
         private LJV7IF_PROFILE_INFO[] _profileInfo;
         /// <summary>Array of controller information</summary>
-        private DeviceData[] _deviceData;
+        private DeviceData _deviceData;
         /// <summary>Array of labels that indicate the controller status</summary>
 
         bool _connected;
-        public bool Connect()
+       
+
+        public bool Connect( )
         {
             try
             {
-                
-                var rc = (Rc)NativeMethods.LJV7IF_Initialize();
-                Thread.Sleep(100);
+                Rc rc = Rc.Ok;
+                rc = (Rc)NativeMethods.LJV7IF_Initialize();
                 if (CheckReturnValue(rc))
                 {
                     rc = (Rc)NativeMethods.LJV7IF_UsbOpen(Define.DEVICE_ID);
-                    Thread.Sleep(100);                    
+                    if (CheckReturnValue(rc))
+                    {
+                        _connected = true;
+                    }
                 }
-                _connected = true;
-                return CheckReturnValue(rc);
+                return _connected;
             }
             catch (Exception)
             {
@@ -118,6 +121,34 @@ namespace ProbeController
                 throw;
             }
             
+        }
+        public bool Connect(string ip1,string ip2,string ip3,string ip4, string port)
+        {
+            try
+            {
+                Rc rc = Rc.Ok;
+                rc = (Rc)NativeMethods.LJV7IF_Initialize();
+                if (CheckReturnValue(rc))
+                {
+                    _ethernetConfig.abyIpAddress = new byte[] {
+                        Convert.ToByte(ip1),
+                        Convert.ToByte(ip2),
+                        Convert.ToByte(ip3),
+                        Convert.ToByte(ip4)
+                        };
+                    _ethernetConfig.wPortNo = Convert.ToUInt16(port);
+                    rc = (Rc)NativeMethods.LJV7IF_EthernetOpen(Define.DEVICE_ID, ref _ethernetConfig);
+                    if (CheckReturnValue(rc))
+                    {
+                        _connected = true;
+                    }
+                }
+                return _connected;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         public bool Disconnect()
         {
@@ -201,7 +232,7 @@ namespace ProbeController
                 byte target3 = 0x00;
                 byte target4 = 0x00;
                 byte[] data = new byte[1] { Convert.ToByte(lJTriggerType) };
-                var setting = new LJSetting(SettingDepth.Running, SettingType.Program00, category, item, target1, target2, target3, target4, data);
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
                 return SetSetting(setting);
             }
             catch (Exception)
@@ -221,7 +252,7 @@ namespace ProbeController
                 byte target3 = 0x00;
                 byte target4 = 0x00;
                 byte[] data = new byte[1] { Convert.ToByte(LJSamplingFrequency.F100Hz) };
-                var setting = new LJSetting(SettingDepth.Running, SettingType.Program00, category, item, target1, target2, target3, target4, data);
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
                 data = GetSetting(setting);
                 LJSamplingFrequency fOut = (LJSamplingFrequency)(Convert.ToUInt32(data[0]));
                 return fOut;
@@ -243,7 +274,7 @@ namespace ProbeController
                 byte target3 = 0x00;
                 byte target4 = 0x00;
                 byte[] data = new byte[1] { Convert.ToByte(lJSamplingFrequency) };
-                var setting = new LJSetting(SettingDepth.Running, SettingType.Program00, category, item, target1, target2, target3, target4, data);
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
                 return SetSetting(setting);
             }
             catch (Exception)
@@ -263,12 +294,11 @@ namespace ProbeController
                 byte target3 = 0x00;
                 byte target4 = 0x00;
                 byte data = Convert.ToByte(batchModeOn);
-                var setting = new LJSetting(SettingDepth.Running, SettingType.Program00, category, item, target1, target2, target3, target4, data);
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
                 return SetSetting(setting);
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -324,7 +354,7 @@ namespace ProbeController
                 throw;
             }
         }
-        bool StartStorage()
+        public bool StartStorage()
         {
             try
             {
@@ -339,7 +369,7 @@ namespace ProbeController
                 throw;
             }
         }
-        bool StopStorage()
+        public bool StopStorage()
         {
             try
             {
@@ -403,40 +433,98 @@ namespace ProbeController
 		/// <returns>Data size of one profile (in units of bytes)</returns>
 		private uint GetOneProfileDataSize()
         {
-            // Buffer size (in units of bytes)
-            uint retBuffSize = 0;
-            _envelopeMode = true;
-            // Basic size
-            int basicSize = (int)Define.MEASURE_RANGE_FULL / (int)Define.RECEIVED_BINNING_OFF;
-            basicSize /= (int)Define.COMPRESS_X_OFF;
+            try
+            {
+                // Buffer size (in units of bytes)
+                uint retBuffSize = 0;
+                _envelopeMode = true;
+                // Basic size
+                int basicSize = (int)Define.MEASURE_RANGE_FULL / (int)Define.RECEIVED_BINNING_OFF;
+                basicSize /= (int)Define.COMPRESS_X_OFF;
 
-            // Number of headers
-            retBuffSize += (uint)basicSize * _probeSetup.ProbeCount;
+                // Number of headers
+                retBuffSize += (uint)basicSize * _probeSetup.ProbeCount;
 
-            // Envelope setting
-            retBuffSize *= (_envelopeMode ? 2U : 1U);
+                // Envelope setting
+                retBuffSize *= (_envelopeMode ? 2U : 1U);
 
-            //in units of bytes
-            retBuffSize *= (uint)Marshal.SizeOf(typeof(uint));
+                //in units of bytes
+                retBuffSize *= (uint)Marshal.SizeOf(typeof(uint));
 
-            // Sizes of the header and footer structures
-            LJV7IF_PROFILE_HEADER profileHeader = new LJV7IF_PROFILE_HEADER();
-            retBuffSize += (uint)Marshal.SizeOf(profileHeader);
-            LJV7IF_PROFILE_FOOTER profileFooter = new LJV7IF_PROFILE_FOOTER();
-            retBuffSize += (uint)Marshal.SizeOf(profileFooter);
+                // Sizes of the header and footer structures
+                LJV7IF_PROFILE_HEADER profileHeader = new LJV7IF_PROFILE_HEADER();
+                retBuffSize += (uint)Marshal.SizeOf(profileHeader);
+                LJV7IF_PROFILE_FOOTER profileFooter = new LJV7IF_PROFILE_FOOTER();
+                retBuffSize += (uint)Marshal.SizeOf(profileFooter);
 
-            return retBuffSize;
+                return retBuffSize;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
+        LJV7IF_STORAGE_INFO GetStorageStatus()
+        {
+            try
+            {
+                LJV7IF_GET_STRAGE_STATUS_REQ req = new LJV7IF_GET_STRAGE_STATUS_REQ() { dwRdArea = 0 };
+                // @Point
+                // # dwReadArea is the target surface to read.
+                //   The target surface to read indicates where in the internal memory usage area to read.
+                // # The method to use in specifying dwReadArea varies depending on how internal memory is allocated.
+                //   * Double buffer
+                //      0 indicates the active surface, 1 indicates surface A, and 2 indicates surface B.
+                //   * Entire area (overwrite)
+                //      Fixed to 1
+                //   * Entire area (do not overwrite)
+                //      After a setting modification, data is saved in surfaces 1, 2, 3, and so on in order, and 0 is set as the active surface.
+                // # For details, see "9.2.9.2 Internal memory."
 
-        private List<DataLib.CartData> GetStoredProfiles()
+                LJV7IF_GET_STRAGE_STATUS_RSP rsp = new LJV7IF_GET_STRAGE_STATUS_RSP();
+                LJV7IF_STORAGE_INFO storageInfo = new LJV7IF_STORAGE_INFO();
+
+                int rc = NativeMethods.LJV7IF_GetStorageStatus(_currentDeviceId, ref req, ref rsp, ref storageInfo);
+                // @Point
+                // # Terminology	
+                //  * Base time … time expressed with 32 bits (<- the time when the setting was changed)
+                //  * Accumulated date and time	 … counter value that indicates the elapsed time, in units of 10 ms, from the base time
+                // # The accumulated date and time are stored in the accumulated data.
+                // # The accumulated time of read data is calculated as shown below.
+                //   Accumulated time = "base time (stBaseTime of LJV7IF_GET_STORAGE_RSP)" + "accumulated date and time × 10 ms"
+
+                return storageInfo;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public List<DataLib.CartData> GetAllStoredProfiles()
+        {
+            try
+            {
+                var storageInfo = GetStorageStatus();
+                return GetStoredProfiles(storageInfo.dwStorageCnt);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public List<DataLib.CartData> GetStoredProfiles(uint profileCount)
         {
             try
             {
                 _sendCommand = SendCommand.GetStorageProfile;
-                _deviceData[_currentDeviceId].ProfileData.Clear();
-                _deviceData[_currentDeviceId].MeasureData.Clear();
+                _deviceData.ProfileData.Clear();
+                _deviceData.MeasureData.Clear();
                 _measureDatas.Clear();
-                LJV7IF_GET_STORAGE_REQ req = new LJV7IF_GET_STORAGE_REQ() { dwDataCnt = 1, dwStartNo = 0, dwSurface = 0 };
+                LJV7IF_GET_STORAGE_REQ req = new LJV7IF_GET_STORAGE_REQ() { dwDataCnt = profileCount, dwStartNo = 0, dwSurface = 0 };
                 // @Point
                 // # dwReadArea is the target surface to read.
                 //   The target surface to read indicates where in the internal memory usage area to read.
@@ -495,12 +583,12 @@ namespace ProbeController
                         for (int i = 0; i < (int)rsp.dwDataCnt; i++)
                         {
                             _measureDatas.Add(new MeasureData(receiveData, byteSize * i));
-                            _deviceData[_currentDeviceId].ProfileData.Add(new ProfileData(receiveData, (measureDataSize + byteSize * i), profileInfo));
+                            _deviceData.ProfileData.Add(new ProfileData(receiveData, (measureDataSize + byteSize * i), profileInfo));
                             Buffer.BlockCopy(receiveData, (measureDataSize + profileDataSize + byteSize * i), tempRecMeasureData, 0, profileMeasureDataSize);
-                            _deviceData[_currentDeviceId].MeasureData.Add(new MeasureData(tempRecMeasureData));
+                            _deviceData.MeasureData.Add(new MeasureData(tempRecMeasureData));
                         }
 
-                        foreach (var profile in _deviceData[_currentDeviceId].ProfileData)
+                        foreach (var profile in _deviceData.ProfileData)
                         {
                             profDataList.Add(profile.AsCartData(_scalingMultiplier));
                         }
@@ -523,9 +611,36 @@ namespace ProbeController
                 var data = new DataLib.CartData();
                 if(_connected)
                 {
+                    _sendCommand = SendCommand.GetProfileAdvance;
+                    _deviceData.ProfileData.Clear();
+                    _deviceData.MeasureData.Clear();
+                    _measureDatas.Clear();
 
+                    // Set the command function
+                    LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
+                    uint dataSize = GetOneProfileDataSize();
+                    int[] profileData = new int[dataSize / Marshal.SizeOf(typeof(int))];
+                    LJV7IF_MEASURE_DATA[] measureData = new LJV7IF_MEASURE_DATA[NativeMethods.MeasurementDataCount];
+
+                    using (PinnedObject pin = new PinnedObject(profileData))
+                    {
+                        // Send the command
+                        int rc = NativeMethods.LJV7IF_GetProfileAdvance(_currentDeviceId, ref profileInfo, pin.Pointer, dataSize, measureData);
+
+                        // Result output
+                       
+                        if (rc == (int)Rc.Ok)
+                        {
+                            // Response data display
+                           
+
+                            _measureDatas.Add(new MeasureData(0, measureData));
+                            ExtractProfileData(1, ref profileInfo, profileData);
+                        }
+                    }
                 }
-                return data;
+                return FilterData( _deviceData.ProfileData[0].AsCartData(1));
+                
             }
             catch (Exception)
             {
@@ -533,14 +648,87 @@ namespace ProbeController
                 throw;
             }
         }
+        DataLib.CartData FilterData(DataLib.CartData cartData)
+        {
+            var outData = new DataLib.CartData();
+            foreach(var pt in cartData)
+            {
+                if(Math.Abs(pt.Y)<1e6)
+                {
+                    outData.Add(pt);
+                }
+            }
+            return outData;
+        }
+        /// <summary>
+        /// AnalyzeProfileData
+        /// </summary>
+        /// <param name="profileCount">Number of profiles that were read</param>
+        /// <param name="profileInfo">Profile information structure</param>
+        /// <param name="profileData">Acquired profile data</param>
+        private void ExtractProfileData(int profileCount, ref LJV7IF_PROFILE_INFO profileInfo, int[] profileData)
+        {
+            try
+            {
+                int dataUnit = ProfileData.CalculateDataSize(profileInfo);
+                ExtractProfileData(profileCount, ref profileInfo, profileData, 0, dataUnit);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+
+        /// <summary>
+        /// AnalyzeProfileData
+        /// </summary>
+        /// <param name="profileCount">Number of profiles that were read</param>
+        /// <param name="profileInfo">Profile information structure</param>
+        /// <param name="profileData">Acquired profile data</param>
+        /// <param name="startProfileIndex">Start position of the profiles to copy</param>
+        /// <param name="dataUnit">Profile data size</param>
+        private void ExtractProfileData(int profileCount, ref LJV7IF_PROFILE_INFO profileInfo, int[] profileData, int startProfileIndex, int dataUnit)
+        {
+            try
+            {
+                int readPropfileDataSize = ProfileData.CalculateDataSize(profileInfo);
+                int[] tempRecvieProfileData = new int[readPropfileDataSize];
+
+                // Profile data retention
+                for (int i = 0; i < profileCount; i++)
+                {
+                    Array.Copy(profileData, (startProfileIndex + i * dataUnit), tempRecvieProfileData, 0, readPropfileDataSize);
+
+                    _deviceData.ProfileData.Add(new ProfileData(tempRecvieProfileData, profileInfo));
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
         MeasurementUnit _outputUnit;
         double _scalingMultiplier;
+        public static List<string> FrequencyList { get; private set; }
+        public static List<string> TriggerTypeList { get; private set; }
+
+        static LJController()
+        {
+            FrequencyList = new List<string>() { "10Hz", "20Hz", "50Hz", "100Hz", "200Hz", "500Hz", "1KHz", "2KHz", "4KHz", "4.13KHz", "8KHz", "32KHz", "64KHz" };
+            TriggerTypeList = new List<string>() { "Continuous", "External", "Encoder" };
+        }
         public LJController(ProbeSetup probeSetup,MeasurementUnit outputUnit)
         {
             _probeSetup = probeSetup;
             _outputUnit = outputUnit;
             _scalingMultiplier = Define.PROFILE_UNIT_MM / outputUnit.ConversionFactor;
-
+            var _batchModeParms = new byte[8] {(byte)SettingDepth.Running,(byte)SettingType.Program00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00 };
+            _deviceData = new DeviceData();
+            _measureDatas = new List<MeasureData>();
         }
     }
     public enum LJTriggerType

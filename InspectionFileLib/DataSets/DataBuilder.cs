@@ -178,7 +178,7 @@ namespace InspectionLib
                     //find polynomial fit for lands and correct for eccentricity        
 
                     var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction, script.CalDataSet.NominalRadius);
-                    dataSet.CorrectedSpiralData.Add(correctedRing);
+                    dataSet.SpiralData.Add(correctedRing);
                     int p = (int)(100 * i / totalrings);
                     progress.Report(p);
                     i++;
@@ -230,7 +230,7 @@ namespace InspectionLib
                 double r = 0;
                 double nextZ = script.StartLocation.X + script.AxialIncrement;
                 double direction = 1;
-                var dataSet = new RasterDataSet(script.InputDataFileName);
+                var dataSet = new CylDataSet(script.InputDataFileName);
                 for (int i = 0; i < data.Length; i++)
                 {
 
@@ -262,7 +262,7 @@ namespace InspectionLib
 
                     r = data[i];
                     var pt = new PointCyl(r, GeomUtilities.ToRadians(theta), z, i);
-                    dataSet.CorrectedCylData.Add(pt);
+                    dataSet.CylData.Add(pt);
                 }
                 return dataSet;
             }
@@ -746,8 +746,8 @@ namespace InspectionLib
                 var dataSet = new RingDataSet(script.InputDataFileName);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution, grooveCount);
-                dataSet.CorrectedCylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction, script.CalDataSet.NominalRadius);
-                dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CorrectedCylData, script.PointsPerRevolution, grooveCount);
+                dataSet.CylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction, script.CalDataSet.NominalRadius);
+                dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CylData, script.PointsPerRevolution, grooveCount);
                 return dataSet;
             }
             catch (Exception)

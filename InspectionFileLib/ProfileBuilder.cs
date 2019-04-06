@@ -30,11 +30,11 @@ namespace InspectionLib
                 {
                     if(dataset is RingDataSet ringData)
                     {
-                        var inspData =ringData.CorrectedCylData;
+                        var inspData =ringData.CylData;
 
                         var groovePoints = new CylData(inspDataSets[0].FileName);
                         var landPoints = new CylData(inspDataSets[0].FileName);                        
-                        int pointCt = ringData.CorrectedCylData.Count;
+                        int pointCt = ringData.CylData.Count;
                         int deltaIndex = pointCt / grooveCount;
 
                         int[] grooveIndices = new int[grooveCount];
@@ -106,9 +106,9 @@ namespace InspectionLib
                 int minLength = int.MaxValue;
                 foreach(InspDataSet dataset in inspDataSets)
                 {
-                    if(dataset  is AxialDataSet axialData)
+                    if(dataset  is CylDataSet cylData)
                     {
-                        int len = axialData.CorrectedCylData.Count;
+                        int len = cylData.CylData.Count;
                         if (len < minLength)
                         {
                             minLength = len;
@@ -126,18 +126,18 @@ namespace InspectionLib
                     double th = 0;
                     foreach (InspDataSet dataset in inspDataSets)
                     {
-                        if (dataset is AxialDataSet axialData)
+                        if (dataset is CylDataSet cylData)
                         {
-                            z = axialData.CorrectedCylData[j].Z;
-                            th = axialData.CorrectedCylData[j].ThetaRad;
-                            if (axialData.DataFormat == ScanFormat.LAND)
+                            z = cylData.CylData[j].Z;
+                            th = cylData.CylData[j].ThetaRad;
+                            if (cylData.DataFormat == ScanFormat.LAND)
                             {
-                                landRadius += axialData.CorrectedCylData[j].R;
+                                landRadius += cylData.CylData[j].R;
                                 landCount++;
                             }
-                            if (axialData.DataFormat == ScanFormat.GROOVE)
+                            if (cylData.DataFormat == ScanFormat.GROOVE)
                             {
-                                grooveRadius += axialData.CorrectedCylData[j].R;
+                                grooveRadius += cylData.CylData[j].R;
                                 grooveCount++;
                             }
                         }

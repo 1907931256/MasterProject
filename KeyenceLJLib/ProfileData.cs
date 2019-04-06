@@ -209,10 +209,11 @@ namespace KeyenceLJLib
             var cartData = new DataLib.CartData();
             int singleProfileCount = ProfInfo.wProfDataCnt;
             int dataCount = (int)ProfInfo.byProfileCnt * (ProfInfo.byEnvelope + 1);
+            scalingMultiplier = 1;
 
             for (int i = 0; i < singleProfileCount; i++)
             {
-                var v = new GeometryLib.Vector3(posX + deltaX * i, scalingMultiplier*_profData[i],0);
+                var v = new GeometryLib.Vector3(scalingMultiplier * (posX + deltaX * i), scalingMultiplier*_profData[i],0);
                 cartData.Add(v);               
             }
             return cartData;

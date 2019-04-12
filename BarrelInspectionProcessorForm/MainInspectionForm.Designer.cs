@@ -149,6 +149,8 @@
             this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.checkBoxUseFilename = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.labelConnStatus = new System.Windows.Forms.Label();
+            this.labelProfileCount = new System.Windows.Forms.Label();
             this.buttonGetMultiProfile = new System.Windows.Forms.Button();
             this.buttonGetSingleProfile = new System.Windows.Forms.Button();
             this.buttonStopStorage = new System.Windows.Forms.Button();
@@ -160,10 +162,11 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
+            this.timerHighSpeedReceive = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -1235,6 +1238,8 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.labelConnStatus);
+            this.tabPage5.Controls.Add(this.labelProfileCount);
             this.tabPage5.Controls.Add(this.buttonGetMultiProfile);
             this.tabPage5.Controls.Add(this.buttonGetSingleProfile);
             this.tabPage5.Controls.Add(this.buttonStopStorage);
@@ -1247,6 +1252,24 @@
             this.tabPage5.TabIndex = 3;
             this.tabPage5.Text = "Data Capture";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // labelConnStatus
+            // 
+            this.labelConnStatus.AutoSize = true;
+            this.labelConnStatus.Location = new System.Drawing.Point(119, 29);
+            this.labelConnStatus.Name = "labelConnStatus";
+            this.labelConnStatus.Size = new System.Drawing.Size(73, 13);
+            this.labelConnStatus.TabIndex = 11;
+            this.labelConnStatus.Text = "Disconnected";
+            // 
+            // labelProfileCount
+            // 
+            this.labelProfileCount.AutoSize = true;
+            this.labelProfileCount.Location = new System.Drawing.Point(119, 174);
+            this.labelProfileCount.Name = "labelProfileCount";
+            this.labelProfileCount.Size = new System.Drawing.Size(70, 13);
+            this.labelProfileCount.TabIndex = 10;
+            this.labelProfileCount.Text = "Profile Count:";
             // 
             // buttonGetMultiProfile
             // 
@@ -1378,6 +1401,13 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
+            // progressBarProcessing
+            // 
+            this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
+            this.progressBarProcessing.Name = "progressBarProcessing";
+            this.progressBarProcessing.Size = new System.Drawing.Size(132, 23);
+            this.progressBarProcessing.TabIndex = 26;
+            // 
             // elementHost1
             // 
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1388,12 +1418,9 @@
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.userControl11;
             // 
-            // progressBarProcessing
+            // timerHighSpeedReceive
             // 
-            this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
-            this.progressBarProcessing.Name = "progressBarProcessing";
-            this.progressBarProcessing.Size = new System.Drawing.Size(132, 23);
-            this.progressBarProcessing.TabIndex = 26;
+            this.timerHighSpeedReceive.Interval = 500;
             // 
             // MainInspectionForm
             // 
@@ -1437,6 +1464,7 @@
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.tabControlOutput.ResumeLayout(false);
             this.tabPageGraph.ResumeLayout(false);
             this.tabPageData.ResumeLayout(false);
@@ -1567,6 +1595,9 @@
         private System.Windows.Forms.Button buttonStartStorage;
         private System.Windows.Forms.Button buttonDisconnect;
         private System.Windows.Forms.Button buttonConnect;
+        private System.Windows.Forms.Label labelConnStatus;
+        private System.Windows.Forms.Label labelProfileCount;
+        private System.Windows.Forms.Timer timerHighSpeedReceive;
     }
 }
 

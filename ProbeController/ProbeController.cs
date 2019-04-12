@@ -103,16 +103,12 @@ namespace ProbeController
         {
             try
             {
-                Rc rc = Rc.Ok;
+                 
                 rc = (Rc)NativeMethods.LJV7IF_Initialize();
-                if (CheckReturnValue(rc))
-                {
-                    rc = (Rc)NativeMethods.LJV7IF_UsbOpen(Define.DEVICE_ID);
-                    if (CheckReturnValue(rc))
-                    {
-                        _connected = true;
-                    }
-                }
+                CheckReturnValue(rc);
+                rc = (Rc)NativeMethods.LJV7IF_UsbOpen(Define.DEVICE_ID);
+                CheckReturnValue(rc);
+                _connected = true;
                 return _connected;
             }
             catch (Exception)
@@ -122,27 +118,24 @@ namespace ProbeController
             }
             
         }
+        Rc rc;
         public bool Connect(string ip1,string ip2,string ip3,string ip4, string port)
         {
             try
             {
-                Rc rc = Rc.Ok;
+                 
                 rc = (Rc)NativeMethods.LJV7IF_Initialize();
-                if (CheckReturnValue(rc))
-                {
-                    _ethernetConfig.abyIpAddress = new byte[] {
+                CheckReturnValue(rc);
+                _ethernetConfig.abyIpAddress = new byte[] {
                         Convert.ToByte(ip1),
                         Convert.ToByte(ip2),
                         Convert.ToByte(ip3),
                         Convert.ToByte(ip4)
-                        };
-                    _ethernetConfig.wPortNo = Convert.ToUInt16(port);
-                    rc = (Rc)NativeMethods.LJV7IF_EthernetOpen(Define.DEVICE_ID, ref _ethernetConfig);
-                    if (CheckReturnValue(rc))
-                    {
-                        _connected = true;
-                    }
-                }
+                };
+                _ethernetConfig.wPortNo = Convert.ToUInt16(port);
+                rc = (Rc)NativeMethods.LJV7IF_EthernetOpen(Define.DEVICE_ID, ref _ethernetConfig);
+                CheckReturnValue(rc);
+                                
                 return _connected;
             }
             catch (Exception)
@@ -158,209 +151,100 @@ namespace ProbeController
 
                 var rc = (Rc)NativeMethods.LJV7IF_CommClose(Define.DEVICE_ID);
                 Thread.Sleep(100);
-                if(CheckReturnValue(rc))
-                {
-                    rc = (Rc)NativeMethods.LJV7IF_Finalize();
-                    Thread.Sleep(100);
-                   
-                }
-                _connected = false;
-                return CheckReturnValue(rc);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        bool SetSetting(LJSetting lJSetting)
-        {
-            try
-            {                
-                using (PinnedObject pin = new PinnedObject(lJSetting.Data))
-                {
-                    uint dwError = 0;
-                    int rc = NativeMethods.LJV7IF_SetSetting(_currentDeviceId, lJSetting.Depth, lJSetting.TargetSetting,
-                        pin.Pointer, (uint)lJSetting.Data.Length, ref dwError);
-                    // @Point
-                    // # There are three setting areas: a) the write settings area, b) the running area, and c) the save area.
-                    //   * Specify a) for the setting level when you want to change multiple settings. However, to reflect settings in the LJ-V operations, you have to call LJV7IF_ReflectSetting.
-                    //	 * Specify b) for the setting level when you want to change one setting but you don't mind if this setting is returned to its value prior to the change when the power is turned off.
-                    //	 * Specify c) for the setting level when you want to change one setting and you want this new value to be retained even when the power is turned off.
-
-                    // @Point
-                    //  As a usage example, we will show how to use SettingForm to configure settings such that sending a setting, with SettingForm using its initial values,
-                    //  will change the sampling period in the running area to "100 Hz."
-                    //  Also see the GetSetting function.       
-                    return CheckReturnValue(rc);
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        byte[] GetSetting(LJSetting lJSetting)
-        {
-            try
-            {
-                LJV7IF_TARGET_SETTING targetSetting = lJSetting.TargetSetting;
-                byte[] data = new byte[lJSetting.DataLength];
-                using (PinnedObject pin = new PinnedObject(data))
-                {
-                    int rc = NativeMethods.LJV7IF_GetSetting(_currentDeviceId, lJSetting.Depth, targetSetting,
-                        pin.Pointer, (uint)lJSetting.DataLength);
-
-                }
-                return data;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        bool SetTriggerType(LJTriggerType lJTriggerType)
-        {
-            try
-            {
-                byte category = 0x00;
-                byte item = 0x01;
-                byte target1 = 0x00;
-                byte target2 = 0x00;
-                byte target3 = 0x00;
-                byte target4 = 0x00;
-                byte[] data = new byte[1] { Convert.ToByte(lJTriggerType) };
-                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
-                return SetSetting(setting);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        LJSamplingFrequency GetSamplingFrequency()
-        {
-            try
-            {               
-                byte category = 0x00;
-                byte item = 0x01;
-                byte target1 = 0x00;
-                byte target2 = 0x00;
-                byte target3 = 0x00;
-                byte target4 = 0x00;
-                byte[] data = new byte[1] { Convert.ToByte(LJSamplingFrequency.F100Hz) };
-                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
-                data = GetSetting(setting);
-                LJSamplingFrequency fOut = (LJSamplingFrequency)(Convert.ToUInt32(data[0]));
-                return fOut;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        bool SetSamplingFrequency(LJSamplingFrequency lJSamplingFrequency)
-        {
-            try
-            {
-                byte category = 0x00;
-                byte item = 0x02;
-                byte target1= 0x00;
-                byte target2 = 0x00;
-                byte target3 = 0x00;
-                byte target4 = 0x00;
-                byte[] data = new byte[1] { Convert.ToByte(lJSamplingFrequency) };
-                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
-                return SetSetting(setting);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        bool SetBatchMode(bool batchModeOn)
-        {
-            try
-            {
-                byte category = 0x00;
-                byte item = 0x03;
-                byte target1 = 0x00;
-                byte target2 = 0x00;
-                byte target3 = 0x00;
-                byte target4 = 0x00;
-                byte data = Convert.ToByte(batchModeOn);
-                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Program00, category, item, target1, target2, target3, target4, data);
-                return SetSetting(setting);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        bool TriggerSingle()
-        {
-            try
-            {
-                var rc = (Rc)NativeMethods.LJV7IF_Trigger(_currentDeviceId);
-                return CheckReturnValue(rc);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        bool CheckReturnValue(Rc rc)
-        {
-            try
-            {
-                if(rc==Rc.Ok)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        bool CheckReturnValue(int rc)
-        {
-            try
-            {
-                if (rc == 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        public bool StartStorage()
-        {
-            try
-            {
+                CheckReturnValue(rc);               
+                 
+                rc = (Rc)NativeMethods.LJV7IF_Finalize();
+                CheckReturnValue(rc); 
                 
-                var rc= (Rc)NativeMethods.LJV7IF_StartStorage(_currentDeviceId);
-                return CheckReturnValue(rc);
+                _connected = false;                
+                return _connected;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        
+        
+        void SetTriggerType(LJV7IF_TRIGGER_MODE lJTriggerType)
+        {
+            try
+            {
+                LJSetting.SetTriggerMode(_currentDeviceId, SettingType.Program00, lJTriggerType);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        } 
+        void SetSamplingFrequency(LJV7IF_FREQUENCY lJSamplingFrequency)
+        {
+            try
+            {
+                LJSetting.SetTriggerFreq(_currentDeviceId, SettingType.Program00, lJSamplingFrequency);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        
+        void TriggerSingle()
+        {
+            try
+            {
+                rc = (Rc)NativeMethods.LJV7IF_Trigger(_currentDeviceId);
+                CheckReturnValue(rc);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void CheckReturnValue(Rc rc)
+        {
+            try
+            {
+                if (rc != Rc.Ok)
+                {
+                    throw new Exception(ErrorCode.GetErrorMessage(rc));
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void CheckReturnValue(int rc)
+        {
+            try
+            {
+                if (rc != 0)
+                {
+                    throw new Exception(ErrorCode.GetErrorMessage(rc));
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public void StartStorage()
+        {
+            try
+            {
+                rc = (Rc)NativeMethods.LJV7IF_ClearMemory(_currentDeviceId);
+                Thread.Sleep(100);
+                CheckReturnValue(rc); 
+                
+                rc = (Rc)NativeMethods.LJV7IF_StartStorage(_currentDeviceId);                                
+                CheckReturnValue(rc);
                  
             }
             catch (Exception)
@@ -369,12 +253,12 @@ namespace ProbeController
                 throw;
             }
         }
-        public bool StopStorage()
+        public void StopStorage()
         {
             try
             {
-                var rc = (Rc)NativeMethods.LJV7IF_StopStorage(_currentDeviceId);
-                return CheckReturnValue(rc);
+                rc = (Rc)NativeMethods.LJV7IF_StopStorage(_currentDeviceId);
+                CheckReturnValue(rc);
             }
             catch (Exception)
             {
@@ -403,11 +287,11 @@ namespace ProbeController
                 LJV7IF_GET_STRAGE_STATUS_RSP rsp = new LJV7IF_GET_STRAGE_STATUS_RSP();
                 LJV7IF_STORAGE_INFO storageInfo = new LJV7IF_STORAGE_INFO();
                 uint profileCount = 0;
-                int rc = NativeMethods.LJV7IF_GetStorageStatus(_currentDeviceId, ref req, ref rsp, ref storageInfo);
-                if (CheckReturnValue(rc))
-                {
-                    profileCount = storageInfo.dwStorageCnt;
-                }
+                 rc = (Rc)NativeMethods.LJV7IF_GetStorageStatus(_currentDeviceId, ref req, ref rsp, ref storageInfo);
+                CheckReturnValue(rc);
+                
+                profileCount = storageInfo.dwStorageCnt;
+                
                 
                 return profileCount;
                 // @Point
@@ -486,7 +370,7 @@ namespace ProbeController
                 LJV7IF_GET_STRAGE_STATUS_RSP rsp = new LJV7IF_GET_STRAGE_STATUS_RSP();
                 LJV7IF_STORAGE_INFO storageInfo = new LJV7IF_STORAGE_INFO();
 
-                int rc = NativeMethods.LJV7IF_GetStorageStatus(_currentDeviceId, ref req, ref rsp, ref storageInfo);
+                rc =(Rc)NativeMethods.LJV7IF_GetStorageStatus(_currentDeviceId, ref req, ref rsp, ref storageInfo);
                 // @Point
                 // # Terminology	
                 //  * Base time … time expressed with 32 bits (<- the time when the setting was changed)
@@ -502,99 +386,50 @@ namespace ProbeController
 
                 throw;
             }
-        }
-        public List<DataLib.CartData> GetAllStoredProfiles()
+        }     
+        public List<DataLib.CartData> GetStoredProfiles()
         {
             try
             {
-                var storageInfo = GetStorageStatus();
-                return GetStoredProfiles(storageInfo.dwStorageCnt);
-            }
-            catch (Exception)
-            {
+                var profDataList = new List< DataLib.CartData > ();
+                LJV7IF_GET_PROFILE_REQ req = new LJV7IF_GET_PROFILE_REQ();
+                req.byTargetBank = (byte)ProfileBank.Active;
+                req.byPosMode = (byte)ProfilePos.Current;
+                req.dwGetProfNo = 0;
+                req.byGetProfCnt = 10;
+                req.byErase = 0;
 
-                throw;
-            }
-        }
-        public List<DataLib.CartData> GetStoredProfiles(uint profileCount)
-        {
-            try
-            {
-                _sendCommand = SendCommand.GetStorageProfile;
-                _deviceData.ProfileData.Clear();
-                _deviceData.MeasureData.Clear();
-                _measureDatas.Clear();
-                LJV7IF_GET_STORAGE_REQ req = new LJV7IF_GET_STORAGE_REQ() { dwDataCnt = profileCount, dwStartNo = 0, dwSurface = 0 };
-                // @Point
-                // # dwReadArea is the target surface to read.
-                //   The target surface to read indicates where in the internal memory usage area to read.
-                // # The method to use in specifying dwReadArea varies depending on how internal memory is allocated.
-                //   * Double buffer
-                //      0 indicates the active surface, 1 indicates surface A, and 2 indicates surface B.
-                //   * Entire area (overwrite)
-                //      Fixed to 1
-                //   * Entire area (do not overwrite)
-                //      After a setting modification, data is saved in surfaces 1, 2, 3, and so on in order, and 0 is set as the active surface.
-                // # For details, see "9.2.9.2 Internal memory."
-
-                LJV7IF_STORAGE_INFO storageInfo = new LJV7IF_STORAGE_INFO();
-                LJV7IF_GET_STORAGE_RSP rsp = new LJV7IF_GET_STORAGE_RSP();
+                LJV7IF_GET_PROFILE_RSP rsp = new LJV7IF_GET_PROFILE_RSP();
                 LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
 
-                uint oneDataSize = (uint)(Marshal.SizeOf(typeof(uint)) + (uint)Utility.GetByteSize(Utility.TypeOfStruct.MEASURE_DATA)
-                    * (uint)NativeMethods.MeasurementDataCount * 2 + GetOneProfileDataSize());
-                uint allDataSize = Math.Min(Define.READ_DATA_SIZE, oneDataSize * req.dwDataCnt);
-                byte[] receiveData = new byte[allDataSize];
-                var profDataList = new List<DataLib.CartData>();
-                using (PinnedObject pin = new PinnedObject(receiveData))
+                int profileDataSize = Define.MAX_PROFILE_COUNT +
+                    (Marshal.SizeOf(typeof(LJV7IF_PROFILE_HEADER)) + Marshal.SizeOf(typeof(LJV7IF_PROFILE_FOOTER))) / Marshal.SizeOf(typeof(int));
+                int[] receiveBuffer = new int[profileDataSize * req.byGetProfCnt];
+
+
+                Rc rc;
+                    // Get profiles.
+                using (PinnedObject pin = new PinnedObject(receiveBuffer))
                 {
-                    int rc = NativeMethods.LJV7IF_GetStorageProfile(_currentDeviceId, ref req, ref storageInfo, ref rsp, ref profileInfo, pin.Pointer, allDataSize);
-                    // @Point
-                    // # Terminology	
-                    //  * Base time … time expressed with 32 bits (<- the time when the setting was changed)
-                    //  * Accumulated date and time	 … counter value that indicates the elapsed time, in units of 10 ms, from the base time
-                    // # The accumulated date and time are stored in the accumulated data.
-                    // # The accumulated time of read data is calculated as shown below.
-                    //   Accumulated time = "base time (stBaseTime of LJV7IF_GET_STORAGE_RSP)" + "accumulated date and time × 10 ms"
-
-                    // @Point
-                    // # When reading multiple profiles, the specified number of profiles may not be read.
-                    // # To read the remaining profiles after the first set of profiles have been read,
-                    //   set the number to start reading profiles from (dwStartNo) and the number of profiles to read (byDataCnt) 
-                    //   to values that specify a range of profiles that have not been read to read the profiles in order.
-                    // # For the basic code, see "btnGetBatchProfileEx_Click."
-
-                    //AddLogResult(rc, Resources.SID_GET_STORAGE_PROFILE);
-                    if (rc == (int)Rc.Ok)
-                    {
-                        //debugTextOutLines = new List<string>();
-                        // Temporarily retain the get data.
-                        int measureDataSize = MeasureData.GetByteSize();
-                        //debugTextOutLines.Add("measureDataSize " + measureDataSize.ToString());
-                        int profileDataSize = ProfileData.CalculateDataSize(profileInfo) * Marshal.SizeOf(typeof(int));
-                        //debugTextOutLines.Add("profileDataSize " + profileDataSize.ToString());
-                        int profileMeasureDataSize = Utility.GetByteSize(Utility.TypeOfStruct.MEASURE_DATA) * NativeMethods.MeasurementDataCount;
-                        int byteSize = measureDataSize + profileDataSize + profileMeasureDataSize;
-                        //debugTextOutLines.Add("byteSize " + byteSize.ToString());
-                        // debugTextOutLines.Add("rsp.dwDataCnt " + rsp.dwDataCnt.ToString());
-                        byte[] tempRecMeasureData = new byte[profileMeasureDataSize];
-                        // textBoxDebugOut.Lines = debugTextOutLines.ToArray();
-
-                        for (int i = 0; i < (int)rsp.dwDataCnt; i++)
-                        {
-                            _measureDatas.Add(new MeasureData(receiveData, byteSize * i));
-                            _deviceData.ProfileData.Add(new ProfileData(receiveData, (measureDataSize + byteSize * i), profileInfo));
-                            Buffer.BlockCopy(receiveData, (measureDataSize + profileDataSize + byteSize * i), tempRecMeasureData, 0, profileMeasureDataSize);
-                            _deviceData.MeasureData.Add(new MeasureData(tempRecMeasureData));
-                        }
-
-                        foreach (var profile in _deviceData.ProfileData)
-                        {
-                            profDataList.Add(profile.AsCartData(_scalingMultiplier));
-                        }
-                    }                             
-                    return profDataList;
+                        rc = (Rc)NativeMethods.LJV7IF_GetProfile(Define.DEVICE_ID, ref req, ref rsp, ref profileInfo, pin.Pointer,
+                            (uint)(receiveBuffer.Length * Marshal.SizeOf(typeof(int))));
+                       
                 }
+               // CheckReturnValue(rc);
+                
+                    // Output the data of each profile
+                List<ProfileData> profileDatas = new List<ProfileData>();
+                int unitSize = ProfileData.CalculateDataSize(profileInfo);
+                for (int i = 0; i < rsp.byGetProfCnt; i++)
+                {
+                        profileDatas.Add(new ProfileData(receiveBuffer, unitSize * i, profileInfo));
+                }
+                foreach (var profile in profileDatas)
+                {
+                      profDataList.Add(profile.GetCartData(_scalingMultiplier));
+                }
+                
+                return profDataList;
             }
             catch (Exception)
             {
@@ -603,7 +438,215 @@ namespace ProbeController
             }
             
         }
+        bool _highSpeedCommsActive;
+        System.Timers.Timer _timerHighSpeed;
+        DeviceStatus _deviceStatus;
+        public void GetProfilesHighSpeed()
+        {
+            try
+            {
+                
+                var ethernetConfig = new LJV7IF_ETHERNET_CONFIG();
+                uint profileCount = 10;
+                var deviceStatus = DeviceStatus.UsbFast;
+                LJSetting.SetOpMode(_currentDeviceId, LJV7IF_OP_MODE.HIGH_SPEED);
+                // Stop and finalize high-speed data communication.
+                NativeMethods.LJV7IF_StopHighSpeedDataCommunication(Define.DEVICE_ID);
+                NativeMethods.LJV7IF_HighSpeedDataCommunicationFinalize(Define.DEVICE_ID);
 
+                // Initialize the data.
+                ThreadSafeBuffer.Clear(Define.DEVICE_ID);
+                Rc rc = Rc.Ok;
+
+                // Initialize the high-speed communication path
+                // High-speed communication start preparations
+                LJV7IF_HIGH_SPEED_PRE_START_REQ req = new LJV7IF_HIGH_SPEED_PRE_START_REQ();
+                try
+                {
+                    uint frequency = 50;
+                    uint threadId = (uint)Define.DEVICE_ID;
+
+                    //if (deviceStatus == DeviceStatus.UsbFast) 
+                    //{
+                        // Initialize USB high-speed data communication
+                     rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataUsbCommunicationInitalize(Define.DEVICE_ID, _callback, frequency, threadId);
+                    //}
+                    //else
+                    //{
+                    // Generate the settings for Ethernet communication.
+                    //    ushort highSpeedPort = 0;
+                    //    _ethernetConfig.abyIpAddress = new byte[] {
+                    //    Convert.ToByte(_txtIpFirstSegment.Text),
+                    //    Convert.ToByte(_txtIpSecondSegment.Text),
+                    //    Convert.ToByte(_txtIpThirdSegment.Text),
+                    //    Convert.ToByte(_txtIpFourthSegment.Text)
+                    //};
+                    //    _ethernetConfig.wPortNo = Convert.ToUInt16(_txtCommandPort.Text);
+                    //    highSpeedPort = Convert.ToUInt16(_txtHighSpeedPort.Text);
+
+                    //    // Initialize Ethernet high-speed data communication
+                    //    rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataEthernetCommunicationInitalize(Define.DEVICE_ID, ref _ethernetConfig,
+                    //        highSpeedPort, _callback, frequency, threadId);
+                    //}
+                    //if (!CheckReturnCode(rc)) return;
+                    req.bySendPos = (byte)0;
+                }
+                catch(Exception)
+                {
+                    throw;
+                }
+
+                // High-speed data communication start preparations
+                LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
+                rc = (Rc)NativeMethods.LJV7IF_PreStartHighSpeedDataCommunication(Define.DEVICE_ID, ref req, ref profileInfo);
+                CheckReturnValue(rc);
+
+                // Start high-speed data communication.
+                rc = (Rc)NativeMethods.LJV7IF_StartHighSpeedDataCommunication(Define.DEVICE_ID);
+                CheckReturnValue(rc);
+
+                //_lblReceiveProfileCount.Text = "0";
+                _timerHighSpeed.Start();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void FinalizeHighSpeedComms()
+        {
+            try
+            {
+                rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataCommunicationFinalize(_currentDeviceId);
+                CheckReturnValue(rc);               
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void StopHighSpeedComms()
+        {
+            try
+            {
+               rc = (Rc)NativeMethods.LJV7IF_StopHighSpeedDataCommunication(_currentDeviceId);
+               CheckReturnValue(rc);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        int _receivedProfiles;
+        void StartHighSpeedComms()
+        {
+            try
+            {
+                ThreadSafeBuffer.ClearBuffer(_currentDeviceId);
+                _receivedProfiles=0;
+                rc = (Rc)NativeMethods.LJV7IF_StartHighSpeedDataCommunication(_currentDeviceId);
+                CheckReturnValue(rc);
+                // @Point
+                //  If the LJ-V does not measure the profile for 30 seconds from the start of transmission,
+                //  "0x00000008" is stored in dwNotify of the callback function.
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void PreStartHighSpeedComms()
+        {
+            try
+            {
+                LJV7IF_HIGH_SPEED_PRE_START_REQ req = new LJV7IF_HIGH_SPEED_PRE_START_REQ();
+                req.bySendPos = (byte)0;
+
+                // @Point
+                // # SendPos is used to specify which profile to start sending data from during high-speed communication.
+                // # When "Overwrite" is specified for the operation when memory full and 
+                //   "0: From previous send complete position" is specified for the send start position,
+                //    if the LJ-V continues to accumulate profiles, the LJ-V memory will become full,
+                //    and the profile at the previous send complete position will be overwritten with a new profile.
+                //    In this situation, because the profile at the previous send complete position is not saved, an error will occur.
+
+                LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
+
+                rc =(Rc) NativeMethods.LJV7IF_PreStartHighSpeedDataCommunication(_currentDeviceId, ref req, ref profileInfo);
+                CheckReturnValue(rc);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void InitHighSpeedEthernetComms(LJV7IF_ETHERNET_CONFIG ethernetConfig,uint profileCount)
+        {
+            try
+            {
+                _deviceData.ProfileData.Clear();  //Clear the retained profile data.
+                _deviceData.MeasureData.Clear();
+                LJV7IF_ETHERNET_CONFIG config = ethernetConfig;
+                ushort portNo =0;
+                uint profileCnt = 10;                
+                var rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataEthernetCommunicationInitalize(_currentDeviceId, ref config,
+                    portNo, _callback, profileCnt, (uint)_currentDeviceId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void InitHighSpeedUSBComms(uint profileCount)
+        {
+            try
+            {
+                _deviceData.ProfileData.Clear();  // Clear the retained profile data.
+                _deviceData.MeasureData.Clear();
+
+                var rc =(Rc) NativeMethods.LJV7IF_HighSpeedDataUsbCommunicationInitalize(_currentDeviceId, _callback, profileCount, (uint)_currentDeviceId);
+                CheckReturnValue(rc);
+                // @Point
+                // # When the frequency of calls is low, the callback function may not be called once per specified number of profiles.
+                // # The callback function is called when both of the following conditions are met.
+                //   * There is one packet of received data.
+                //   * The specified number of profiles have been received by the time the call frequency has been met.               
+
+                if (rc == Rc.Ok) _deviceData.Status = DeviceStatus.UsbFast;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        void InitHighSpeedComms(DeviceStatus deviceStatus, LJV7IF_ETHERNET_CONFIG ethernetConfig, uint profileCount)
+        {
+            try
+            {
+               switch(deviceStatus )
+               {
+                    case DeviceStatus.UsbFast:
+                        InitHighSpeedUSBComms(profileCount);
+                        break;
+                    case DeviceStatus.EthernetFast:
+                        InitHighSpeedEthernetComms(ethernetConfig, profileCount);
+                        break;
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public DataLib.CartData GetSingleProfile()
         {
             try
@@ -625,21 +668,15 @@ namespace ProbeController
                     using (PinnedObject pin = new PinnedObject(profileData))
                     {
                         // Send the command
-                        int rc = NativeMethods.LJV7IF_GetProfileAdvance(_currentDeviceId, ref profileInfo, pin.Pointer, dataSize, measureData);
-
-                        // Result output
+                        rc = (Rc)NativeMethods.LJV7IF_GetProfileAdvance(_currentDeviceId, ref profileInfo, pin.Pointer, dataSize, measureData);
+                        CheckReturnValue(rc);
                        
-                        if (rc == (int)Rc.Ok)
-                        {
-                            // Response data display
-                           
-
-                            _measureDatas.Add(new MeasureData(0, measureData));
-                            ExtractProfileData(1, ref profileInfo, profileData);
-                        }
+                        // Response data display 
+                        _measureDatas.Add(new MeasureData(0, measureData));
+                        ExtractProfileData(1, ref profileInfo, profileData);
                     }
                 }
-                return FilterData( _deviceData.ProfileData[0].AsCartData(1));
+                return _deviceData.ProfileData[0].GetCartData(_scalingMultiplier);
                 
             }
             catch (Exception)
@@ -648,18 +685,7 @@ namespace ProbeController
                 throw;
             }
         }
-        DataLib.CartData FilterData(DataLib.CartData cartData)
-        {
-            var outData = new DataLib.CartData();
-            foreach(var pt in cartData)
-            {
-                if(Math.Abs(pt.Y)<1e6)
-                {
-                    outData.Add(pt);
-                }
-            }
-            return outData;
-        }
+       
         /// <summary>
         /// AnalyzeProfileData
         /// </summary>
@@ -715,45 +741,59 @@ namespace ProbeController
         double _scalingMultiplier;
         public static List<string> FrequencyList { get; private set; }
         public static List<string> TriggerTypeList { get; private set; }
+        public static void ReceiveHighSpeedData(IntPtr buffer, uint size, uint count, uint notify, uint user)
+        {
+            // @Point
+            // Take care to only implement storing profile data in a thread save buffer in the callback function.
+            // As the thread used to call the callback function is the same as the thread used to receive data,
+            // the processing time of the callback function affects the speed at which data is received,
+            // and may stop communication from being performed properly in some environments.
 
+            uint profileSize = (uint)(size / Marshal.SizeOf(typeof(int)));
+            List<int[]> receiveBuffer = new List<int[]>();
+            int[] bufferArray = new int[profileSize * count];
+            Marshal.Copy(buffer, bufferArray, 0, (int)(profileSize * count));
+
+            // Profile data retention
+            for (int i = 0; i < count; i++)
+            {
+                int[] oneProfile = new int[profileSize];
+                Array.Copy(bufferArray, i * profileSize, oneProfile, 0, profileSize);
+                receiveBuffer.Add(oneProfile);
+            }
+
+            ThreadSafeBuffer.Add((int)user, receiveBuffer, notify);
+        }
+        public static void CountProfileReceive(IntPtr buffer, uint size, uint count, uint notify, uint user)
+        {
+            // @Point
+            // Take care to only implement storing profile data in a thread save buffer in the callback function.
+            // As the thread used to call the callback function is the same as the thread used to receive data,
+            // the processing time of the callback function affects the speed at which data is received,
+            // and may stop communication from being performed properly in some environments.
+
+            ThreadSafeBuffer.AddCount((int)user, count, notify);
+        }
         static LJController()
         {
             FrequencyList = new List<string>() { "10Hz", "20Hz", "50Hz", "100Hz", "200Hz", "500Hz", "1KHz", "2KHz", "4KHz", "4.13KHz", "8KHz", "32KHz", "64KHz" };
             TriggerTypeList = new List<string>() { "Continuous", "External", "Encoder" };
         }
+
+
         public LJController(ProbeSetup probeSetup,MeasurementUnit outputUnit)
         {
             _probeSetup = probeSetup;
             _outputUnit = outputUnit;
-            _scalingMultiplier = Define.PROFILE_UNIT_MM / outputUnit.ConversionFactor;
+            _scalingMultiplier = 5e-7;// outputUnit.ConversionFactor * Define.PROFILE_UNIT_MM;
             var _batchModeParms = new byte[8] {(byte)SettingDepth.Running,(byte)SettingType.Program00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00 };
             _deviceData = new DeviceData();
             _measureDatas = new List<MeasureData>();
+            _callback = new HighSpeedDataCallBack(ReceiveHighSpeedData);
+            _callbackOnlyCount = new HighSpeedDataCallBack(CountProfileReceive);
         }
     }
-    public enum LJTriggerType
-    {
-        Continuous=0,
-        External=1,
-        Encode=2
-    }
-    public enum LJSamplingFrequency
-    {
-        F10Hz=0,
-        F20Hz=1,
-        F50Hz =2,
-        F100Hz=3,
-        F200Hz=4,
-        F500Hz=5,
-        F1KHz=6,
-        F2KHz=7,
-        F4KHz=8,
-        F413KHz=9,
-        F8KHz=10,
-        F16KHz=11,
-        F32KHz=12,
-        F64KHz=13
-    }
+    
 
     public class SiController
     {

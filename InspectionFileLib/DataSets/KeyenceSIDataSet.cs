@@ -86,7 +86,7 @@ namespace InspectionLib
                     throw new Exception("Data rows not found");
                 }
                 int columnCount = words.GetLength(1);
-                double scalingFactor = InputUnits.ConversionFactor / OutputUnits.ConversionFactor;
+                double scalingFactor = OutputUnits.ConversionFactor/InputUnits.ConversionFactor;
                 if (columnCount==2)
                 {
                     for (int i = _headerRowCount; i < _rowCount; i++)
@@ -319,7 +319,7 @@ namespace InspectionLib
                 data.AddRange(ExtractProbeData(words,dataColumn));
                 
                
-                double scalingFactor = InputUnits.ConversionFactor/OutputUnits.ConversionFactor;
+                double scalingFactor = OutputUnits.ConversionFactor/InputUnits.ConversionFactor;
                 ScaleData(scalingFactor);
                 
             }

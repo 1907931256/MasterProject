@@ -11,7 +11,7 @@ namespace ProbeController
     static public class MeasurementUnitDictionary
     {
 
-        static public double GetConversionFactor(LengthUnit lengthUnit)
+        static public double ConversionToMM(LengthUnit lengthUnit)
         {
             double value = 1.0;
             unitDictionary.TryGetValue(lengthUnit, out value);
@@ -32,11 +32,11 @@ namespace ProbeController
         static MeasurementUnitDictionary()
         {
             unitDictionary = new Dictionary<LengthUnit, double>();
-            unitDictionary.Add(LengthUnit.INCH, 25400);           
-            unitDictionary.Add(LengthUnit.MICRON, 1);
-            unitDictionary.Add(LengthUnit.MM, 1000);
-            unitDictionary.Add(LengthUnit.UM, 1);
-            unitDictionary.Add(LengthUnit.NANOX10, .01);
+            unitDictionary.Add(LengthUnit.INCH, .03937008);           
+            unitDictionary.Add(LengthUnit.MICRON, 1000);
+            unitDictionary.Add(LengthUnit.MM, 1);
+            unitDictionary.Add(LengthUnit.UM, 1000);
+           
         }
     }
 }

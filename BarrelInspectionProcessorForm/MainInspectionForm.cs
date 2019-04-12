@@ -2820,7 +2820,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                List<string> profileFileNames = new List<string>();
+                
                 
                 bool saveFile = false;
                 if (_inspDataSetList != null && _inspDataSetList.Count >= 1)
@@ -2836,23 +2836,31 @@ namespace BarrelInspectionProcessorForm
                         };
                         if (sfd.ShowDialog() == DialogResult.OK)
                         {
-                            profileFileNames.Add(sfd.FileName);
+                            _inspDataSetList[0].OutputFileName = sfd.FileName;
                             saveFile = true;
                         }
                     }
                     else
                     {
-                        for (int i = 0; i < _inspDataSetList.Count; i++)
+                        var fbd = new FolderBrowserDialog();
+                        fbd.ShowNewFolderButton = true;
+                        fbd.Description = "Select Output Folder";
+                        if (fbd.ShowDialog() == DialogResult.OK)
                         {
-                            profileFileNames.Add(DataFileBuilder.BuildFileName(_inspDataSetList[i].FileName, "_out", ".csv"));
-                            saveFile = true;
+                            
+                            for (int i = 0; i < _inspDataSetList.Count; i++)
+                            {
+                                _inspDataSetList[i].OutputFileName  = DataFileBuilder.BuildFileName(fbd.SelectedPath, _inspDataSetList[i].FileName, "_out", ".csv");
+                                saveFile = true;
+                            }
                         }
+
                     }
                     if (saveFile)
                     {
                         for (int i = 0; i < _inspDataSetList.Count; i++)
                         {
-                            textBoxDataOut.Text = "Saving Files " + profileFileNames[i];
+                            textBoxDataOut.Text = "Saving Files " + _inspDataSetList[i].OutputFileName;
                             string fileCount = (i + 1).ToString();
                             string totalFileCount = _inspDataSetList.Count.ToString();
                             labelStatus.Text = "Saving File " + fileCount + " of " + totalFileCount;
@@ -2860,12 +2868,12 @@ namespace BarrelInspectionProcessorForm
                             {
                                 if (saveCSV)
                                 {
-                                    DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, cylDataSet.CylData, profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                    DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, cylDataSet.CylData, _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                                 if (saveDXF)
                                 {
-                                    DataFileBuilder.SaveDXF(cylDataSet.CylData, profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                    DataFileBuilder.SaveDXF(cylDataSet.CylData, _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                             }
@@ -2874,13 +2882,13 @@ namespace BarrelInspectionProcessorForm
                                 if (saveCSV)
                                 {
                                     DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, spiralData.SpiralData,
-                                   profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                   _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                                 if (saveDXF)
                                 {
                                     DataFileBuilder.SavePlyFile(_barrel, _dataOutOptions, spiralData.SpiralData,
-                                    _barrel.DimensionData.LandNominalDiam / 2.0, profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                    _barrel.DimensionData.LandNominalDiam / 2.0, _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
 
@@ -2891,12 +2899,12 @@ namespace BarrelInspectionProcessorForm
                                 if (saveCSV)
                                 {
                                     DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, ringData.CylData,
-                                    profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                    _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                                 if (saveDXF)
                                 {
-                                   DataFileBuilder.SaveDXF(ringData.CylData, profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                   DataFileBuilder.SaveDXF(ringData.CylData, _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                             }
@@ -2905,12 +2913,12 @@ namespace BarrelInspectionProcessorForm
                                 if (saveCSV)
                                 {
                                     DataFileBuilder.SaveCSVFile(_barrel, _dataOutOptions, cartData.CartData,
-                                   profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                  _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                                 if (saveDXF)
                                 {
-                                    DataFileBuilder.SaveDXF(cartData.CartData, profileFileNames[i], new Progress<int>(p => ShowProgress(p)));
+                                    DataFileBuilder.SaveDXF(cartData.CartData, _inspDataSetList[i].OutputFileName, new Progress<int>(p => ShowProgress(p)));
                                     progressBarProcessing.Value = 0;
                                 }
                             }
@@ -3396,18 +3404,8 @@ namespace BarrelInspectionProcessorForm
             {
                 _probeSetup = GetProbeSetup();
                 _LJController = new LJController(_probeSetup, _outputUnit);
-                _connectedLJ = _LJController.Connect();
-                if(_connectedLJ)
-                {
-                    buttonConnect.BackColor = System.Drawing.Color.Green;
-                    buttonConnect.Text = "Connected";
-                    
-                }
-                else
-                {
-                    buttonConnect.BackColor = System.Drawing.Color.LightGray;
-                    buttonConnect.Text = "Connect";
-                }
+                 
+                SetConnectionStatus(_LJController.Connect());
             }
             catch (Exception ex)
             {
@@ -3417,15 +3415,29 @@ namespace BarrelInspectionProcessorForm
            
             
         }
-
+        void SetConnectionStatus(bool connected)
+        {
+            if (connected)
+            {
+                labelConnStatus.ForeColor = System.Drawing.Color.Green;
+                labelConnStatus.Text = "Connecteded";
+                _connectedLJ = true;
+            }
+            else
+            {
+                labelConnStatus.ForeColor = System.Drawing.Color.Black;
+                labelConnStatus.Text = "Disconnected";
+                _connectedLJ = false;
+            }
+        }
         private void buttonDisconnect_Click(object sender, EventArgs e)
         {
             try
             {
                 if (_LJController != null)
                 {
-                    _LJController.Disconnect();
-                    _connectedLJ = false;
+                    SetConnectionStatus(!_LJController.Disconnect());
+                     
                 }
             }
             catch (Exception ex)
@@ -3440,8 +3452,10 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_LJController != null)
+                if (_LJController != null && _connectedLJ)
                 {
+                    _inspDataSetList = new List<InspDataSet>();
+                    labelProfileCount.Text = "Profile Count: " + _inspDataSetList.Count.ToString();
                     _LJController.StartStorage();
                 }
             }
@@ -3457,7 +3471,7 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_LJController != null)
+                if (_LJController != null && _connectedLJ)
                 {
                     _LJController.StopStorage();
                 }
@@ -3474,13 +3488,26 @@ namespace BarrelInspectionProcessorForm
         {
             try
             {
-                if (_LJController != null)
+                int fileCount = 0;
+
+                if (_LJController != null && _connectedLJ)
                 {
+                    fileCount++;
                     _inspDataSetList = new List<InspDataSet>();
-                    var cartDataSet = new CartDataSet();
-                    cartDataSet.CartData.AddRange(_LJController.GetSingleProfile());
-                    _inspDataSetList.Add(cartDataSet);
-                    DisplayData(BuildDisplayDataList());
+                    string filename = "data-" + fileCount.ToString() + ".csv";
+                    var cartDataSet = new CartDataSet(filename);
+                    var cartData = _LJController.GetSingleProfile();
+                    if (  cartData.Count > 0)
+                    {
+                        cartDataSet.CartData.AddRange(cartData);
+                        _inspDataSetList.Add(cartDataSet);
+                        DisplayData(BuildDisplayDataList());
+                        labelProfileCount.Text = "Profile Count: " + _inspDataSetList.Count.ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("No Data Collected");
+                    }
                 }
             }
             catch (Exception ex)
@@ -3493,7 +3520,34 @@ namespace BarrelInspectionProcessorForm
 
         private void buttonGetMultiProfile_Click(object sender, EventArgs e)
         {
+            try
+            {
+                if (_LJController != null && _connectedLJ)
+                {
+                    _inspDataSetList = new List<InspDataSet>();
+                   
+                    var cartDataSets = _LJController.GetStoredProfiles();
+                    int fileCount = 0;
+                    foreach(var dataSet in cartDataSets)
+                    {
+                        if (dataSet.Count > 0)
+                        {
+                            fileCount++;
+                            string filename = "data-" + fileCount.ToString() + ".csv";
+                            var cartDataSet = new CartDataSet(filename);
+                            cartDataSet.CartData.AddRange(dataSet);
+                            _inspDataSetList.Add(cartDataSet);
+                        }
+                    }
+                    labelProfileCount.Text = "Profile Count: " + _inspDataSetList.Count.ToString();
+                    DisplayData(BuildDisplayDataList());
+                }
+            }
+            catch (Exception ex)
+            {
 
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
         }
     }
 }

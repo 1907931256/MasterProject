@@ -116,6 +116,7 @@ namespace InspectionLib
     {        
         public ScanFormat DataFormat { get;  set; }
         public string FileName { get;  set; }
+        public string OutputFileName { get; set; }
         public InspDataSet()
         {
 

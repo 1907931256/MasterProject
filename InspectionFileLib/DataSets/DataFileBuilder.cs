@@ -16,8 +16,14 @@ namespace InspectionLib
     /// builds various output data files from data set
     /// </summary>
     public class DataFileBuilder
-    {      
-        
+    {
+        static public string BuildFileName(string path, string fileName, string suffix, string extension)
+        {
+            var _filenoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);
+            var outputDirectory = path;
+            var outputFilename = string.Concat(outputDirectory, "\\", _filenoExt, suffix, extension);
+            return outputFilename;
+        }
         static public string BuildFileName(string fileName,string suffix,string extension)
         {
             var _filenoExt = System.IO.Path.GetFileNameWithoutExtension(fileName);

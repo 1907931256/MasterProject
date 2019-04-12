@@ -62,7 +62,8 @@ namespace KeyenceLJLib
 		/// Unit conversion factor (mm) for profile values
 		/// </summary>
 		public const double PROFILE_UNIT_MM = 1E-5;
-
+        public const  int MAX_RAW_VALUE = 800000;
+        public const int MIN_RAW_VALUE = -800000;
 		#endregion
 	}	
 }

@@ -11,8 +11,6 @@ namespace ProbeController
         MICRON,
         UM,
         MM,
-        NANOX10,
-        NANO,
         INCH        
     }
     public class MeasurementUnit
@@ -54,7 +52,7 @@ namespace ProbeController
         }
         public MeasurementUnit(LengthUnit lengthUnit)
         {
-            ConversionFactor = MeasurementUnitDictionary.GetConversionFactor(lengthUnit);
+            ConversionFactor = MeasurementUnitDictionary.ConversionToMM(lengthUnit);
             Name = lengthUnit.ToString();
             LengthUnits = lengthUnit;
         }

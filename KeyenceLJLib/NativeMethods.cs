@@ -20,30 +20,109 @@ namespace KeyenceLJLib
 		/// <summary>Failed to open the device</summary>
 		ErrOpenDevice = 0x1000,
 		/// <summary>Device not open</summary>
-		ErrNoDevice,
+		ErrNoDevice = 0x1001,
 		/// <summary>Command send error</summary>
-		ErrSend,
+		ErrSend = 0x1002,
 		/// <summary>Response reception error</summary>
-		ErrReceive,
+		ErrReceive = 0x1003,
 		/// <summary>Timeout</summary>
-		ErrTimeout,
+		ErrTimeout = 0x1004,
 		/// <summary>No free space</summary>
-		ErrNomemory,
+		ErrNomemory = 0x1005,
 		/// <summary>Parameter error</summary>
-		ErrParameter,
+		ErrParameter = 0x1006,
 		/// <summary>Received header format error</summary>
-		ErrRecvFmt,
+		ErrRecvFmt = 0x1007,
 
 		/// <summary>Not open error (for high-speed communication)</summary>
 		ErrHispeedNoDevice = 0x1009,
 		/// <summary>Already open error (for high-speed communication)</summary>
-		ErrHispeedOpenYet,
+		ErrHispeedOpenYet = 0x100A,
 		/// <summary>Already performing high-speed communication error (for high-speed communication)</summary>
-		ErrHispeedRecvYet,
+		ErrHispeedRecvYet = 0x100B,
 		/// <summary>Insufficient buffer size</summary>
-		ErrBufferShort,
+		ErrBufferShort = 0x100C,
 	}
+    public class ErrorCode
+    {
+        static public Rc GetRc(byte returnCode)
+        {
+            Rc rc = (Rc)returnCode;
+            return rc;
+        }
+        static public Rc GetRc(int returnCode)
+        {
+            Rc rc = (Rc)returnCode;
+            return rc;
+        }
+        static public string GetErrorMessage(int rc)
+        {
+            try
+            {
+                return GetErrorMessage(GetRc(rc));
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
+        static public string GetErrorMessage(byte rc)
+        {
+            try
+            {
+                return GetErrorMessage(GetRc(rc));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static public string GetErrorMessage(Rc rc)
+        {
+            try
+            {
+                switch (rc)
+                {
+                              
+                    case Rc.ErrOpenDevice:
+                        return "Failed to open the device";
+                    case Rc.ErrNoDevice:
+                        return "Device not open";
+                    case Rc.ErrSend:
+                        return "Command send error";
+                    case Rc.ErrReceive:
+                        return "Response reception error";
+                    case Rc.ErrTimeout:
+                        return "Timeout";
+                    case Rc.ErrNomemory:
+                        return "No free space";
+                    case Rc.ErrParameter:
+                        return "Parameter error";
+                    case Rc.ErrRecvFmt :
+                        return "Received header format error";
+                    case Rc.ErrHispeedNoDevice:
+                        return "Not open error (for high-speed communication)";
+                    case Rc.ErrHispeedOpenYet:
+                        return "Already open error (for high-speed communication)";
+                    case Rc.ErrHispeedRecvYet:
+                        return "Already performing high-speed communication error (for high-speed communication)";
+                    case Rc.ErrBufferShort:
+                        return "Insufficient buffer size";
+                    case Rc.Ok:
+                        return " Normal termination";
+                    default:
+                        return " Unknown Error Return Code: " +string.Format(" 0x{0,8:x}", rc);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+    }
 	/// <summary>
 	/// Definition that indicates the validity of a measurement value
 	/// </summary>
@@ -53,17 +132,59 @@ namespace KeyenceLJLib
 		LJV7IF_MEASURE_DATA_INFO_ALARM = 0x01,	// Alarm value
 		LJV7IF_MEASURE_DATA_INFO_WAIT = 0x02	// Judgment wait value
 	}
-
-	/// <summary>
-	/// Definition that indicates the tolerance judgment result of the measurement
-	/// </summary>
-	public enum LJV7IF_JUDGE_RESULT
+    public enum LJV7IF_OP_MODE
+    {
+        HIGH_SPEED,
+        ADVANCED
+    }
+    public enum LJV7IF_MEM_ALLOCATION
+    {
+        DOUBLE_BUFFER,
+        OVERWRITE,
+        NO_OVERWRITE
+    }
+    public enum LJV7IF_FULL_MEM_OP
+    {
+        OVERWRITE,
+        STOP
+    }
+    public enum LJV7IF_BATCH_MODE
+    {
+        OFF,
+        ON
+    }
+    public enum LJV7IF_FREQUENCY
+    {
+        F10HZ,
+        F20HZ,
+        F50HZ,
+        F100HZ,
+        F200HZ,
+        F500HZ,
+        F1KHZ,
+        F2KHZ,
+        F4KHZ,
+        F413KHZ,
+        F8KHZ,
+        F16KHZ,
+        F32KHZ,
+        F64KHZ
+    }
+    /// <summary>
+    /// Definition that indicates the tolerance judgment result of the measurement
+    /// </summary>
+    public enum LJV7IF_JUDGE_RESULT
 	{
 		LJV7IF_JUDGE_RESULT_HI = 0x01,	// HI
 		LJV7IF_JUDGE_RESULT_GO = 0x02,	// GO
 		LJV7IF_JUDGE_RESULT_LO = 0x04	// LO
 	}
-
+    public enum LJV7IF_TRIGGER_MODE
+    {
+        CONTINUOUS,
+        EXTERNAL,
+        ENCODER
+    }
 	/// Get batch profile position specification method designation
 	public enum BatchPos : byte
 	{
@@ -492,7 +613,179 @@ namespace KeyenceLJLib
             get { return _data; }
         }
         #endregion
-       
+
+        static public void SetOpMode(int deviceId, LJV7IF_OP_MODE data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 0;
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Common, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
+                SetSetting(deviceId, setting);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        static public LJV7IF_OP_MODE GetOpMode(int deviceId)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 0;
+                byte[] data = new byte[1];
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Common, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, data);
+                data =  GetSetting(deviceId, setting);
+                return (LJV7IF_OP_MODE)(data[0]);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static public void SetMemAllocation(int deviceId, LJV7IF_MEM_ALLOCATION data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 1;
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Common, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
+                SetSetting(deviceId, setting);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        static public void SetMemFullOp(int deviceId, LJV7IF_FULL_MEM_OP data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 2;
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)SettingType.Common, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
+                SetSetting(deviceId, setting);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        static public void SetTriggerMode(int deviceId, SettingType settingType, LJV7IF_TRIGGER_MODE data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 1;
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
+                SetSetting(deviceId, setting);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        static public void SetTriggerFreq(int deviceId, SettingType settingType, LJV7IF_FREQUENCY data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 2;
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
+                SetSetting(deviceId, setting);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        static public void SetBatchMode(int deviceId, SettingType settingType, LJV7IF_BATCH_MODE data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 3;
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
+                SetSetting(deviceId, setting);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+        static byte[] GetSetting(int deviceId, LJSetting lJSetting)
+        {
+            try
+            {
+                LJV7IF_TARGET_SETTING targetSetting = lJSetting.TargetSetting;
+                byte[] data = new byte[lJSetting.DataLength];
+                using (PinnedObject pin = new PinnedObject(data))
+                {
+                    int rc = NativeMethods.LJV7IF_GetSetting(deviceId, lJSetting.Depth, targetSetting,
+                        pin.Pointer, (uint)lJSetting.DataLength);
+
+                }
+                return data;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static void SetSetting(int deviceId, LJSetting lJSetting)
+        {
+            try
+            {
+                using (PinnedObject pin = new PinnedObject(lJSetting.Data))
+                {
+                    uint dwError = 0;
+                    int rc = NativeMethods.LJV7IF_SetSetting(deviceId, lJSetting.Depth, lJSetting.TargetSetting,
+                        pin.Pointer, (uint)lJSetting.Data.Length, ref dwError);
+                    // @Point
+                    // # There are three setting areas: a) the write settings area, b) the running area, and c) the save area.
+                    //   * Specify a) for the setting level when you want to change multiple settings. However, to reflect settings in the LJ-V operations, you have to call LJV7IF_ReflectSetting.
+                    //	 * Specify b) for the setting level when you want to change one setting but you don't mind if this setting is returned to its value prior to the change when the power is turned off.
+                    //	 * Specify c) for the setting level when you want to change one setting and you want this new value to be retained even when the power is turned off.
+
+                    // @Point
+                    //  As a usage example, we will show how to use SettingForm to configure settings such that sending a setting, with SettingForm using its initial values,
+                    //  will change the sampling period in the running area to "100 Hz."
+                    //  Also see the GetSetting function.      
+                    if(ErrorCode.GetRc(rc) != Rc.Ok)
+                    {
+                        throw new Exception(ErrorCode.GetErrorMessage(rc));
+                    }
+                    
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public LJSetting(byte depth, byte type, byte category, byte item, byte target1, byte target2, byte target3, byte target4, params byte[] data)
         {
             _targetSetting = new LJV7IF_TARGET_SETTING();

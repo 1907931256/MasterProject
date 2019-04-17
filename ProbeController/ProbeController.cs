@@ -91,13 +91,14 @@ namespace ProbeController
 
         /// The following are maintained in arrays to support multiple controllers.
         /// <summary>Array of profile information structures</summary>
-        private LJV7IF_PROFILE_INFO[] _profileInfo;
+        private LJV7IF_PROFILE_INFO _profileInfo;
         /// <summary>Array of controller information</summary>
         private DeviceData _deviceData;
         /// <summary>Array of labels that indicate the controller status</summary>
 
         bool _connected;
        
+        public int ReceivedProfileCount { get { return _receivedProfileCount; } }
 
         public bool Connect( )
         {
@@ -439,74 +440,16 @@ namespace ProbeController
             
         }
         bool _highSpeedCommsActive;
-        System.Timers.Timer _timerHighSpeed;
+       
         DeviceStatus _deviceStatus;
-        public void GetProfilesHighSpeed()
+        public void StopHighSpeedProfileAcquisition()
         {
             try
             {
-                
-                var ethernetConfig = new LJV7IF_ETHERNET_CONFIG();
-                uint profileCount = 10;
-                var deviceStatus = DeviceStatus.UsbFast;
-                LJSetting.SetOpMode(_currentDeviceId, LJV7IF_OP_MODE.HIGH_SPEED);
-                // Stop and finalize high-speed data communication.
-                NativeMethods.LJV7IF_StopHighSpeedDataCommunication(Define.DEVICE_ID);
-                NativeMethods.LJV7IF_HighSpeedDataCommunicationFinalize(Define.DEVICE_ID);
-
-                // Initialize the data.
-                ThreadSafeBuffer.Clear(Define.DEVICE_ID);
-                Rc rc = Rc.Ok;
-
-                // Initialize the high-speed communication path
-                // High-speed communication start preparations
-                LJV7IF_HIGH_SPEED_PRE_START_REQ req = new LJV7IF_HIGH_SPEED_PRE_START_REQ();
-                try
+                if(_deviceStatus == DeviceStatus.UsbFast)
                 {
-                    uint frequency = 50;
-                    uint threadId = (uint)Define.DEVICE_ID;
-
-                    //if (deviceStatus == DeviceStatus.UsbFast) 
-                    //{
-                        // Initialize USB high-speed data communication
-                     rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataUsbCommunicationInitalize(Define.DEVICE_ID, _callback, frequency, threadId);
-                    //}
-                    //else
-                    //{
-                    // Generate the settings for Ethernet communication.
-                    //    ushort highSpeedPort = 0;
-                    //    _ethernetConfig.abyIpAddress = new byte[] {
-                    //    Convert.ToByte(_txtIpFirstSegment.Text),
-                    //    Convert.ToByte(_txtIpSecondSegment.Text),
-                    //    Convert.ToByte(_txtIpThirdSegment.Text),
-                    //    Convert.ToByte(_txtIpFourthSegment.Text)
-                    //};
-                    //    _ethernetConfig.wPortNo = Convert.ToUInt16(_txtCommandPort.Text);
-                    //    highSpeedPort = Convert.ToUInt16(_txtHighSpeedPort.Text);
-
-                    //    // Initialize Ethernet high-speed data communication
-                    //    rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataEthernetCommunicationInitalize(Define.DEVICE_ID, ref _ethernetConfig,
-                    //        highSpeedPort, _callback, frequency, threadId);
-                    //}
-                    //if (!CheckReturnCode(rc)) return;
-                    req.bySendPos = (byte)0;
+                    StopHighSpeedAquisition();
                 }
-                catch(Exception)
-                {
-                    throw;
-                }
-
-                // High-speed data communication start preparations
-                LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
-                rc = (Rc)NativeMethods.LJV7IF_PreStartHighSpeedDataCommunication(Define.DEVICE_ID, ref req, ref profileInfo);
-                CheckReturnValue(rc);
-
-                // Start high-speed data communication.
-                rc = (Rc)NativeMethods.LJV7IF_StartHighSpeedDataCommunication(Define.DEVICE_ID);
-                CheckReturnValue(rc);
-
-                //_lblReceiveProfileCount.Text = "0";
-                _timerHighSpeed.Start();
             }
             catch (Exception)
             {
@@ -514,12 +457,42 @@ namespace ProbeController
                 throw;
             }
         }
-        void FinalizeHighSpeedComms()
+        public List<DataLib.CartData> GetProfiles()
         {
             try
             {
-                rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataCommunicationFinalize(_currentDeviceId);
-                CheckReturnValue(rc);               
+                var dataList = new List<DataLib.CartData>();
+                for (int i = 0; i < _deviceData.ProfileData.Count; i++)
+                {
+                    dataList.Add(_deviceData.ProfileData[i].GetCartData(_scalingMultiplier));
+                }
+                return dataList;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+        public void StartHighSpeedAcquistion(uint profileCount)
+        {
+            try
+            {
+                if (_connected)
+                {
+                    _receivedProfileCount = 0;
+                    var ethernetConfig = new LJV7IF_ETHERNET_CONFIG();
+                     
+
+                    StopHighSpeedAquisition();
+                    _timerHighSpeed.Start();
+                    LJSetting.SetOpMode(_currentDeviceId, LJV7IF_OP_MODE.HIGH_SPEED);
+                    InitHighSpeedUSBComms(20);
+                    StartHighSpeedDataCommunication();
+                    _highSpeedCommsActive = true;
+
+                }
             }
             catch (Exception)
             {
@@ -527,12 +500,29 @@ namespace ProbeController
                 throw;
             }
         }
-        void StopHighSpeedComms()
+       
+        void StopHighSpeedAquisition()
         {
             try
             {
                rc = (Rc)NativeMethods.LJV7IF_StopHighSpeedDataCommunication(_currentDeviceId);
+                _highSpeedCommsActive = false;
                CheckReturnValue(rc);
+                rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataCommunicationFinalize(_currentDeviceId);
+                CheckReturnValue(rc);
+                switch (_deviceData.Status)
+                {
+                    case DeviceStatus.UsbFast:
+                        _deviceData.Status = DeviceStatus.Usb;
+                        break;
+                    case DeviceStatus.EthernetFast:
+                        LJV7IF_ETHERNET_CONFIG config = _deviceData.EthernetConfig;
+                        _deviceData.Status = DeviceStatus.Ethernet;
+                        _deviceData.EthernetConfig = config;
+                        break;
+                    default:
+                        break;
+                }
             }
             catch (Exception)
             {
@@ -541,7 +531,7 @@ namespace ProbeController
             }
         }
         int _receivedProfiles;
-        void StartHighSpeedComms()
+        void StartHighSpeedDataCommunication()
         {
             try
             {
@@ -559,12 +549,12 @@ namespace ProbeController
                 throw;
             }
         }
-        void PreStartHighSpeedComms()
+        void PreStartHighSpeedAquisition()
         {
             try
             {
                 LJV7IF_HIGH_SPEED_PRE_START_REQ req = new LJV7IF_HIGH_SPEED_PRE_START_REQ();
-                req.bySendPos = (byte)0;
+                req.bySendPos = (byte)2;
 
                 // @Point
                 // # SendPos is used to specify which profile to start sending data from during high-speed communication.
@@ -577,7 +567,10 @@ namespace ProbeController
                 LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
 
                 rc =(Rc) NativeMethods.LJV7IF_PreStartHighSpeedDataCommunication(_currentDeviceId, ref req, ref profileInfo);
+                
                 CheckReturnValue(rc);
+
+                _profileInfo = profileInfo;
             }
             catch (Exception)
             {
@@ -593,9 +586,11 @@ namespace ProbeController
                 _deviceData.MeasureData.Clear();
                 LJV7IF_ETHERNET_CONFIG config = ethernetConfig;
                 ushort portNo =0;
-                uint profileCnt = 10;                
-                var rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataEthernetCommunicationInitalize(_currentDeviceId, ref config,
-                    portNo, _callback, profileCnt, (uint)_currentDeviceId);
+                
+                rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataEthernetCommunicationInitalize(_currentDeviceId, ref config,
+                    portNo, _callback, profileCount, (uint)_currentDeviceId);
+                CheckReturnValue(rc);
+                PreStartHighSpeedAquisition();
             }
             catch (Exception)
             {
@@ -610,14 +605,15 @@ namespace ProbeController
                 _deviceData.ProfileData.Clear();  // Clear the retained profile data.
                 _deviceData.MeasureData.Clear();
 
-                var rc =(Rc) NativeMethods.LJV7IF_HighSpeedDataUsbCommunicationInitalize(_currentDeviceId, _callback, profileCount, (uint)_currentDeviceId);
+                rc =(Rc) NativeMethods.LJV7IF_HighSpeedDataUsbCommunicationInitalize(_currentDeviceId, _callback, profileCount,
+                    (uint)_currentDeviceId);
                 CheckReturnValue(rc);
                 // @Point
                 // # When the frequency of calls is low, the callback function may not be called once per specified number of profiles.
                 // # The callback function is called when both of the following conditions are met.
                 //   * There is one packet of received data.
                 //   * The specified number of profiles have been received by the time the call frequency has been met.               
-
+                PreStartHighSpeedAquisition();
                 if (rc == Rc.Ok) _deviceData.Status = DeviceStatus.UsbFast;
             }
             catch (Exception)
@@ -749,7 +745,7 @@ namespace ProbeController
             // the processing time of the callback function affects the speed at which data is received,
             // and may stop communication from being performed properly in some environments.
 
-            uint profileSize = (uint)(size / Marshal.SizeOf(typeof(int)));
+            uint profileSize =  (uint)(size / Marshal.SizeOf(typeof(int)));
             List<int[]> receiveBuffer = new List<int[]>();
             int[] bufferArray = new int[profileSize * count];
             Marshal.Copy(buffer, bufferArray, 0, (int)(profileSize * count));
@@ -764,23 +760,34 @@ namespace ProbeController
 
             ThreadSafeBuffer.Add((int)user, receiveBuffer, notify);
         }
-        public static void CountProfileReceive(IntPtr buffer, uint size, uint count, uint notify, uint user)
-        {
-            // @Point
-            // Take care to only implement storing profile data in a thread save buffer in the callback function.
-            // As the thread used to call the callback function is the same as the thread used to receive data,
-            // the processing time of the callback function affects the speed at which data is received,
-            // and may stop communication from being performed properly in some environments.
-
-            ThreadSafeBuffer.AddCount((int)user, count, notify);
-        }
+       
         static LJController()
         {
             FrequencyList = new List<string>() { "10Hz", "20Hz", "50Hz", "100Hz", "200Hz", "500Hz", "1KHz", "2KHz", "4KHz", "4.13KHz", "8KHz", "32KHz", "64KHz" };
             TriggerTypeList = new List<string>() { "Continuous", "External", "Encoder" };
         }
-
-
+        int _receivedProfileCount;
+        void _timerHighSpeed_Elapsed(object sender, EventArgs e)
+        {
+            int count = 0;
+            uint notify = 0;
+            int batchNo = 0;
+            List<int[]> data = ThreadSafeBuffer.Get(0, out notify, out batchNo);
+            if(data.Count==0)
+            {
+                return;
+            }
+            foreach (int[] profile in data)
+            {
+                    if (_deviceData.ProfileData.Count < Define.WRITE_DATA_SIZE)
+                    {
+                        _deviceData.ProfileData.Add(new ProfileData(profile, _profileInfo));
+                    }
+                    count++;
+            }
+            _receivedProfileCount += count;
+        }
+        System.Timers.Timer _timerHighSpeed;
         public LJController(ProbeSetup probeSetup,MeasurementUnit outputUnit)
         {
             _probeSetup = probeSetup;
@@ -789,8 +796,11 @@ namespace ProbeController
             var _batchModeParms = new byte[8] {(byte)SettingDepth.Running,(byte)SettingType.Program00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00 };
             _deviceData = new DeviceData();
             _measureDatas = new List<MeasureData>();
-            _callback = new HighSpeedDataCallBack(ReceiveHighSpeedData);
-            _callbackOnlyCount = new HighSpeedDataCallBack(CountProfileReceive);
+            _callback = new HighSpeedDataCallBack(ReceiveHighSpeedData);            
+            _timerHighSpeed = new System.Timers.Timer(100.0);
+            _timerHighSpeed.AutoReset = true;               
+            _timerHighSpeed.Elapsed += new System.Timers.ElapsedEventHandler(_timerHighSpeed_Elapsed);
+            _profileInfo = new LJV7IF_PROFILE_INFO();
         }
     }
     

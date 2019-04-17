@@ -162,11 +162,12 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             this.timerHighSpeedReceive = new System.Windows.Forms.Timer(this.components);
+            this.textBoxProfilesToGet = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -1238,6 +1239,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.textBoxProfilesToGet);
             this.tabPage5.Controls.Add(this.labelConnStatus);
             this.tabPage5.Controls.Add(this.labelProfileCount);
             this.tabPage5.Controls.Add(this.buttonGetMultiProfile);
@@ -1401,13 +1403,6 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
-            // progressBarProcessing
-            // 
-            this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
-            this.progressBarProcessing.Name = "progressBarProcessing";
-            this.progressBarProcessing.Size = new System.Drawing.Size(132, 23);
-            this.progressBarProcessing.TabIndex = 26;
-            // 
             // elementHost1
             // 
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1418,9 +1413,24 @@
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.userControl11;
             // 
+            // progressBarProcessing
+            // 
+            this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
+            this.progressBarProcessing.Name = "progressBarProcessing";
+            this.progressBarProcessing.Size = new System.Drawing.Size(132, 23);
+            this.progressBarProcessing.TabIndex = 26;
+            // 
             // timerHighSpeedReceive
             // 
             this.timerHighSpeedReceive.Interval = 500;
+            // 
+            // textBoxProfilesToGet
+            // 
+            this.textBoxProfilesToGet.Location = new System.Drawing.Point(189, 199);
+            this.textBoxProfilesToGet.Name = "textBoxProfilesToGet";
+            this.textBoxProfilesToGet.Size = new System.Drawing.Size(100, 20);
+            this.textBoxProfilesToGet.TabIndex = 12;
+            this.textBoxProfilesToGet.Text = "100";
             // 
             // MainInspectionForm
             // 
@@ -1598,6 +1608,7 @@
         private System.Windows.Forms.Label labelConnStatus;
         private System.Windows.Forms.Label labelProfileCount;
         private System.Windows.Forms.Timer timerHighSpeedReceive;
+        private System.Windows.Forms.TextBox textBoxProfilesToGet;
     }
 }
 

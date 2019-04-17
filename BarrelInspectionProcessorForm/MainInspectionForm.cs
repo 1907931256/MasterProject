@@ -3524,22 +3524,34 @@ namespace BarrelInspectionProcessorForm
             {
                 if (_LJController != null && _connectedLJ)
                 {
+                    uint totalProfiles = 100;
+                    uint.TryParse(textBoxProfilesToGet.Text, out totalProfiles);
                     _inspDataSetList = new List<InspDataSet>();
-                   
-                    var cartDataSets = _LJController.GetStoredProfiles();
-                    int fileCount = 0;
-                    foreach(var dataSet in cartDataSets)
+                    _LJController.StartHighSpeedAcquistion(totalProfiles);
+                    
+                    while(_LJController.ReceivedProfileCount<totalProfiles)
                     {
-                        if (dataSet.Count > 0)
+                        Thread.Sleep(100);
+                        labelProfileCount.Text = "Profiles Received: " + _LJController.ReceivedProfileCount.ToString();
+                    }
+                    
+
+                    var cartDataSets = _LJController.GetProfiles();
+                   
+                    int fileCount = 0;
+                    for(int i=0;i< totalProfiles;i++)
+                    {
+                        if (cartDataSets[i].Count > 0)
                         {
                             fileCount++;
                             string filename = "data-" + fileCount.ToString() + ".csv";
                             var cartDataSet = new CartDataSet(filename);
-                            cartDataSet.CartData.AddRange(dataSet);
+                            cartDataSet.CartData.AddRange(cartDataSets[i]);
                             _inspDataSetList.Add(cartDataSet);
                         }
                     }
-                    labelProfileCount.Text = "Profile Count: " + _inspDataSetList.Count.ToString();
+                    
+                    _LJController.StopHighSpeedProfileAcquisition();
                     DisplayData(BuildDisplayDataList());
                 }
             }

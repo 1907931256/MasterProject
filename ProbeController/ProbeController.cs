@@ -144,7 +144,7 @@ namespace ProbeController
                 throw;
             }
         }
-        public bool Disconnect()
+        public void Disconnect()
         {
             try
             {
@@ -158,7 +158,7 @@ namespace ProbeController
                 CheckReturnValue(rc); 
                 
                 _connected = false;                
-                return _connected;
+                
             }
             catch (Exception)
             {
@@ -172,7 +172,7 @@ namespace ProbeController
         {
             try
             {
-                LJSetting.SetTriggerMode(_currentDeviceId, SettingType.Program00, lJTriggerType);
+                LJSetting.SetTriggerMode(_currentDeviceId, lJTriggerType);
             }
             catch (Exception)
             {
@@ -184,7 +184,7 @@ namespace ProbeController
         {
             try
             {
-                LJSetting.SetTriggerFreq(_currentDeviceId, SettingType.Program00, lJSamplingFrequency);
+                LJSetting.SetTriggerFreq(_currentDeviceId,  lJSamplingFrequency);
             }
             catch (Exception)
             {
@@ -475,7 +475,7 @@ namespace ProbeController
             }
            
         }
-        public void StartHighSpeedAcquistion(uint profileCount)
+        public void StartHighSpeedAcquistion(CancellationToken ct, Progress<int> progress,uint profileCount)
         {
             try
             {
@@ -486,8 +486,10 @@ namespace ProbeController
                      
 
                     StopHighSpeedAquisition();
+                    Thread.Sleep(50);
                     _timerHighSpeed.Start();
                     LJSetting.SetOpMode(_currentDeviceId, LJV7IF_OP_MODE.HIGH_SPEED);
+                    Thread.Sleep(50);
                     InitHighSpeedUSBComms(20);
                     StartHighSpeedDataCommunication();
                     _highSpeedCommsActive = true;
@@ -505,24 +507,17 @@ namespace ProbeController
         {
             try
             {
-               rc = (Rc)NativeMethods.LJV7IF_StopHighSpeedDataCommunication(_currentDeviceId);
+               rc = (Rc)NativeMethods.LJV7IF_StopHighSpeedDataCommunication(_currentDeviceId);                
                 _highSpeedCommsActive = false;
                CheckReturnValue(rc);
+                Thread.Sleep(50);
                 rc = (Rc)NativeMethods.LJV7IF_HighSpeedDataCommunicationFinalize(_currentDeviceId);
                 CheckReturnValue(rc);
-                switch (_deviceData.Status)
-                {
-                    case DeviceStatus.UsbFast:
-                        _deviceData.Status = DeviceStatus.Usb;
-                        break;
-                    case DeviceStatus.EthernetFast:
-                        LJV7IF_ETHERNET_CONFIG config = _deviceData.EthernetConfig;
-                        _deviceData.Status = DeviceStatus.Ethernet;
-                        _deviceData.EthernetConfig = config;
-                        break;
-                    default:
-                        break;
-                }
+                Thread.Sleep(50);
+                rc = (Rc)NativeMethods.LJV7IF_CommClose(_currentDeviceId);
+                CheckReturnValue(rc);
+                Thread.Sleep(50);
+                Connect();
             }
             catch (Exception)
             {
@@ -536,6 +531,7 @@ namespace ProbeController
             try
             {
                 ThreadSafeBuffer.ClearBuffer(_currentDeviceId);
+                Thread.Sleep(50);
                 _receivedProfiles=0;
                 rc = (Rc)NativeMethods.LJV7IF_StartHighSpeedDataCommunication(_currentDeviceId);
                 CheckReturnValue(rc);
@@ -654,7 +650,8 @@ namespace ProbeController
                     _deviceData.ProfileData.Clear();
                     _deviceData.MeasureData.Clear();
                     _measureDatas.Clear();
-
+                    LJSetting.SetOpMode(_currentDeviceId, LJV7IF_OP_MODE.ADVANCED);
+                    Thread.Sleep(50);
                     // Set the command function
                     LJV7IF_PROFILE_INFO profileInfo = new LJV7IF_PROFILE_INFO();
                     uint dataSize = GetOneProfileDataSize();
@@ -760,36 +757,75 @@ namespace ProbeController
 
             ThreadSafeBuffer.Add((int)user, receiveBuffer, notify);
         }
-       
+        public double GetSamplePeriodMs()
+        {
+            try
+            {
+                var triggerFreq =  LJSetting.GetTriggerFreq(_currentDeviceId);
+                var tf = freqDictionary[triggerFreq];
+                return tf.Period_ms;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        Dictionary<LJV7IF_FREQUENCY, TriggerFrequency> freqDictionary;
+        void BuildFDictionary()
+        {
+            freqDictionary.Add(LJV7IF_FREQUENCY.F100HZ, new TriggerFrequency(LJV7IF_FREQUENCY.F100HZ, "100Hz", 10.0));
+        }
         static LJController()
         {
             FrequencyList = new List<string>() { "10Hz", "20Hz", "50Hz", "100Hz", "200Hz", "500Hz", "1KHz", "2KHz", "4KHz", "4.13KHz", "8KHz", "32KHz", "64KHz" };
             TriggerTypeList = new List<string>() { "Continuous", "External", "Encoder" };
         }
         int _receivedProfileCount;
+        CancellationTokenSource _cancellation;
+
         void _timerHighSpeed_Elapsed(object sender, EventArgs e)
         {
-            int count = 0;
-            uint notify = 0;
-            int batchNo = 0;
-            List<int[]> data = ThreadSafeBuffer.Get(0, out notify, out batchNo);
-            if(data.Count==0)
+            try
             {
-                return;
-            }
-            foreach (int[] profile in data)
-            {
-                    if (_deviceData.ProfileData.Count < Define.WRITE_DATA_SIZE)
+                if (_cancellation.IsCancellationRequested)
+                {
+                    _timerHighSpeed.Stop();
+                    StopHighSpeedAquisition();
+                }
+                else
+                {
+                    int count = 0;
+                    uint notify = 0;
+                    int batchNo = 0;
+                    List<int[]> data = ThreadSafeBuffer.Get(0, out notify, out batchNo);
+                    if (data.Count == 0)
                     {
-                        _deviceData.ProfileData.Add(new ProfileData(profile, _profileInfo));
+                        return;
                     }
-                    count++;
+                    foreach (int[] profile in data)
+                    {
+                        if (_deviceData.ProfileData.Count < Define.WRITE_DATA_SIZE)
+                        {
+                            _deviceData.ProfileData.Add(new ProfileData(profile, _profileInfo));
+                        }
+                        count++;
+                    }
+                    _receivedProfileCount += count;
+                }
             }
-            _receivedProfileCount += count;
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+           
         }
         System.Timers.Timer _timerHighSpeed;
-        public LJController(ProbeSetup probeSetup,MeasurementUnit outputUnit)
+        public LJController(ProbeSetup probeSetup,MeasurementUnit outputUnit,CancellationTokenSource cancellation)
         {
+            _currentDeviceId = 0;
+            _cancellation = cancellation;
             _probeSetup = probeSetup;
             _outputUnit = outputUnit;
             _scalingMultiplier = 5e-7;// outputUnit.ConversionFactor * Define.PROFILE_UNIT_MM;
@@ -803,7 +839,7 @@ namespace ProbeController
             _profileInfo = new LJV7IF_PROFILE_INFO();
         }
     }
-    
+     
 
     public class SiController
     {

@@ -105,9 +105,6 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dataAquisitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.connectToDAQToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.disconnectFromDAQToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelStatus = new System.Windows.Forms.Label();
@@ -153,8 +150,6 @@
             this.labelProfileCount = new System.Windows.Forms.Label();
             this.buttonGetMultiProfile = new System.Windows.Forms.Button();
             this.buttonGetSingleProfile = new System.Windows.Forms.Button();
-            this.buttonStopStorage = new System.Windows.Forms.Button();
-            this.buttonStartStorage = new System.Windows.Forms.Button();
             this.buttonDisconnect = new System.Windows.Forms.Button();
             this.buttonConnect = new System.Windows.Forms.Button();
             this.tabControlOutput = new System.Windows.Forms.TabControl();
@@ -162,12 +157,15 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             this.timerHighSpeedReceive = new System.Windows.Forms.Timer(this.components);
             this.textBoxProfilesToGet = new System.Windows.Forms.TextBox();
+            this.buttonCancelDAQ = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.labelDAQStatus = new System.Windows.Forms.Label();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -621,7 +619,6 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.toolsToolStripMenuItem,
-            this.dataAquisitionToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -760,31 +757,6 @@
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.OptionsToolStripMenuItem_Click);
-            // 
-            // dataAquisitionToolStripMenuItem
-            // 
-            this.dataAquisitionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.connectToDAQToolStripMenuItem1,
-            this.disconnectFromDAQToolStripMenuItem});
-            this.dataAquisitionToolStripMenuItem.Name = "dataAquisitionToolStripMenuItem";
-            this.dataAquisitionToolStripMenuItem.Size = new System.Drawing.Size(100, 20);
-            this.dataAquisitionToolStripMenuItem.Text = "Data Aquisition";
-            // 
-            // connectToDAQToolStripMenuItem1
-            // 
-            this.connectToDAQToolStripMenuItem1.Enabled = false;
-            this.connectToDAQToolStripMenuItem1.Name = "connectToDAQToolStripMenuItem1";
-            this.connectToDAQToolStripMenuItem1.Size = new System.Drawing.Size(190, 22);
-            this.connectToDAQToolStripMenuItem1.Text = "Connect To DAQ";
-            this.connectToDAQToolStripMenuItem1.Click += new System.EventHandler(this.ConnectToDAQToolStripMenuItem1_Click);
-            // 
-            // disconnectFromDAQToolStripMenuItem
-            // 
-            this.disconnectFromDAQToolStripMenuItem.Enabled = false;
-            this.disconnectFromDAQToolStripMenuItem.Name = "disconnectFromDAQToolStripMenuItem";
-            this.disconnectFromDAQToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.disconnectFromDAQToolStripMenuItem.Text = "Disconnect from DAQ";
-            this.disconnectFromDAQToolStripMenuItem.Click += new System.EventHandler(this.DisconnectFromDAQToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1239,13 +1211,14 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.labelDAQStatus);
+            this.tabPage5.Controls.Add(this.label3);
+            this.tabPage5.Controls.Add(this.buttonCancelDAQ);
             this.tabPage5.Controls.Add(this.textBoxProfilesToGet);
             this.tabPage5.Controls.Add(this.labelConnStatus);
             this.tabPage5.Controls.Add(this.labelProfileCount);
             this.tabPage5.Controls.Add(this.buttonGetMultiProfile);
             this.tabPage5.Controls.Add(this.buttonGetSingleProfile);
-            this.tabPage5.Controls.Add(this.buttonStopStorage);
-            this.tabPage5.Controls.Add(this.buttonStartStorage);
             this.tabPage5.Controls.Add(this.buttonDisconnect);
             this.tabPage5.Controls.Add(this.buttonConnect);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
@@ -1269,9 +1242,9 @@
             this.labelProfileCount.AutoSize = true;
             this.labelProfileCount.Location = new System.Drawing.Point(119, 174);
             this.labelProfileCount.Name = "labelProfileCount";
-            this.labelProfileCount.Size = new System.Drawing.Size(70, 13);
+            this.labelProfileCount.Size = new System.Drawing.Size(93, 13);
             this.labelProfileCount.TabIndex = 10;
-            this.labelProfileCount.Text = "Profile Count:";
+            this.labelProfileCount.Text = "Profiles Received:";
             // 
             // buttonGetMultiProfile
             // 
@@ -1296,30 +1269,6 @@
             this.buttonGetSingleProfile.Text = "Get 1 Profile";
             this.buttonGetSingleProfile.UseVisualStyleBackColor = true;
             this.buttonGetSingleProfile.Click += new System.EventHandler(this.buttonGetSingleProfile_Click);
-            // 
-            // buttonStopStorage
-            // 
-            this.buttonStopStorage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonStopStorage.Location = new System.Drawing.Point(19, 112);
-            this.buttonStopStorage.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonStopStorage.Name = "buttonStopStorage";
-            this.buttonStopStorage.Size = new System.Drawing.Size(95, 25);
-            this.buttonStopStorage.TabIndex = 7;
-            this.buttonStopStorage.Text = "Stop Storage";
-            this.buttonStopStorage.UseVisualStyleBackColor = true;
-            this.buttonStopStorage.Click += new System.EventHandler(this.buttonStopStorage_Click);
-            // 
-            // buttonStartStorage
-            // 
-            this.buttonStartStorage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonStartStorage.Location = new System.Drawing.Point(19, 83);
-            this.buttonStartStorage.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonStartStorage.Name = "buttonStartStorage";
-            this.buttonStartStorage.Size = new System.Drawing.Size(95, 25);
-            this.buttonStartStorage.TabIndex = 6;
-            this.buttonStartStorage.Text = "Start Storage";
-            this.buttonStartStorage.UseVisualStyleBackColor = true;
-            this.buttonStartStorage.Click += new System.EventHandler(this.buttonStartStorage_Click);
             // 
             // buttonDisconnect
             // 
@@ -1403,16 +1352,6 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(606, 516);
-            this.elementHost1.TabIndex = 0;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.userControl11;
-            // 
             // progressBarProcessing
             // 
             this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
@@ -1423,14 +1362,55 @@
             // timerHighSpeedReceive
             // 
             this.timerHighSpeedReceive.Interval = 500;
+            this.timerHighSpeedReceive.Tick += new System.EventHandler(this.timerHighSpeedReceive_Tick);
             // 
             // textBoxProfilesToGet
             // 
-            this.textBoxProfilesToGet.Location = new System.Drawing.Point(189, 199);
+            this.textBoxProfilesToGet.Location = new System.Drawing.Point(198, 202);
             this.textBoxProfilesToGet.Name = "textBoxProfilesToGet";
             this.textBoxProfilesToGet.Size = new System.Drawing.Size(100, 20);
             this.textBoxProfilesToGet.TabIndex = 12;
             this.textBoxProfilesToGet.Text = "100";
+            // 
+            // buttonCancelDAQ
+            // 
+            this.buttonCancelDAQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonCancelDAQ.Location = new System.Drawing.Point(19, 199);
+            this.buttonCancelDAQ.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelDAQ.Name = "buttonCancelDAQ";
+            this.buttonCancelDAQ.Size = new System.Drawing.Size(95, 25);
+            this.buttonCancelDAQ.TabIndex = 13;
+            this.buttonCancelDAQ.Text = "Cancel";
+            this.buttonCancelDAQ.UseVisualStyleBackColor = true;
+            this.buttonCancelDAQ.Click += new System.EventHandler(this.buttonCancelDAQ_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(122, 205);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(70, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Profile Count:";
+            // 
+            // labelDAQStatus
+            // 
+            this.labelDAQStatus.AutoSize = true;
+            this.labelDAQStatus.Location = new System.Drawing.Point(122, 238);
+            this.labelDAQStatus.Name = "labelDAQStatus";
+            this.labelDAQStatus.Size = new System.Drawing.Size(37, 13);
+            this.labelDAQStatus.TabIndex = 15;
+            this.labelDAQStatus.Text = "Status";
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(606, 516);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.userControl11;
             // 
             // MainInspectionForm
             // 
@@ -1522,9 +1502,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveProcessedFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dataAquisitionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem connectToDAQToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem disconnectFromDAQToolStripMenuItem;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.TextBox textBoxSerialN;
         private System.Windows.Forms.Label label1;
@@ -1601,14 +1578,15 @@
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.Button buttonGetMultiProfile;
         private System.Windows.Forms.Button buttonGetSingleProfile;
-        private System.Windows.Forms.Button buttonStopStorage;
-        private System.Windows.Forms.Button buttonStartStorage;
         private System.Windows.Forms.Button buttonDisconnect;
         private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.Label labelConnStatus;
         private System.Windows.Forms.Label labelProfileCount;
         private System.Windows.Forms.Timer timerHighSpeedReceive;
         private System.Windows.Forms.TextBox textBoxProfilesToGet;
+        private System.Windows.Forms.Button buttonCancelDAQ;
+        private System.Windows.Forms.Label labelDAQStatus;
+        private System.Windows.Forms.Label label3;
     }
 }
 

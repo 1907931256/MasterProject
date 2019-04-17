@@ -176,11 +176,11 @@ namespace InspectionLib
                     
                     if(getSum)
                     {
-                        values.Add(data1[i] + data2[i]);
+                        values.Add((data1[i] + data2[i])/2.0);
                     }
                     else
                     {
-                        values.Add(data1[i] + data2[probe2Index]);
+                        values.Add((data1[i] + data2[probe2Index])/2.0);
                     }
                     
                 }
@@ -225,7 +225,17 @@ namespace InspectionLib
                 probeData.Add(new KeyenceSiDataSet(cylScript, CsvFileName, 2));
             }
         }
-       
+        public KeyenceDualSiDataSet(double probePhaseDifferenceDegs ,int pointsPerRev)
+        {
+            probeData = new List<KeyenceSiDataSet>();
+           
+                double phaseDifference = (probePhaseDifferenceDegs) / (2 * Math.PI);
+                probeIndexOffset = (int)(Math.Round(pointsPerRev * phaseDifference));
+
+                probeData.Add(new KeyenceSiDataSet(1));
+                probeData.Add(new KeyenceSiDataSet(2));
+           
+        }
     }
     /// <summary>
     /// holds raw sensor data 
@@ -372,9 +382,10 @@ namespace InspectionLib
             }
 
         }
-        public KeyenceSiDataSet()
+        public KeyenceSiDataSet(int probeNumber)
         {
-            
+            int dataColumn = _firstDataCol + probeNumber - 1;
+            ProcessFile(dataColumn);
         }
     }   
 }

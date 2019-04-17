@@ -5,6 +5,7 @@
 //----------------------------------------------------------------------------- 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace KeyenceLJLib
 {
@@ -122,6 +123,19 @@ namespace KeyenceLJLib
                 throw;
             }
         }
+    }
+    public class TriggerFrequency
+    {
+        public string FrequencyString { get; set; }
+        public double Period_ms { get; set; }
+        LJV7IF_FREQUENCY LJFrequency { get; set; }
+        public TriggerFrequency(LJV7IF_FREQUENCY lJV7IF_FREQUENCY,string frequency, double period_ms)
+        {
+            LJFrequency = lJV7IF_FREQUENCY;
+            FrequencyString = frequency;
+            Period_ms = period_ms;
+        }
+        
     }
 	/// <summary>
 	/// Definition that indicates the validity of a measurement value
@@ -565,7 +579,13 @@ namespace KeyenceLJLib
 	/// <param name="user">Thread ID</param>
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	public delegate void HighSpeedDataCallBack(IntPtr buffer, uint size, uint count, uint notify, uint user);
+    public class SampleFrequency
+    {
+        public SampleFrequency(LJV7IF_FREQUENCY lJV7IF_FREQUENCY)
+        {
 
+        }
+    }
     public class LJSetting
     {
         #region Field
@@ -649,6 +669,7 @@ namespace KeyenceLJLib
                 throw;
             }
         }
+        
         static public void SetMemAllocation(int deviceId, LJV7IF_MEM_ALLOCATION data)
         {
             try
@@ -683,12 +704,13 @@ namespace KeyenceLJLib
             }
             
         }
-        static public void SetTriggerMode(int deviceId, SettingType settingType, LJV7IF_TRIGGER_MODE data)
+        static public void SetTriggerMode(int deviceId, LJV7IF_TRIGGER_MODE data)
         {
             try
             {
                 byte category = 0;
                 byte item = 1;
+                var settingType = SettingType.Program00;
                 var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
                     (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
                 SetSetting(deviceId, setting);
@@ -700,12 +722,32 @@ namespace KeyenceLJLib
             }
             
         }
-        static public void SetTriggerFreq(int deviceId, SettingType settingType, LJV7IF_FREQUENCY data)
+        static public LJV7IF_FREQUENCY GetTriggerFreq(int deviceId )
         {
             try
             {
                 byte category = 0;
                 byte item = 2;
+                var settingType = SettingType.Program00;
+                byte[] data = new byte[1];
+                var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
+                    (byte)0, (byte)0, (byte)0, (byte)0,  data);
+                data =  GetSetting(deviceId, setting);
+                return (LJV7IF_FREQUENCY)data[0];
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        static public void SetTriggerFreq(int deviceId, LJV7IF_FREQUENCY data)
+        {
+            try
+            {
+                byte category = 0;
+                byte item = 2;
+                var settingType = SettingType.Program00;
                 var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
                     (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
                 SetSetting(deviceId, setting);
@@ -717,12 +759,13 @@ namespace KeyenceLJLib
             }
            
         }
-        static public void SetBatchMode(int deviceId, SettingType settingType, LJV7IF_BATCH_MODE data)
+        static public void SetBatchMode(int deviceId,  LJV7IF_BATCH_MODE data)
         {
             try
             {
                 byte category = 0;
                 byte item = 3;
+                var settingType = SettingType.Program00;
                 var setting = new LJSetting((byte)SettingDepth.Running, (byte)settingType, category, item,
                     (byte)0, (byte)0, (byte)0, (byte)0, (byte)data);
                 SetSetting(deviceId, setting);
@@ -763,6 +806,7 @@ namespace KeyenceLJLib
                     uint dwError = 0;
                     int rc = NativeMethods.LJV7IF_SetSetting(deviceId, lJSetting.Depth, lJSetting.TargetSetting,
                         pin.Pointer, (uint)lJSetting.Data.Length, ref dwError);
+                    Thread.Sleep(50);
                     // @Point
                     // # There are three setting areas: a) the write settings area, b) the running area, and c) the save area.
                     //   * Specify a) for the setting level when you want to change multiple settings. However, to reflect settings in the LJ-V operations, you have to call LJV7IF_ReflectSetting.
@@ -773,7 +817,7 @@ namespace KeyenceLJLib
                     //  As a usage example, we will show how to use SettingForm to configure settings such that sending a setting, with SettingForm using its initial values,
                     //  will change the sampling period in the running area to "100 Hz."
                     //  Also see the GetSetting function.      
-                    if(ErrorCode.GetRc(rc) != Rc.Ok)
+                    if (ErrorCode.GetRc(rc) != Rc.Ok)
                     {
                         throw new Exception(ErrorCode.GetErrorMessage(rc));
                     }

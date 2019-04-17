@@ -500,9 +500,9 @@ namespace BarrelInspectionProcessorForm
                 _pitch = Math.Abs(startX - endX) / ringCount;
                 textBoxPitch.Text = _pitch.ToString("f3");
 
-                _calDataSet = GetCalDataSet();
+                
                 _probeSetup = GetProbeSetup();
-               
+                _calDataSet = GetCalDataSet();
 
                 if (_useFilenameData)
                 { 
@@ -660,13 +660,13 @@ namespace BarrelInspectionProcessorForm
                         probeSetup.Add(probe);
                         break;
                     case ProbeConfig.DUAL_SI_F10:
-                        probe = new Probe(Probe.ProbeType.SI_F10, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);
+                        probe = new Probe(Probe.ProbeType.SI_F10, new MeasurementUnit(LengthUnit.MICRON), 0);
                         probeSetup.Add(probe);
                         probe = new Probe(Probe.ProbeType.SI_F10,new MeasurementUnit(LengthUnit.MICRON),probePhaseRad);
                         probeSetup.Add(probe);
                         break;
                     case ProbeConfig.LJ_V7060_SI_F10:
-                        probe = new Probe(Probe.ProbeType.LJ_V7060, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);
+                        probe = new Probe(Probe.ProbeType.LJ_V7060, new MeasurementUnit(LengthUnit.MICRON), 0);
                         probeSetup.Add(probe);
                         probe = new Probe(Probe.ProbeType.SI_F10, new MeasurementUnit(LengthUnit.MICRON), probePhaseRad);
                         probeSetup.Add(probe);
@@ -685,7 +685,7 @@ namespace BarrelInspectionProcessorForm
             }
             
         }
-        CalDataSet GetCalDataSet()
+        CalDataSet GetCalDataSet(double phaseDiffDegs,int pointsperRev,double ringGageDiam,string filename)
         {
             try
             {
@@ -698,7 +698,7 @@ namespace BarrelInspectionProcessorForm
                         {
                             double ringCalDiameterInch = 0.0;
                             InputVerification.TryGetValue(textBoxRingCal, "x>0", out ringCalDiameterInch);
-                            calDataSet = DataBuilder.BuildCalData(_inspScript, ringCalDiameterInch, _calFilename);
+                            calDataSet = DataBuilder.BuildCalData(phaseDiffDegs, pointsperRev, ringGageDiam, filename);
                             _barrel.DimensionData.LandActualDiam = calDataSet.NominalRadius * 2;
                             
                         }
@@ -2970,33 +2970,7 @@ namespace BarrelInspectionProcessorForm
             }
         }
 
-        private void ConnectToDAQToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                throw new Exception("not implemented");
-            }
-            catch (Exception ex)
-            {
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message +":" +ex.StackTrace);
-
-            }
-        }
-
-        private void DisconnectFromDAQToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                throw new Exception("not implemented");
-            }
-            catch (Exception ex)
-            {
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message +":" +ex.StackTrace);
-
-            }
-        }
+        
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
@@ -3403,7 +3377,8 @@ namespace BarrelInspectionProcessorForm
             try
             {
                 _probeSetup = GetProbeSetup();
-                _LJController = new LJController(_probeSetup, _outputUnit);
+                cts = new CancellationTokenSource();
+                _LJController = new LJController(_probeSetup, _outputUnit, cts);
                  
                 SetConnectionStatus(_LJController.Connect());
             }
@@ -3436,7 +3411,8 @@ namespace BarrelInspectionProcessorForm
             {
                 if (_LJController != null)
                 {
-                    SetConnectionStatus(!_LJController.Disconnect());
+                    _LJController.Disconnect();
+                    SetConnectionStatus(false);
                      
                 }
             }
@@ -3518,28 +3494,72 @@ namespace BarrelInspectionProcessorForm
 
         }
 
-        private void buttonGetMultiProfile_Click(object sender, EventArgs e)
+        Task StartHighSpeedAcq(CancellationToken ct, Progress<int> progress, uint totalProfiles)
+        {
+           return Task.Run(()=> _LJController.StartHighSpeedAcquistion(ct, progress , totalProfiles));
+        }
+        uint totalProfiles;
+        CancellationTokenSource cts;
+        private  async Task GetMultipleLJVProfiles()
         {
             try
             {
                 if (_LJController != null && _connectedLJ)
                 {
-                    uint totalProfiles = 100;
+                    totalProfiles = 100;
                     uint.TryParse(textBoxProfilesToGet.Text, out totalProfiles);
-                    _inspDataSetList = new List<InspDataSet>();
-                    _LJController.StartHighSpeedAcquistion(totalProfiles);
                     
-                    while(_LJController.ReceivedProfileCount<totalProfiles)
-                    {
-                        Thread.Sleep(100);
-                        labelProfileCount.Text = "Profiles Received: " + _LJController.ReceivedProfileCount.ToString();
-                    }
+                    var ct = cts.Token;
+
+                    _inspDataSetList = new List<InspDataSet>();
                     
 
-                    var cartDataSets = _LJController.GetProfiles();
+                    await StartHighSpeedAcq(ct, new Progress<int>(p=>ShowProgress(p)), totalProfiles);
+
+
                    
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        private async void buttonGetMultiProfile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                labelDAQStatus.Text = "Receiving Profiles";
+                
+                timerHighSpeedReceive.Interval = 500;
+                timerHighSpeedReceive.Start();
+                await GetMultipleLJVProfiles();
+                
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+        }
+
+        private void timerHighSpeedReceive_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                var cartDataSets = new List<CartData>();
+                var profCount = _LJController.ReceivedProfileCount;
+                labelProfileCount.Text = "Received Profiles: " + profCount.ToString();
+                Refresh();
+                if (!(cts.IsCancellationRequested) && profCount >= totalProfiles)
+                {
+                    cartDataSets = _LJController.GetProfiles();
+
+                    int dataCount = Math.Min((int)totalProfiles, cartDataSets.Count);
                     int fileCount = 0;
-                    for(int i=0;i< totalProfiles;i++)
+                    for (int i = 0; i < dataCount; i++)
                     {
                         if (cartDataSets[i].Count > 0)
                         {
@@ -3550,9 +3570,9 @@ namespace BarrelInspectionProcessorForm
                             _inspDataSetList.Add(cartDataSet);
                         }
                     }
-                    
                     _LJController.StopHighSpeedProfileAcquisition();
                     DisplayData(BuildDisplayDataList());
+
                 }
             }
             catch (Exception ex)
@@ -3560,6 +3580,23 @@ namespace BarrelInspectionProcessorForm
 
                 MessageBox.Show(ex.Message + ":" + ex.StackTrace);
             }
+            
+        }
+
+        private void buttonCancelDAQ_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                labelDAQStatus.Text = "Canceled Profiles";
+                timerHighSpeedReceive.Stop();
+                cts.Cancel();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+           
         }
     }
 }

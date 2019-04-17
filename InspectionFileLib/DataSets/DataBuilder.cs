@@ -49,30 +49,16 @@ namespace InspectionLib
                 throw;
             }
         }
-        public static CalDataSet BuildCalData(InspectionScript script, double ringGageDiamInch, string CsvFileName)
+        public static CalDataSet BuildCalData(double phaseDifferenceDegs,int pointsPerRev, double ringGageDiamInch, string CsvFileName)
         {
             try
             {
-                if (script is CylInspScript cylScript)
-                {
-                    double data = 0;
-                    if (cylScript.ProbeSetup.Count == 1)
-                    {
-                        var singleData = new KeyenceSiDataSet(script, CsvFileName);
-                        data = singleData.GetData()[0];
-                    }
-                    else
-                    {
-                        var dualData = new KeyenceDualSiDataSet(script, CsvFileName);
-
-                        data = dualData.GetData(ScanFormat.CAL)[0];
-                    }
-                    return new CalDataSet(ringGageDiamInch, data, cylScript.ProbeSetup.Direction);
-                }
-                else
-                {
-                    return new CalDataSet(script.CalDataSet.NominalRadius);
-                }
+               
+                    double data = 0;                   
+                    var dualData = new KeyenceDualSiDataSet(phaseDifferenceDegs, pointsPerRev);
+                    data = dualData.GetData(ScanFormat.CAL)[0];                    
+                    return new CalDataSet(ringGageDiamInch, data,ProbeDirection.ID);
+               
             }
             catch (System.IO.FileNotFoundException)
             {
@@ -710,7 +696,7 @@ namespace InspectionLib
                         {
                             minDiam = sum;
                         }
-                        double r = probeSign * (probeSpacing + sum) / 2.0;
+                        double r = probeSign * (probeSpacing + sum) ;
                         var pt1 = new PointCyl(r, theta, z, i);
 
                         points.Add(pt1);

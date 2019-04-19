@@ -36,8 +36,7 @@ namespace ProbeController
             {
                 return _direction;
             }
-        }
-        public double ProbePhaseRad { get; set; }
+        }       
         public ProbeType Type { get; private set; } 
         public MeasurementUnit Units {get;set;}
         double _minValue;
@@ -55,10 +54,10 @@ namespace ProbeController
             return type;
         }
         
-        public Probe (ProbeType probeType,MeasurementUnit measurementUnit,double phaseAngleRad)
+        public Probe (ProbeType probeType,MeasurementUnit measurementUnit)
         {
             Units = measurementUnit;
-            ProbePhaseRad = phaseAngleRad;
+            
             this.Type = probeType;
             SetupProbe();
         }       

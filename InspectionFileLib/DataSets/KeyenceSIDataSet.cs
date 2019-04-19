@@ -161,7 +161,7 @@ namespace InspectionLib
             }
             return minCount;
         }
-        double[] GetDualProbeValues(bool getSum)
+        public double[] GetData(ScanFormat format)
         {
             try
             {
@@ -172,16 +172,23 @@ namespace InspectionLib
                 for (int i=0;i<count;i++)
                 {
 
-                    int probe2Index = (i + probeIndexOffset) % count;      
-                    
-                    if(getSum)
+                    int probe2Index = (i + probeIndexOffset) % count;
+                    switch (format)
                     {
-                        values.Add((data1[i] + data2[i])/2.0);
-                    }
-                    else
-                    {
-                        values.Add((data1[i] + data2[probe2Index])/2.0);
-                    }
+                        case ScanFormat.AXIAL:
+                        case ScanFormat.LAND:
+                        case ScanFormat.GROOVE:
+                            values.Add((data1[i] + data2[i])/2);
+                            break;
+                        case ScanFormat.CAL:
+                            values.Add(data1[i] + data2[i]);
+                            break;
+                        case ScanFormat.RING:
+                        case ScanFormat.SPIRAL:
+                        default:
+                            values.Add((data1[i] + data2[probe2Index]) / 2.0);
+                            break;
+                    }                   
                     
                 }
                 return values.ToArray();
@@ -194,46 +201,26 @@ namespace InspectionLib
 
         }
       
-        public double[] GetData(ScanFormat format)
-        {
-            bool getSumValues = true;
-            switch(format)
-            {
-                case ScanFormat.AXIAL:
-                case ScanFormat.LAND:
-                case ScanFormat.GROOVE:
-                case ScanFormat.CAL:
-                    getSumValues = true;
-                    break;
-                case ScanFormat.RING:               
-                case ScanFormat.SPIRAL:
-                default:
-                    getSumValues = false;
-                    break;
-            }
-            return GetDualProbeValues(getSumValues);
-        }
+        
         public KeyenceDualSiDataSet(InspectionScript inspScript, string CsvFileName)
         {
             probeData = new List<KeyenceSiDataSet>();
             if (inspScript is CylInspScript cylScript)
             {
-                double phaseDifference = (cylScript.ProbeSetup[1].ProbePhaseRad - cylScript.ProbeSetup[0].ProbePhaseRad) / (2 * Math.PI);
+                double phaseDifference = (cylScript.ProbeSetup.PhaseDiffRad)/(Math.PI*2.0);
                 probeIndexOffset = (int)(Math.Round(cylScript.PointsPerRevolution * phaseDifference));
 
                 probeData.Add(new KeyenceSiDataSet(cylScript, CsvFileName, 1));
                 probeData.Add(new KeyenceSiDataSet(cylScript, CsvFileName, 2));
             }
         }
-        public KeyenceDualSiDataSet(double probePhaseDifferenceDegs ,int pointsPerRev)
+        public KeyenceDualSiDataSet(ScanFormat scanFormat, MeasurementUnit outputUnit, double probePhaseDiffRads ,int pointsPerRev, string CsvFileName)
         {
             probeData = new List<KeyenceSiDataSet>();
-           
-                double phaseDifference = (probePhaseDifferenceDegs) / (2 * Math.PI);
-                probeIndexOffset = (int)(Math.Round(pointsPerRev * phaseDifference));
-
-                probeData.Add(new KeyenceSiDataSet(1));
-                probeData.Add(new KeyenceSiDataSet(2));
+            double phaseDifference = (probePhaseDiffRads) / (Math.PI * 2.0);
+            probeIndexOffset = (int)(Math.Round(pointsPerRev * phaseDifference));
+            probeData.Add(new KeyenceSiDataSet(scanFormat,outputUnit,CsvFileName,1));
+            probeData.Add(new KeyenceSiDataSet(scanFormat, outputUnit, CsvFileName,2));
            
         }
     }
@@ -382,8 +369,16 @@ namespace InspectionLib
             }
 
         }
-        public KeyenceSiDataSet(int probeNumber)
+        public KeyenceSiDataSet(ScanFormat scanFormat, MeasurementUnit outputUnit, string CsvFileName, int probeNumber)
         {
+            OutputUnits = outputUnit;
+            ScanFormat = scanFormat;
+            DataFormat = RawDataFormat.RADIAL;
+            Filename = CsvFileName;
+            _headerRowCount = 0;
+            _firstDataRow = 4;
+            _firstDataCol = 2;
+            data = new List<double>();
             int dataColumn = _firstDataCol + probeNumber - 1;
             ProcessFile(dataColumn);
         }

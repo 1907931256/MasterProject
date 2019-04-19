@@ -34,7 +34,7 @@ namespace DataLib
                         result.Add(bp);
                     }
                 }
-                result.NominalMinDiam = ring.NominalMinDiam;
+                result.MinRadius = ring.MinRadius;
                 return result;
             }
             catch (Exception)

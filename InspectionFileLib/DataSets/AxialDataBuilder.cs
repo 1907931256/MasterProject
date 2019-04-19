@@ -43,9 +43,11 @@ namespace InspectionLib
                 var dataSet = new CylDataSet( script.InputDataFileName);               
                 for (int i = 0; i < len; i++)
                 {
-                    dataSet.CylData.Add(GetPoint(i,script, (data[i] + script.CalDataSet.ProbeSpacingInch) / 2.0));
+                    var pt = GetPoint(i, script, data[i] + script.CalDataSet.ProbeSpacingInch / 2.0);
+                    dataSet.CylData.Add(pt);
+                    dataSet.UncorrectedCylData.Add(pt);
                 }
-               
+                dataSet.DataFormat = script.ScanFormat;
                 return dataSet;
             }
             catch (Exception)

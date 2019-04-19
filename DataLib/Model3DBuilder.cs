@@ -92,12 +92,13 @@ namespace DataLib
         double dzInput;
         double dzTarget;
 
-        private double[,] MakeData(CylGridData scan, double radialDirection, double nominalRadius, double scalingFactor)
+        private double[,] BuildHeightArray(CylGridData scan, double radialDirection, double nominalRadius, double scalingFactor)
         {
             try
             {
                 int zCount = scan.Count;
                 int xCount = scan[0].Count;
+                //find smallest strip to dim array
                 foreach (CylData strip in scan)
                 {
                     if (strip.Count < xCount)
@@ -107,6 +108,7 @@ namespace DataLib
                 }
                 double[,] inputValues = new double[xCount, zCount];
                 int zi = 0;
+                //move strip values into array of heights
                 foreach (CylData strip in scan)
                 {
                     for (int xi = 0; xi < xCount; xi++)
@@ -115,56 +117,54 @@ namespace DataLib
                     }
                     zi++;
                 }
-
-
-
-                var p00 = new PointCyl(scan[0][0].R + nominalRadius, scan[0][0].ThetaRad, scan[0][0].Z);
-                var p01 = new PointCyl(scan[0][1].R + nominalRadius, scan[0][1].ThetaRad, scan[0][1].Z);
-                var p10 = new PointCyl(scan[1][0].R + nominalRadius, scan[1][0].ThetaRad, scan[1][0].Z);
-                dxInput = p00.DistanceTo(p01);
-                dzInput = p00.DistanceTo(p10);
-                dxTarget = .002;
-                dzTarget = .002;
+                //calc x and z spacing 
+                dxInput =  Math.Abs(nominalRadius * (scan[0][0].ThetaRad - scan[0][1].ThetaRad));
+                dzInput = Math.Abs(scan[0][0].Z - scan[1][0].Z);
+                dxTarget = .004;
+                dzTarget = .004;
                 int xSpacing = 1;
                 double xScaling = dxTarget / dxInput;
                 if (xScaling > 1)
                 {
                     xSpacing = (int)Math.Ceiling(xScaling);
                 }
-
+                else
+                {
+                    xSpacing = 1;
+                }
                 int zOutCount = (int)(zCount * dzInput / dzTarget);
                 int xOutCount = xCount / xSpacing;
 
                 double[,] valuesXAve = new double[xOutCount, zCount];
 
                 double clippingValue = 20 * _maxToleranceValue;
-
+                //average x values 
                 for (int zIndex = 0; zIndex < inputValues.GetUpperBound(1); zIndex++)
                 {
-                    int xi = 0;
-                    int xstart = 0;
-                    while (xi < xOutCount)
-                    {
-                        int xend = Math.Min(xstart + xSpacing, inputValues.GetUpperBound(0));
-                        double sum = 0;
-                        for (int xsub = xstart; xsub < xend; xsub++)
+                        int xi = 0;
+                        int xstart = 0;
+                        while (xi < xOutCount)
                         {
-                            sum += inputValues[xsub, zIndex];
+                            int xend = Math.Min(xstart + xSpacing, inputValues.GetUpperBound(0));
+                            double sum = 0;
+                            for (int xsub = xstart; xsub < xend; xsub++)
+                            {
+                                sum += inputValues[xsub, zIndex];
+                            }
+                            int sumCount = xend - xstart;
+                            sum /= sumCount;
+                            valuesXAve[xi, zIndex] = sum * scalingFactor;
+                            xi++;
+                            xstart += xSpacing;
                         }
-                        int sumCount = xend - xstart;
-                        sum /= sumCount;
-                        valuesXAve[xi, zIndex] = sum * scalingFactor;
-                        xi++;
-                        xstart += xSpacing;
-                    }
 
                 }
-
+                
 
                 double[,] valuesOut = new double[xOutCount, zOutCount];
 
 
-
+                //poly fit z values
                 for (int xio = 0; xio < xOutCount; xio++)
                 {
 
@@ -294,24 +294,23 @@ namespace DataLib
                 MeshGeometry3D mesh = new MeshGeometry3D();
                 pointDictionary = new Dictionary<Point3D, int>();
                 // Make the surface's points and triangles.
-                float offset_x = xIndexMax / 2f;
-                float offset_z = zIndexMax / 2f;
-                double xScaling = dxTarget;
-                double zScaling = dzTarget;
-                for (int x = xIndexMin; x <= xIndexMax - dxIndex; x += dxIndex)
+                var midIndex_x = xIndexMax / 2.0;
+                var midIndex_z = zIndexMax / 2.0;
+                
+                for (int x = xIndexMin; x < xIndexMax ; x ++)
                 {
-                    for (int z = zIndexMin; z <= zIndexMax - dzIndex; z += dzIndex)
+                    for (int z = zIndexMin; z < zIndexMax ; z ++)
                     {
                         // Make points at the corners of the surface
                         // over (x, z) - (x + dx, z + dz).
-                        double x0 = (x - offset_x) * xScaling;
-                        double z0 = (z - offset_z) * zScaling;
-                        double x1 = x0 + xScaling;
-                        double z1 = z0 + zScaling;
+                        double x0 = (x - midIndex_x) * dxTarget;
+                        double z0 = (z - midIndex_z) * dzTarget;
+                        double x1 = x0 + dxTarget;
+                        double z1 = z0 + dzTarget;
                         Point3D p00 = new Point3D(x0, values[x, z], z0);
-                        Point3D p10 = new Point3D(x1, values[x + dxIndex, z], z0);
-                        Point3D p01 = new Point3D(x0, values[x, z + dzIndex], z1);
-                        Point3D p11 = new Point3D(x1, values[x + dxIndex, z + dzIndex], z1);
+                        Point3D p10 = new Point3D(x1, values[x + 1, z], z0);
+                        Point3D p01 = new Point3D(x0, values[x, z + 1], z1);
+                        Point3D p11 = new Point3D(x1, values[x + 1, z + 1], z1);
 
                         // Add the triangles.
                         AddTriangle(mesh, p00, p01, p11);
@@ -333,12 +332,12 @@ namespace DataLib
                 // Make the mesh's model.
                 GeometryModel3D surface_model = new GeometryModel3D(mesh, surface_material);
 
-                var xOrigin = (xIndexMin - offset_x) * xScaling;
+                var xOrigin = (xIndexMin - midIndex_x) * dxTarget;
                 var yOrigin = 0;
-                var zOrigin = (zIndexMin - offset_z) * zScaling;
+                var zOrigin = (zIndexMin - midIndex_z) * dzTarget;
 
 
-                var axis = new Rect3D(xOrigin, yOrigin, zOrigin, dxIndex * xScaling, dxIndex * xScaling, dzIndex * zScaling);
+                var axis = new Rect3D(xOrigin, yOrigin, zOrigin, dxIndex * dzInput, dxIndex * dxTarget, dzIndex * dzTarget);
                 var axisBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
                 var axisMaterial = new DiffuseMaterial(axisBrush);
                 //var axisModel = new GeometryModel3D(axis, axisMaterial);
@@ -365,7 +364,7 @@ namespace DataLib
                 model_group = modelgroup;
                 _maxToleranceValue = maxToleranceValue;
                 DefineLights();
-                var values = MakeData(spiralScan, radialDirection, nominalRadius, scalingFactor);
+                var values = BuildHeightArray(spiralScan, radialDirection, nominalRadius, scalingFactor);
                 CreateAltitudeMap(values, maxToleranceValue * scalingFactor, colorCode);
                 DefineModel(values);
             }

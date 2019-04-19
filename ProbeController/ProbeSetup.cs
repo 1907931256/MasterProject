@@ -22,6 +22,7 @@ namespace ProbeController
     {
         public ProbeConfig ProbeConfig{get;set;}
         public ProbeDirection Direction { get; set; }
+        public double PhaseDiffRad { get; set; }
         public uint ProbeCount
         {
             get
@@ -42,7 +43,7 @@ namespace ProbeController
         {
             ProbeConfig = ProbeConfig.SINGLE_LJ_V7060;
             Direction = ProbeDirection.ID;
-
+            PhaseDiffRad = 0;
         }
     }
 }

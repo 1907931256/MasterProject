@@ -11,7 +11,7 @@ namespace DataLib
     public class CylData : List<PointCyl>
     {
         public string FileName { get; private set; }
-        public double NominalMinDiam { get; set; }
+        public double MinRadius { get; set; }
         public DisplayData AsDisplayData( ViewPlane viewplane)
         {
             var pts = new DisplayData(FileName);

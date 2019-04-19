@@ -38,7 +38,7 @@ namespace InspectionLib
         {
             double maxR = double.MinValue;
             double minR = double.MaxValue;
-            foreach (PointCyl pt in RawLandPoints)
+            foreach (PointCyl pt in pts)
             {
                 if (pt.R > maxR)
                 {

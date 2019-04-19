@@ -37,83 +37,29 @@ namespace InspectionLib
 
         }
 
-        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, SingleCylInspScript script, Vector2[] rawDataSet)
-        {
-            try
-            {
-                //Init(options);
-                return BuildCartDataFromLineData(script, rawDataSet);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        public static CalDataSet BuildCalData(double phaseDifferenceDegs,int pointsPerRev, double ringGageDiamInch, string CsvFileName)
-        {
-            try
-            {
-               
-                    double data = 0;                   
-                    var dualData = new KeyenceDualSiDataSet(phaseDifferenceDegs, pointsPerRev);
-                    data = dualData.GetData(ScanFormat.CAL)[0];                    
-                    return new CalDataSet(ringGageDiamInch, data,ProbeDirection.ID);
-               
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                throw new Exception("Cal file not found");
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
-        static protected PointCyl GetPoint(int i, SpiralInspScript script, double r)
-        {
-            var z = i / script.PitchInch + script.StartLocation.X;
-            var theta = i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
-            var pt = new PointCyl(r, theta, z, i);
-            return pt;
-        }
-        static protected CylData GetData(SpiralInspScript script, double[] data)
-        {
-            try
-            {
-                var points = new CylData(script.InputDataFileName);
-                for (int i = 0; i < data.Length; i++)
-                {
-                    points.Add(GetPoint(i, script, data[i]));
-                }
-                return points;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
+        
+        
         /// <summary>
         /// separate point list into rings from spiral
         /// </summary>
         /// <returns></returns>
-        static CylGridData BuildGridList(CylData uncorrectedData, int thetaDirection)
+        static CylGridData BuildGridList(SpiralInspScript script, double[] rawInputData )
         {
             try
             {
                 int pointCountPerRev = 0;
                 int revCount = 0;
                 int pointIndex = 0;
-                double thetaStart = Math.Abs(uncorrectedData[0].ThetaRad);
-                double thetaEnd = Math.Abs(thetaStart + (thetaDirection * Math.PI * 2.0));
-                var pointList = new CylData(uncorrectedData.FileName);
-                var uncorrectedGridData = new CylGridData();
 
-                while (pointIndex < uncorrectedData.Count)
+                double thetaStart = GeomUtilities.ToRadians(script.StartLocation.Adeg);
+                double thetaEnd = Math.Abs(thetaStart + (Math.Sign(script.AngleIncrement) * Math.PI * 2.0));
+                var pointList = new CylData(script.InputDataFileName);
+                var uncorrectedGridData = new CylGridData();
+                double zStart = script.StartLocation.X;
+                double z = zStart;
+                while (pointIndex < rawInputData.Length)
                 {
-                    var p = uncorrectedData[pointIndex];
+                    var p = GetPoint(rawInputData[pointIndex], pointIndex, z, script);
 
                     var thA = Math.Abs(p.ThetaRad);
                     if (thA >= thetaStart && thA < thetaEnd)
@@ -126,12 +72,12 @@ namespace InspectionLib
                     {
 
                         revCount++;
-
+                        z += script.PitchInch;
                         pointCountPerRev = 0;
                         uncorrectedGridData.Add(pointList);
-                        pointList = new CylData(uncorrectedData.FileName);
+                        pointList = new CylData(script.InputDataFileName);
                         thetaStart = thetaEnd;
-                        thetaEnd = Math.Abs(thetaStart + (thetaDirection * Math.PI * 2.0));
+                        thetaEnd = Math.Abs(thetaStart + (Math.Sign(script.AngleIncrement) * Math.PI * 2.0));
                     }
                 }
                 return uncorrectedGridData;
@@ -148,11 +94,10 @@ namespace InspectionLib
             {
 
 
-                var data = DataBuilder.GetUncorrectedData(script, rawInputData);
-                var dataSet = new SpiralDataSet(script.InputDataFileName);
-                var ringData = new RingDataSet(script.InputDataFileName);
-                ringData.UncorrectedCylData = DataBuilder.GetUncorrectedData(script, rawInputData);
-                dataSet.UncorrectedSpiralData = BuildGridList(ringData.UncorrectedCylData, Math.Sign(script.AngleIncrement));
+                
+                var dataSet = new SpiralDataSet(script.InputDataFileName);                 
+                
+                dataSet.UncorrectedSpiralData = BuildGridList(script, rawInputData );
                 int totalrings = dataSet.UncorrectedSpiralData.Count;
 
                 //find all land points
@@ -160,10 +105,10 @@ namespace InspectionLib
                 foreach (var row in dataSet.UncorrectedSpiralData)
                 {
 
-                    var landPointArr = DataBuilder.GetLandPoints(row, script.PointsPerRevolution, grooveCount);
+                    var landPointArr = GetLandPoints(row, script.PointsPerRevolution, grooveCount);
                     //find polynomial fit for lands and correct for eccentricity        
 
-                    var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction, script.CalDataSet.NominalRadius);
+                    var correctedRing = CorrectRing(row, landPointArr, script.ProbeSetup.Direction, script.CalDataSet.ProbeSpacingInch / 2.0);
                     dataSet.SpiralData.Add(correctedRing);
                     int p = (int)(100 * i / totalrings);
                     progress.Report(p);
@@ -178,33 +123,7 @@ namespace InspectionLib
                 throw;
             }
         }
-        /// <summary>
-        /// build grid data from spiral raw set
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <param name="progress"></param>
-        /// <param name="script"></param>
-        /// <param name="rawDataSet"></param>
-        /// <param name="options"></param>
-        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, SpiralInspScript script, double[] rawDataSet, int grooveCount)
-        {
-            try
-            {
-                //Init(options);
-                var sw = new Stopwatch();
-                progress.Report(sw.Elapsed.Seconds);
-
-                var dataSet = BuildSpiralFromRadialData(progress, script, rawDataSet, grooveCount);
-
-                return dataSet;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
+       
 
         static InspDataSet BuildRasterPoints(RasterInspScript script, double[] data)
         {
@@ -258,136 +177,48 @@ namespace InspectionLib
                 throw;
             }
         }
-
-        public static InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, RasterInspScript script, double[] rawDataSet, DataOutputOptions options)
-        {
-            try
-            {
-                //Init(options);
-                var sw = new Stopwatch();
-                progress.Report(sw.Elapsed.Seconds);
-
-                var dataSet = BuildRasterPoints(script, rawDataSet);
-
-                return dataSet;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
-        //protected Barrel _barrel;
-
-        static public string InputFileName
-        {
-            get
-            {
-                return _inputFileName;
-            }
-        }
         
-        static protected string _inputFileName;
-        //long _id;
-        protected BoundingBox _boundingBox;
-
-        //static protected virtual CylData GetData(CylInspScript script, double[] data)
-        //{
-        //   return new CylData(script.InputDataFileName);
-        //}
-        //static protected CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
-        //{
-        //    try
-        //    {               
-        //        return GetData(script, rawInputData);              
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-        //}
-
-        static double GetMinRadiusFromPointList(CylData singleRing, PointCyl[] landPoints)
-        {
-            try
-            {
-                var pointDictionary = new Dictionary<int, PointCyl>();
-                
-                var foundPoints = new CylData(singleRing.FileName);
-
-                
-                foreach (PointCyl pt in singleRing)
-                {
-                    if(!pointDictionary.ContainsKey(pt.ID))
-                        pointDictionary.Add(pt.ID, pt);
-                }
-                foreach (PointCyl landpt in landPoints)
-                {
-                    var pt = new PointCyl();
-                    if (pointDictionary.TryGetValue(landpt.ID, out pt))
-                    {
-                        foundPoints.Add(pt);
-                    }
-                }
-                double rSum = 0;
-                double rAve = 0;
-               
-                if (foundPoints.Count > 0)
-                {
-                    foreach (PointCyl pt in foundPoints)
-                    {
-                        if (!(pt is null))
-                        {
-                            rSum += pt.R;
-                            
-                        }
-                    }
-                    rAve = rSum / foundPoints.Count;
-                }
-
-                return rAve;
-            }
-            catch (Exception)
-            {
-                
-                throw;
-            }
-            
-        }
+       
         /// <summary>
-        /// find min radius and reset radii to nominal 
-        /// </summary>
-        /// <param name="singleRing"></param>
-        /// <param name="setPt"></param>
-        /// <param name="knownRadius"></param>
+        /// find min radius point with rolling average
+        /// /// </summary>
+        /// <param name="row"></param>
         /// <returns></returns>
-        static public CylData ResetToKnownRadius(CylData singleRing, PointCyl setPt,  double knownRadius)
+        static double GetMinAveRadius(List<PointCyl> data, int searchWindowHalfW)
         {
             try
-            {                
-                var result = new CylData(singleRing.FileName);
-                double rCorrection = knownRadius - setPt.R;
-                
-                foreach (var pt in singleRing)
-                {
-                    PointCyl newPt;                   
-                    newPt = new PointCyl(pt.R + rCorrection, pt.ThetaRad, pt.Z);                    
+            {
 
-                    result.Add(newPt);
+                double minR = double.MaxValue;
+                int minPtIndex = 0;
+                for (int i = 0; i < data.Count; i++)
+                {
+                    if (data[i].R < minR)
+                    {
+                        minPtIndex = i;
+                        minR = data[i].R;
+                    }
                 }
-                result.NominalMinDiam = singleRing.NominalMinDiam;
-                return result;
+                int startSearch = Math.Max(0, minPtIndex - searchWindowHalfW);
+                int endSearch = Math.Min(data.Count - 1, minPtIndex + searchWindowHalfW);
+                double aveCt = 0;
+                double sumR = 0;
+                for (int j = startSearch; j < endSearch; j++)
+                {
+                    sumR += data[j].R;
+                    aveCt++;
+                }
+                sumR /= aveCt;
+                return sumR;
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
 
         }
-        static protected double GetCorrectionRadius(CylData singleRing, double nominalRadius)
+        static double GetCorrectionRadius(CylData singleRing, double nominalRadius)
         {
             double minR = GetMinAveRadius(singleRing, 5);
             double rCorrection = nominalRadius - minR;
@@ -399,7 +230,7 @@ namespace InspectionLib
         /// <param name="singleRing"></param>
         /// <param name="_nominalRadius"></param>
         /// <returns></returns>
-        static protected CylData CorrectRadius(CylData singleRing,double rCorrection, ProbeDirection probeDir)
+        static CylData CorrectRadius(CylData singleRing,double rCorrection, ProbeDirection probeDir)
         {
             try
             {
@@ -423,7 +254,7 @@ namespace InspectionLib
                     result.Add(newPt);
 
                 }
-                result.NominalMinDiam = singleRing.NominalMinDiam;
+                result.MinRadius = singleRing.MinRadius;
                 return result;
             }
             catch (Exception)
@@ -433,55 +264,13 @@ namespace InspectionLib
             }
 
         }
-
-
-        //}
+        
         /// <summary>
         /// find min radius point with rolling average
         /// /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
-        static protected double GetMinAveRadius(List<PointCyl> data,int searchWindowHalfW)
-        {
-            try
-            {
-               
-                double minR = double.MaxValue;
-                int minPtIndex = 0;
-                for (int i = 0; i < data.Count; i++)
-                {
-                    if (data[i].R < minR)
-                    {
-                        minPtIndex = i;
-                        minR = data[i].R;
-                    }
-                }
-                int startSearch = Math.Max(0, minPtIndex - searchWindowHalfW);
-                int endSearch = Math.Min(data.Count - 1, minPtIndex + searchWindowHalfW);
-                double aveCt = 0;
-                double sumR=0;
-                for(int j=startSearch; j<endSearch;j++)
-                {
-                    sumR += data[j].R;
-                    aveCt++;
-                }
-                sumR /= aveCt;
-                return sumR;
-            }
-            catch (Exception)
-            {
-             
-                throw;
-            }
-            
-        }
-        //}
-        /// <summary>
-        /// find min radius point with rolling average
-        /// /// </summary>
-        /// <param name="row"></param>
-        /// <returns></returns>
-        static protected PointCyl GetMinRadiusPt(List<PointCyl> data)
+        static PointCyl GetMinRadiusPt(List<PointCyl> data)
         {
             try
             {
@@ -512,7 +301,7 @@ namespace InspectionLib
         /// </summary>
         /// <param name="rawSingleRing"></param>
         /// <returns></returns>
-        static protected CylData GetLandPoints(CylData ring,int pointsPerRevolution,int grooveCount)
+        static CylData GetLandPoints(CylData ring,int pointsPerRevolution,int grooveCount)
         {
             try
             {
@@ -613,7 +402,7 @@ namespace InspectionLib
             }
            
         }
-        static protected void AddSelfPoints(ref CylData lands, CylData pointArr)
+        static  void AddSelfPoints(ref CylData lands, CylData pointArr)
         {
             try
             {
@@ -629,7 +418,7 @@ namespace InspectionLib
                 throw;
             } 
         }
-        static protected CylData CorrectRing(CylData singleRing, CylData landPointArr, ProbeDirection probeDirection,double nominalRadius)
+        static  CylData CorrectRing(CylData uncorrectedData, CylData landPointArr, ProbeDirection probeDirection,double nominalRadius)
         {
             try
             {
@@ -637,7 +426,7 @@ namespace InspectionLib
                 bool segmentFit = true;
 
                 var coeffList = new List<double[]>();
-                var landPointList = new CylData(singleRing.FileName);
+                var landPointList = new CylData(uncorrectedData.FileName);
 
                 landPointList.AddRange(landPointArr);
 
@@ -647,12 +436,13 @@ namespace InspectionLib
                 var fitData = new FitData(segmentFit, polyOrder);
 
                 fitData.CalcFitCoeffs(landPointList);
-                var eccData = fitData.CorrectData(singleRing);
+                var eccData = fitData.CorrectData(uncorrectedData);
 
-                eccData.SortByTheta();               
-                eccData.NominalMinDiam = singleRing.NominalMinDiam;
+                eccData.SortByTheta();
+                eccData.MinRadius = GetMinAveRadius(eccData, 5);
 
-                double rCorrection =  GetCorrectionRadius(eccData,nominalRadius) ;
+                double rCorrection = uncorrectedData.MinRadius - eccData.MinRadius;
+                
                 var correctedData = CorrectRadius(eccData,rCorrection, probeDirection);
                 return correctedData;
             }
@@ -660,66 +450,104 @@ namespace InspectionLib
             {
                 throw;
             }
+        }    
+        
+        static PointCyl GetPoint(double rRaw,int i,double zLocation, CylInspScript script )
+        {
+            var z = zLocation;
+            var theta = i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
+            double r = script.ProbeSetup[0].DirectionSign * rRaw + script.CalDataSet.ProbeSpacingInch / 2.0;
+            var pt = new PointCyl(r, theta, z, i);
+            return pt;
         }
-
-        static public CylData GetUncorrectedData(CylInspScript script, double[] rawInputData)
+        static  CylData GetUncorrectedData(CylInspScript script,double zLocation, double[] data)
         {
             try
             {
-                return GetData(script, rawInputData);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        static protected CylData GetData(CylInspScript script, double[] data)
-        {
-            try
-            {
-                if (script is CylInspScript ringScript)
+                
+                var points = new CylData(script.InputDataFileName);
+                
+                int pointCt = 0;
+                
+               
+                if (script.ScanFormat == ScanFormat.RING)
                 {
-                    var points = new CylData(ringScript.InputDataFileName);
-                    double probeSpacing = ringScript.CalDataSet.ProbeSpacingInch;
-                    int pointCt = Math.Min(ringScript.PointsPerRevolution, data.GetUpperBound(0));
-                    var probeSign = script.ProbeSetup[0].DirectionSign;
-                    double minDiam = double.MaxValue;
-                    for (int i = 0; i < pointCt; i++)
-                    {
-                        var z = script.StartLocation.X;
-                        var theta = i * ringScript.AngleIncrement + GeomUtilities.ToRadians(ringScript.StartLocation.Adeg);
-
-                        var diam = data[i];
-                        var sum = data[i];
-                        if (sum < minDiam)
-                        {
-                            minDiam = sum;
-                        }
-                        double r = probeSign * (probeSpacing + sum) ;
-                        var pt1 = new PointCyl(r, theta, z, i);
-
-                        points.Add(pt1);
-
-                    }
-                    points.NominalMinDiam = minDiam + ringScript.CalDataSet.ProbeSpacingInch;
-                    // var trans = new Vector3(0, -1 * script.CalDataSet.NominalRadius, 0);
-                    // points.Translate(trans);
-                    return points;
+                    pointCt = Math.Min(script.PointsPerRevolution, data.Length);
                 }
                 else
                 {
-                    return new CylData("");
+                    pointCt = data.Length;                    
                 }
+                  
+                
+                double minR = double.MaxValue;
+                for (int i = 0; i < pointCt; i++)
+                {
+                   
+                    if (data[i] < minR)
+                    {
+                        minR = data[i];
+                    }
+
+                    var pt = GetPoint(data[i], i, zLocation, script);
+                    points.Add(pt);
+
+                }
+                points.MinRadius = script.ProbeSetup[0].DirectionSign * minR + script.CalDataSet.ProbeSpacingInch / 2.0;
+                  
+                return points;
+               
 
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
+        static CylData GetUncorrectedData(CylInspScript script, double[] data)
+        {
+            try
+            {
 
+                var points = new CylData(script.InputDataFileName);
+
+                int pointCt = 0;
+
+
+                if (script.ScanFormat == ScanFormat.RING)
+                {
+                    pointCt = Math.Min(script.PointsPerRevolution, data.Length);
+                }
+                else
+                {
+                    pointCt = data.Length;
+                }
+
+
+                double minR = double.MaxValue;
+                for (int i = 0; i < pointCt; i++)
+                {
+
+                    if (data[i] < minR)
+                    {
+                        minR = data[i];
+                    }
+
+                    var pt = GetPoint(data[i], i, script.StartLocation.X, script);
+                    points.Add(pt);
+
+                }
+                points.MinRadius = script.ProbeSetup[0].DirectionSign * minR + script.CalDataSet.ProbeSpacingInch / 2.0;
+
+                return points;
+
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         /// <summary>
         /// build ring data from raw data and auto find lands
         /// </summary>
@@ -732,7 +560,7 @@ namespace InspectionLib
                 var dataSet = new RingDataSet(script.InputDataFileName);
                 dataSet.UncorrectedCylData = GetUncorrectedData(script, rawInputData);
                 dataSet.RawLandPoints = GetLandPoints(dataSet.UncorrectedCylData, script.PointsPerRevolution, grooveCount);
-                dataSet.CylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction, script.CalDataSet.NominalRadius);
+                dataSet.CylData = CorrectRing(dataSet.UncorrectedCylData, dataSet.RawLandPoints, script.ProbeSetup.Direction, script.CalDataSet.ProbeSpacingInch/2.0);
                 dataSet.CorrectedLandPoints = GetLandPoints(dataSet.CylData, script.PointsPerRevolution, grooveCount);
                 return dataSet;
             }
@@ -740,6 +568,57 @@ namespace InspectionLib
             {
                 throw;
             }
+        }
+        #region public_methods
+        /// <summary>
+        /// find min radius and reset radii to nominal 
+        /// </summary>
+        /// <param name="singleRing"></param>
+        /// <param name="setPt"></param>
+        /// <param name="knownRadius"></param>
+        /// <returns></returns>
+        static public CylData ResetToKnownRadius(CylData singleRing, PointCyl setPt, double knownRadius)
+        {
+            try
+            {
+                var result = new CylData(singleRing.FileName);
+                double rCorrection = knownRadius - setPt.R;
+
+                foreach (var pt in singleRing)
+                {
+                    PointCyl newPt;
+                    newPt = new PointCyl(pt.R + rCorrection, pt.ThetaRad, pt.Z);
+
+                    result.Add(newPt);
+                }
+                result.MinRadius = singleRing.MinRadius;
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public static InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, RasterInspScript script, double[] rawDataSet, DataOutputOptions options)
+        {
+            try
+            {
+
+                var sw = new Stopwatch();
+                progress.Report(sw.Elapsed.Seconds);
+
+                var dataSet = BuildRasterPoints(script, rawDataSet);
+
+                return dataSet;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
         /// <summary>
@@ -754,8 +633,8 @@ namespace InspectionLib
         {
             try
             {
-                //Init(options);
-                _inputFileName = script.InputDataFileName;
+                
+                
                 var dataSet = BuildRingFromRadialData(script, rawDataSet, grooveCount);
                 return dataSet;
             }
@@ -764,10 +643,73 @@ namespace InspectionLib
                 throw;
             }
         }
+       
+        public static InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, SingleCylInspScript script, Vector2[] rawDataSet)
+        {
+            try
+            {
+               
+                return BuildCartDataFromLineData(script, rawDataSet);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        /// <summary>
+        /// build grid data from spiral raw set
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <param name="progress"></param>
+        /// <param name="script"></param>
+        /// <param name="rawDataSet"></param>
+        /// <param name="options"></param>
+        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, SpiralInspScript script, double[] rawDataSet, int grooveCount)
+        {
+            try
+            {
+
+                var sw = new Stopwatch();
+                progress.Report(sw.Elapsed.Seconds);
+
+                var dataSet = BuildSpiralFromRadialData(progress, script, rawDataSet, grooveCount);
+
+                return dataSet;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public static CalDataSet BuildCalData(MeasurementUnit outputUnit, double phaseDifferenceRads, int pointsPerRev, double ringGageDiamInch, string CsvFileName)
+        {
+            try
+            {
+
+                double data = 0;
+                var dualData = new KeyenceDualSiDataSet(ScanFormat.CAL, outputUnit, phaseDifferenceRads, pointsPerRev, CsvFileName);
+                data = dualData.GetData(ScanFormat.CAL)[0];
+                return new CalDataSet(ringGageDiamInch, data, ProbeDirection.ID);
+
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                throw new Exception("Cal file not found");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
         public DataBuilder()
         {
         }
-
+        
+        #endregion
     }
     
   

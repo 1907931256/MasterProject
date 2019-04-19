@@ -55,10 +55,8 @@
             this.radioButtonPtsperRev = new System.Windows.Forms.RadioButton();
             this.comboBoxMethod = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.labelPitch = new System.Windows.Forms.Label();
             this.labelEndPos = new System.Windows.Forms.Label();
             this.labelMethod = new System.Windows.Forms.Label();
-            this.textBoxPitch = new System.Windows.Forms.TextBox();
             this.textBoxAngleInc = new System.Windows.Forms.TextBox();
             this.textBoxPtsPerRev = new System.Windows.Forms.TextBox();
             this.textBoxEndPosA = new System.Windows.Forms.TextBox();
@@ -146,6 +144,10 @@
             this.buttonBuildProfile = new System.Windows.Forms.Button();
             this.checkBoxUseFilename = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.labelDAQStatus = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.buttonCancelDAQ = new System.Windows.Forms.Button();
+            this.textBoxProfilesToGet = new System.Windows.Forms.TextBox();
             this.labelConnStatus = new System.Windows.Forms.Label();
             this.labelProfileCount = new System.Windows.Forms.Label();
             this.buttonGetMultiProfile = new System.Windows.Forms.Button();
@@ -157,15 +159,11 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             this.timerHighSpeedReceive = new System.Windows.Forms.Timer(this.components);
-            this.textBoxProfilesToGet = new System.Windows.Forms.TextBox();
-            this.buttonCancelDAQ = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.labelDAQStatus = new System.Windows.Forms.Label();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -292,16 +290,6 @@
             this.label7.TabIndex = 1;
             this.label7.Text = "Probe Direction";
             // 
-            // labelPitch
-            // 
-            this.labelPitch.AutoSize = true;
-            this.labelPitch.Location = new System.Drawing.Point(93, 156);
-            this.labelPitch.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelPitch.Name = "labelPitch";
-            this.labelPitch.Size = new System.Drawing.Size(77, 13);
-            this.labelPitch.TabIndex = 1;
-            this.labelPitch.Text = "Spiral Pitch (in)";
-            // 
             // labelEndPos
             // 
             this.labelEndPos.AutoSize = true;
@@ -322,14 +310,6 @@
             this.labelMethod.TabIndex = 1;
             this.labelMethod.Text = "Scan Format";
             this.labelMethod.Click += new System.EventHandler(this.labelMethod_Click);
-            // 
-            // textBoxPitch
-            // 
-            this.textBoxPitch.Location = new System.Drawing.Point(145, 153);
-            this.textBoxPitch.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxPitch.Name = "textBoxPitch";
-            this.textBoxPitch.Size = new System.Drawing.Size(82, 20);
-            this.textBoxPitch.TabIndex = 0;
             // 
             // textBoxAngleInc
             // 
@@ -1048,13 +1028,11 @@
             this.tabPage2.Controls.Add(this.labelMethod);
             this.tabPage2.Controls.Add(this.labelStartPos);
             this.tabPage2.Controls.Add(this.labelInputFIlename);
-            this.tabPage2.Controls.Add(this.textBoxPitch);
             this.tabPage2.Controls.Add(this.textBoxStartPosX);
             this.tabPage2.Controls.Add(this.textBoxAngleInc);
             this.tabPage2.Controls.Add(this.labelEndPos);
             this.tabPage2.Controls.Add(this.textBoxEndPosX);
             this.tabPage2.Controls.Add(this.textBoxPtsPerRev);
-            this.tabPage2.Controls.Add(this.labelPitch);
             this.tabPage2.Controls.Add(this.radioButtonAngleInc);
             this.tabPage2.Controls.Add(this.radioButtonPtsperRev);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -1228,6 +1206,44 @@
             this.tabPage5.Text = "Data Capture";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // labelDAQStatus
+            // 
+            this.labelDAQStatus.AutoSize = true;
+            this.labelDAQStatus.Location = new System.Drawing.Point(122, 238);
+            this.labelDAQStatus.Name = "labelDAQStatus";
+            this.labelDAQStatus.Size = new System.Drawing.Size(37, 13);
+            this.labelDAQStatus.TabIndex = 15;
+            this.labelDAQStatus.Text = "Status";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(122, 205);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(70, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Profile Count:";
+            // 
+            // buttonCancelDAQ
+            // 
+            this.buttonCancelDAQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonCancelDAQ.Location = new System.Drawing.Point(19, 199);
+            this.buttonCancelDAQ.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCancelDAQ.Name = "buttonCancelDAQ";
+            this.buttonCancelDAQ.Size = new System.Drawing.Size(95, 25);
+            this.buttonCancelDAQ.TabIndex = 13;
+            this.buttonCancelDAQ.Text = "Cancel";
+            this.buttonCancelDAQ.UseVisualStyleBackColor = true;
+            this.buttonCancelDAQ.Click += new System.EventHandler(this.buttonCancelDAQ_Click);
+            // 
+            // textBoxProfilesToGet
+            // 
+            this.textBoxProfilesToGet.Location = new System.Drawing.Point(198, 202);
+            this.textBoxProfilesToGet.Name = "textBoxProfilesToGet";
+            this.textBoxProfilesToGet.Size = new System.Drawing.Size(100, 20);
+            this.textBoxProfilesToGet.TabIndex = 12;
+            this.textBoxProfilesToGet.Text = "100";
+            // 
             // labelConnStatus
             // 
             this.labelConnStatus.AutoSize = true;
@@ -1352,6 +1368,16 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(606, 516);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.userControl11;
+            // 
             // progressBarProcessing
             // 
             this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
@@ -1363,54 +1389,6 @@
             // 
             this.timerHighSpeedReceive.Interval = 500;
             this.timerHighSpeedReceive.Tick += new System.EventHandler(this.timerHighSpeedReceive_Tick);
-            // 
-            // textBoxProfilesToGet
-            // 
-            this.textBoxProfilesToGet.Location = new System.Drawing.Point(198, 202);
-            this.textBoxProfilesToGet.Name = "textBoxProfilesToGet";
-            this.textBoxProfilesToGet.Size = new System.Drawing.Size(100, 20);
-            this.textBoxProfilesToGet.TabIndex = 12;
-            this.textBoxProfilesToGet.Text = "100";
-            // 
-            // buttonCancelDAQ
-            // 
-            this.buttonCancelDAQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonCancelDAQ.Location = new System.Drawing.Point(19, 199);
-            this.buttonCancelDAQ.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonCancelDAQ.Name = "buttonCancelDAQ";
-            this.buttonCancelDAQ.Size = new System.Drawing.Size(95, 25);
-            this.buttonCancelDAQ.TabIndex = 13;
-            this.buttonCancelDAQ.Text = "Cancel";
-            this.buttonCancelDAQ.UseVisualStyleBackColor = true;
-            this.buttonCancelDAQ.Click += new System.EventHandler(this.buttonCancelDAQ_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(122, 205);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(70, 13);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "Profile Count:";
-            // 
-            // labelDAQStatus
-            // 
-            this.labelDAQStatus.AutoSize = true;
-            this.labelDAQStatus.Location = new System.Drawing.Point(122, 238);
-            this.labelDAQStatus.Name = "labelDAQStatus";
-            this.labelDAQStatus.Size = new System.Drawing.Size(37, 13);
-            this.labelDAQStatus.TabIndex = 15;
-            this.labelDAQStatus.Text = "Status";
-            // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(606, 516);
-            this.elementHost1.TabIndex = 0;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.userControl11;
             // 
             // MainInspectionForm
             // 
@@ -1481,8 +1459,6 @@
         private System.Windows.Forms.TextBox textBoxAngleInc;
         private System.Windows.Forms.ComboBox comboBoxBarrel;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label labelPitch;
-        private System.Windows.Forms.TextBox textBoxPitch;
         private System.Windows.Forms.RadioButton radioButtonAngleInc;
         private System.Windows.Forms.RadioButton radioButtonPtsperRev;
         private System.Windows.Forms.PictureBox pictureBox1;

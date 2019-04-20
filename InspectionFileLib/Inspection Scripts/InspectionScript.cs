@@ -14,12 +14,11 @@ namespace InspectionLib
     {
         RING,
         SPIRAL,
-        AXIAL,
-        LAND,
-        GROOVE,
+        AXIAL,       
         CAL,
         SINGLE,
-        RASTER
+        RASTER,
+        MULTIRING
     }
 
     /// <summary>

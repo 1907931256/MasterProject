@@ -11,8 +11,8 @@ namespace DwgConverterLib
             X = 0;
             Y = 0;
             Z = 0;
-            ID = 0;           
-            Col = new RGBColor();
+            ID = 0;
+            Col = System.Drawing.Color.Red;
             DxfColor = DxfColor.White;
         }
         public DXFPoint(Vector3 pt)

@@ -13,6 +13,7 @@ namespace DataLib
   
     public class CartData : List<Vector3>
     {
+        public System.Drawing.Color Color { get; set; }
         public string FileName { get; set; }
         public double GetDataRotation(Vector3 pt1, Vector3 pt2)
         {
@@ -283,7 +284,7 @@ namespace DataLib
             try
             {
                 var pts = new DisplayData(FileName);
-
+                pts.Color = Color;
                 foreach (Vector3 v in this)
                 {
                     switch (viewPlane)
@@ -329,11 +330,13 @@ namespace DataLib
         BoundingBox _boundingBox;
         public CartData()
         {
+            Color = System.Drawing.Color.Blue;
             FileName = "";
         }
         public CartData(string filename)
         {
             FileName = filename;
+            Color = System.Drawing.Color.Blue;
         }
         
     }

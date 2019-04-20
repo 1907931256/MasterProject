@@ -43,6 +43,7 @@ namespace BarrelInspectionProcessorForm
         string knownDiamTypeStr;
         string manufStepStr;
         string calDiamStr;
+        List<System.Drawing.Color> _displayColors;
         private void SetComboBoxes()
         {
             try
@@ -146,6 +147,18 @@ namespace BarrelInspectionProcessorForm
             }
             
 
+        }
+        void BuildDisplayColors()
+        {
+            _displayColors = new List<System.Drawing.Color>();
+            _displayColors.Add(System.Drawing.Color.Aqua);
+            _displayColors.Add(System.Drawing.Color.Yellow);
+            _displayColors.Add(System.Drawing.Color.Red);
+            _displayColors.Add(System.Drawing.Color.Blue);
+            _displayColors.Add(System.Drawing.Color.RosyBrown);
+            _displayColors.Add(System.Drawing.Color.Salmon);
+            _displayColors.Add(System.Drawing.Color.GreenYellow);
+            
         }
         #region OpenFile_Methods
         List<string> _inputFileNames;
@@ -442,7 +455,8 @@ namespace BarrelInspectionProcessorForm
         CalDataSet _calDataSet;
         
         MeasurementUnit _outputUnit;
-
+        double _ringSpacing;
+        int _ringSkipPoints;
         private void BuildScriptFromInputs(string dataFilename)
         {
             try
@@ -488,11 +502,6 @@ namespace BarrelInspectionProcessorForm
                     }
                 }
                 
-                var grooves = new int[4];
-                InputVerification.TryGetValues(textBoxGrooveList, "x>0", 1, _barrel.DimensionData.GrooveCount, out grooves);
-                
-               
-                
                 //read helix pitch
                 var ringCount = Math.Abs(startA - endA) / 360.0;
 
@@ -512,7 +521,8 @@ namespace BarrelInspectionProcessorForm
                 }
                 else
                 {
-                   
+                    InputVerification.TryGetValue(textBoxRingSpacing, "x>0", 0, double.MaxValue, out _ringSpacing);
+                    InputVerification.TryGetValue(textBoxSkipPointsMultiRing, "nan", out _ringSkipPoints);
                     //read start angle
                     InputVerification.TryGetValue(textBoxStartPosA, "x>0", 0, double.MaxValue, out startA);
                     //read start x 
@@ -569,15 +579,14 @@ namespace BarrelInspectionProcessorForm
                         _inspScript = new AxialInspScript(_scanFormat, _outputUnit, _probeSetup, _calDataSet, _startPos, _endPos, _axialInc);
                         break;
                     case ScanFormat.CAL:
-                        break;
-                    case ScanFormat.GROOVE:
-                        break;
-                    case ScanFormat.LAND:
-                        break;
+                        break;                   
                     case ScanFormat.RASTER:
                         break;
                     case ScanFormat.SINGLE:
                         _inspScript = new SingleCylInspScript(_scanFormat, _outputUnit, _probeSetup, _calDataSet, _startPos);                       
+                        break;
+                    case ScanFormat.MULTIRING:
+                        _inspScript = new MultiRingScript(_scanFormat, _outputUnit, _probeSetup, _calDataSet, _startPos, _endPos, _ptsPerRev, _ringSkipPoints, _ringSpacing);
                         break;
                     default:
                         _inspScript = new InspectionScript(_scanFormat, _outputUnit, _probeSetup, _calDataSet);
@@ -612,14 +621,14 @@ namespace BarrelInspectionProcessorForm
                         
                         break;
                     case ScanFormat.AXIAL:                        
+                        
+                        fileParser.ParseAxialFilename(filename);
+                        _startPos = fileParser.Start;
+                        _endPos = fileParser.End;
                         _inspScript = new AxialInspScript(_scanFormat, _outputUnit, _probeSetup, _calDataSet, _startPos, _endPos, _axialInc);
-                            break;
+                        break;
                     case ScanFormat.CAL:
-                        break;
-                    case ScanFormat.GROOVE:
-                        break;
-                    case ScanFormat.LAND:
-                        break;
+                        break;                   
                     case ScanFormat.RASTER:
                         break;
                     case ScanFormat.SINGLE:
@@ -781,19 +790,17 @@ namespace BarrelInspectionProcessorForm
                     rawSiData = keyenceMultiSiDataSet.GetData(_scanFormat);
                 }
                 switch (_inspScript.ScanFormat)
-                {
-                    case ScanFormat.GROOVE:
-                    case ScanFormat.LAND:
+                {                    
                     case ScanFormat.AXIAL:                        
-                        return Task.Run(() => AxialDataBuilder.BuildDataAsync(ct, progress, _inspScript as AxialInspScript, rawSiData));
+                        return Task.Run(() => DataBuilder.BuildDataAsync(ct, progress, _inspScript as AxialInspScript, rawSiData));
 
                     case ScanFormat.RING:                        
                         return Task.Run(() => DataBuilder.BuildDataAsync(ct, progress, _inspScript as CylInspScript, rawSiData,_barrel.DimensionData.GrooveCount));
 
                     case ScanFormat.SPIRAL:                        
                         return Task.Run(() => DataBuilder.BuildDataAsync(ct, progress, _inspScript as SpiralInspScript, rawSiData, _barrel.DimensionData.GrooveCount));
-
-                    
+                    case ScanFormat.MULTIRING:
+                        return Task.Run(() => DataBuilder.BuildDataAsync(ct, progress, _inspScript as MultiRingScript, rawSiData, _barrel.DimensionData.GrooveCount));
                     default:
                         return null;
                 }
@@ -916,6 +923,10 @@ namespace BarrelInspectionProcessorForm
                                 dataOuputText.Add("Raw land variation: " + ringData.GetRawLandVariation().ToString());
                                 dataOuputText.Add("Corrected land variation: " + ringData.GetCorrectedLandVariation().ToString());
                             }
+                            if (_correctGrooveAngle)
+                            {
+                                CorrectForAveAngle();
+                            }
                         }
                         if(dataset is CartDataSet cartData)
                         {
@@ -944,7 +955,7 @@ namespace BarrelInspectionProcessorForm
                     Clear3DView();
 
                     await ProcessFiles();
-                    CorrectForAveAngle();
+                    
                     ResetOnClick();
                     DisplayData(BuildDisplayDataList());
                 }
@@ -1151,35 +1162,28 @@ namespace BarrelInspectionProcessorForm
             //GROOVE 4
             //CAL 5
             //SINGLE 6 
+
             try
             {
-                switch (comboBoxMethod.SelectedIndex)
+                var method = ScanFormat.RASTER;
+
+                Enum.TryParse(comboBoxMethod.SelectedItem.ToString(), out method);
+                _scanFormat = method;
+
+                switch (_scanFormat)
                 {
-                    case 0:
-                        _scanFormat = ScanFormat.RING;
+                    case ScanFormat.RING:                       
                         SetRingSwitches();
                         break;
-                    case 1:
-                        _scanFormat = ScanFormat.SPIRAL;
+                    case ScanFormat.SPIRAL:                        
                         SetSpiralSwitches();
                         break;
-                    case 2:
-                        _scanFormat = ScanFormat.AXIAL;
+                    case ScanFormat.AXIAL:                                 
                         SetAxialSwitches();
                         break;
-                    case 3:
-                        _scanFormat = ScanFormat.LAND;
-                        SetAxialSwitches();
+                    case ScanFormat.CAL:                       
                         break;
-                    case 4:
-                        _scanFormat = ScanFormat.GROOVE;
-                        SetAxialSwitches();
-                        break;
-                    case 5:
-                        _scanFormat = ScanFormat.CAL;
-                        break;
-                    case 6:
-                        _scanFormat = ScanFormat.SINGLE;
+                    case ScanFormat.SINGLE:                        
                         SetLineSwitches();
                         break;
                 }
@@ -1642,7 +1646,7 @@ namespace BarrelInspectionProcessorForm
             else
             {
                 sizeX = GetGridRange(xmax - xmin);
-                midX = Math.Round(round * (xmax + xmin) / 2.0);
+                midX = Math.Round(round * (xmax + xmin) / 2.0)/round;
             }
             
            
@@ -1703,45 +1707,73 @@ namespace BarrelInspectionProcessorForm
 
                 switch (_scanFormat)
                 {
-                    case ScanFormat.AXIAL:
-                    case ScanFormat.GROOVE:
-                    case ScanFormat.LAND:
+                    case ScanFormat.AXIAL:                   
                         _viewPlane = ViewPlane.ZR;
                         break;
                     case ScanFormat.RING:
                     case ScanFormat.SPIRAL:
+                    case ScanFormat.MULTIRING:
                         _viewPlane = ViewPlane.THETAR;
                         break;
                     case ScanFormat.SINGLE:
                         _viewPlane = ViewPlane.XY;
                         break;
                 }
+                int maxColorCount = _inspDataSetList.Count;
+                int colorIndex = 0;
+                int minIndex = 0;
                 foreach (InspDataSet dataSet in _inspDataSetList)
                 {
                     var displayData = new DisplayData(dataSet.FileName);
                     
-                    if (dataSet is CartDataSet cartData)
+                    if (dataSet is CartDataSet cartDataSet)
                     {
                         _viewPlane = ViewPlane.XY;
-                        displayData = cartData.CartData.AsDisplayData(_viewPlane);
+                        cartDataSet.CartData.Color = ColorCoder.MapRainbowColor(colorIndex++, minIndex, maxColorCount);
+                        displayData = cartDataSet.CartData.AsDisplayData(_viewPlane);
+                        displayData.Color = cartDataSet.CartData.Color;
+                        displayData.FileName = cartDataSet.FileName;
+                    }
+                    if( dataSet is SpiralDataSet spiralDataSet)
+                    {
+                        if (_viewProcessed)
+                        {
+                            foreach (var cylData in spiralDataSet.SpiralData)
+                            {
+                                cylData.Color = ColorCoder.MapRainbowColor(colorIndex++, minIndex, maxColorCount);
+                                displayData = cylData.AsDisplayData(_viewPlane);
+                                displayData.Color = cylData.Color;
+                            }
+                        }
+                        else
+                        {
 
-                        displayData.FileName = cartData.FileName;
+                            foreach (var cylData in spiralDataSet.UncorrectedSpiralData)
+                            {
+                                cylData.Color = ColorCoder.MapRainbowColor(colorIndex++, minIndex, maxColorCount);
+                                displayData = cylData.AsDisplayData(_viewPlane);
+                                displayData.Color = cylData.Color;
+                            }
+                        }
                     }
                     if (dataSet is CylDataSet cyldataSet)
                     {
                        
                         if (_viewProcessed)
                         {
+                            cyldataSet.CylData.Color = ColorCoder.MapRainbowColor(colorIndex++, minIndex, maxColorCount);
                             displayData = cyldataSet.CylData.AsDisplayData(_viewPlane);
+                            displayData.Color = cyldataSet.CylData.Color;
                         }
                         else
                         {
+                            cyldataSet.UncorrectedCylData.Color = ColorCoder.MapRainbowColor(colorIndex++, minIndex, maxColorCount);
                             displayData = cyldataSet.UncorrectedCylData.AsDisplayData(_viewPlane);
+                            displayData.Color = cyldataSet.UncorrectedCylData.Color;
                         }
                         displayData.FileName = cyldataSet.FileName;
-                    }
-                   
-                    displayData.Color = System.Drawing.Color.HotPink;
+                    }                   
+                    
                     _displayDataList.Add(displayData);
                 }
                 SetLegendLabels();
@@ -1762,40 +1794,39 @@ namespace BarrelInspectionProcessorForm
                 int decimalPlaces = 3;
                 bool stretchToFit = true;
 
-                if (_inspDataSetList[0] is SpiralDataSet spiralData)
+                if (_scanFormat == ScanFormat.SPIRAL)                    
                 {
+                   if( _inspDataSetList[0] is SpiralDataSet spiralData)
                     Load3DView(spiralData.SpiralData);
                 }
-                else
+                
+                var mRect = GetRectangle(displayData, borderPercent, decimalPlaces);
+
+                if (_overlayMinMax)
                 {
-
-                    var mRect = GetRectangle(displayData, borderPercent, decimalPlaces);
-
-                    if (_overlayMinMax)
+                    BuildToleranceDataSet();
+                    var trimmedTolDisplayData = new List<DisplayData>();
+                    foreach (var ddata in _toleranceDisplayDataList)
                     {
-                        BuildToleranceDataSet();
-                        var trimmedTolDisplayData = new List<DisplayData>();
-                        foreach (var ddata in _toleranceDisplayDataList)
-                        {
-                            trimmedTolDisplayData.Add(ddata.TrimTo(mRect));
-                            displayData.AddRange(trimmedTolDisplayData);
-                        }
+                        trimmedTolDisplayData.Add(ddata.TrimTo(mRect));
+                        displayData.AddRange(trimmedTolDisplayData);
                     }
-                    var gridRect = GetRectangle(displayData, borderPercent, decimalPlaces);
-                    _screenTransform = new ScreenTransform(gridRect, pictureBox1.DisplayRectangle, borderPercent, stretchToFit);
-                    SetupDisplay();
-                    var screenPtsList = BuildScreenPtList(displayData);
-                    DrawGrid(gridRect, decimalPlaces);
-                    foreach (DisplayData dd in screenPtsList)
-                    {
-                        var pen = new System.Drawing.Pen(dd.Color);
-                        _graphics.DrawLines(pen, dd.ToArray());
-                    }
-                    pictureBox1.Image = _bitmap;
-                    var img = new Bitmap(pictureBox1.Image);
-                    _baseImageBrush = new TextureBrush(img);
-                    SetLegendLabels();
                 }
+                var gridRect = GetRectangle(displayData, borderPercent, decimalPlaces);
+                _screenTransform = new ScreenTransform(gridRect, pictureBox1.DisplayRectangle, borderPercent, stretchToFit);
+                SetupDisplay();
+                var screenPtsList = BuildScreenPtList(displayData);
+                DrawGrid(gridRect, decimalPlaces);
+                foreach (DisplayData dd in screenPtsList)
+                {
+                    var pen = new System.Drawing.Pen(dd.Color);
+                    _graphics.DrawLines(pen, dd.ToArray());
+                }
+                pictureBox1.Image = _bitmap;
+                var img = new Bitmap(pictureBox1.Image);
+                _baseImageBrush = new TextureBrush(img);
+                SetLegendLabels();
+               
             }
             catch (Exception)
             {
@@ -2072,6 +2103,7 @@ namespace BarrelInspectionProcessorForm
                                 DrawMeasurement(_mouseDownScr, _mouseLocation, _dataSelection);
                                 break;
                             case DataToolSelection.WINDOWDATA:
+                            case DataToolSelection.TRIMWINDOW:
                                 DrawWindow(_mouseDownScr, _mouseLocation);
                                 break;
                         }
@@ -2172,7 +2204,11 @@ namespace BarrelInspectionProcessorForm
                                 _dataSelection = DataToolSelection.NONE;
                                 break;
                             case DataToolSelection.WINDOWDATA:
-                                WindowData(_prevMouseDownModel, _mouseDownModel);
+                                WindowAndCenterData(_prevMouseDownModel, _mouseDownModel,true);
+                                _dataSelection = DataToolSelection.NONE;
+                                break;
+                            case DataToolSelection.TRIMWINDOW:
+                                WindowAndCenterData(_prevMouseDownModel, _mouseDownModel,false);
                                 _dataSelection = DataToolSelection.NONE;
                                 break;
                         }
@@ -2353,6 +2389,7 @@ namespace BarrelInspectionProcessorForm
             WINDOWDATA,
             FITCIRCLE,     
             MEASUREVERT,
+            TRIMWINDOW,
             NONE
         }
         private DataToolSelection _dataSelection;        
@@ -2500,7 +2537,62 @@ namespace BarrelInspectionProcessorForm
             }
 
         }
-        void WindowData(PointF pt1Part, PointF pt2Part)
+        
+       
+        CylData TrimToWindow(CylData cylData,float minX,float maxX,float minY, float maxY)
+        {
+            var winData = new CylData( );
+            foreach (var pt in cylData.AsDisplayData(_viewPlane))
+            {
+                if (pt.X >= minX && pt.X <= maxX && pt.Y >= minY && pt.Y < maxY)
+                {
+                    switch (_viewPlane)
+                    {
+                        case ViewPlane.THETAR:
+                            winData.Add(new PointCyl(pt.Y, GeomUtilities.ToRadians(pt.X), 0));
+                            break;
+                        case ViewPlane.ZR:
+                            winData.Add(new PointCyl(pt.Y, 0, pt.X));
+                            break;
+                        case ViewPlane.XY:
+                            break;
+                        case ViewPlane.XZ:
+                            break;
+                        case ViewPlane.YZ:
+                            break;
+                    }
+
+                   
+                }
+            }
+            return winData;
+        }
+        CartData TrimToWindow(CartData cylData, float minX, float maxX, float minY, float maxY)
+        {
+            var winData = new CartData();
+            foreach (var pt in cylData.AsDisplayData(_viewPlane))
+            {
+                if (pt.X >= minX && pt.X <= maxX && pt.Y >= minY && pt.Y < maxY)
+                {
+                    switch (_viewPlane)
+                    {                        
+                        case ViewPlane.XY:
+                            winData.Add(new Vector3(pt.X, pt.Y, 0));
+                            break;
+                        case ViewPlane.XZ:
+                            winData.Add(new Vector3(pt.X,0, pt.Y));
+                            break;
+                        case ViewPlane.YZ:
+                            winData.Add(new Vector3(0, pt.X, pt.Y));
+                            break;
+                    }
+
+
+                }
+            }
+            return winData;
+        }
+        void WindowAndCenterData(PointF pt1Part, PointF pt2Part,bool centerData)
         {
             try
             {
@@ -2512,56 +2604,63 @@ namespace BarrelInspectionProcessorForm
                 var windowInspData = new List<InspDataSet>();
                 foreach (var dataSet in _inspDataSetList)
                 {
-                    if (dataSet is RingDataSet ringDataSet)
-                    {
-                        var winData = new CylData(ringDataSet.FileName);
-                        foreach (var pt in ringDataSet.CylData.AsDisplayData(_viewPlane))
-                        {
-                            if (pt.X >= minX && pt.X <= maxX && pt.Y >= minY && pt.Y < maxY)
-                            {
-                                winData.Add(new PointCyl(pt.Y, GeomUtilities.ToRadians(pt.X), 0));
-                            }
-                        }
-                        var cenData = DataUtil.CenterToThetaRadMidpoint(winData);
-
-                        var winDataSet = new CylDataSet(ringDataSet.FileName);
-                        winDataSet.CylData.AddRange(cenData);
-                        windowInspData.Add(winDataSet);
-                        windowDisplayData.Add(cenData.AsDisplayData(_viewPlane));
-                    }
+                    //if (dataSet is RingDataSet ringDataSet)
+                    //{
+                    //    var winData = new CylData(ringDataSet.FileName);
+                        
+                    //    winData.AddRange(TrimToWindow(ringDataSet.CylData, minX, maxX, minY, maxY));
+                    //    var cenData = DataUtil.CenterToThetaRadMidpoint(winData);
+                    //    var winDataSet = new CylDataSet(ringDataSet.FileName);
+                    //    winDataSet.CylData.AddRange(cenData);
+                    //    windowInspData.Add(winDataSet);
+                    //    windowDisplayData.Add(cenData.AsDisplayData(_viewPlane));
+                    //}
                     if (dataSet is CylDataSet cylDataSet)
                     {
                         var winData = new CylData(cylDataSet.FileName);
-                        foreach (var pt in cylDataSet.CylData.AsDisplayData(_viewPlane))
+                        winData.AddRange(TrimToWindow(cylDataSet.CylData, minX, maxX, minY, maxY));
+                        winData.Color = cylDataSet.CylData.Color;
+                        if(centerData)
                         {
-                            if (pt.X >= minX && pt.X <= maxX && pt.Y >= minY && pt.Y < maxY)
-                            {
-                                winData.Add(new PointCyl(pt.Y, GeomUtilities.ToRadians(pt.X), 0));
-                            }
+                            
+                            var cenData = DataUtil.CenterToThetaRadMidpoint(winData);
+                            var winDataSet = new CylDataSet(cylDataSet.FileName);
+                            winDataSet.CylData.AddRange(cenData);
+                            winDataSet.CylData.Color = cylDataSet.CylData.Color;
+                            windowInspData.Add(winDataSet);
+                            windowDisplayData.Add(cenData.AsDisplayData(_viewPlane));
                         }
-                        var cenData = DataUtil.CenterToThetaRadMidpoint(winData);
-                         
-                        var winDataSet = new CylDataSet(cylDataSet.FileName);
-                        winDataSet.CylData.AddRange(cenData);
-                        windowInspData.Add(winDataSet);
-                        windowDisplayData.Add(cenData.AsDisplayData(_viewPlane));
+                        else
+                        {
+                            var winDataSet = new CylDataSet(cylDataSet.FileName);
+                            winDataSet.CylData.AddRange(winData);
+                            windowInspData.Add(winDataSet);
+                            windowDisplayData.Add(winData.AsDisplayData(_viewPlane));
+                        }
+                        
                     }
                     if (dataSet is CartDataSet cartDataSet)
                     {
                         var winData = new CartData(cartDataSet.FileName);
-                        foreach (var pt in cartDataSet.CartData.AsDisplayData(_viewPlane))
+                        winData.AddRange(TrimToWindow(cartDataSet.CartData, minX, maxX, minY, maxY));
+                        winData.Color = cartDataSet.CartData.Color;
+                        if(centerData)
                         {
-                            if (pt.X >= minX && pt.X <= maxX && pt.Y >= minY && pt.Y < maxY)
-                            {
-                                winData.Add(new Vector3(pt.X, pt.Y, 0));
-                            }
+                            var cenData = winData.CenterToMidpoint();
+                            cenData.SortByX();
+                            var winDataSet = new CartDataSet(cartDataSet.FileName);
+                            winDataSet.CartData.AddRange(cenData);
+                            windowInspData.Add(winDataSet);
+                            windowDisplayData.Add(cenData.AsDisplayData(_viewPlane));
                         }
-                        var cenData = winData.CenterToMidpoint();
-                        cenData.SortByX();
-                        var winDataSet = new CartDataSet(cartDataSet.FileName);
-                        winDataSet.CartData.AddRange(cenData);
-                        windowInspData.Add(winDataSet);
-                        windowDisplayData.Add(cenData.AsDisplayData(_viewPlane));
+                        else
+                        {                           
+                            var winDataSet = new CartDataSet(cartDataSet.FileName);
+                            winDataSet.CartData.AddRange(winData);
+                            windowInspData.Add(winDataSet);
+                            windowDisplayData.Add(winData.AsDisplayData(_viewPlane));
+                        }
+                       
                     }
                 }
                 _inspDataSetList.Clear();
@@ -2659,6 +2758,20 @@ namespace BarrelInspectionProcessorForm
 
                 _logFile.SaveMessage(ex);
                 MessageBox.Show(ex.Message + ":" + ex.StackTrace);
+            }
+        }
+        private void toolStripButtonTrimWindow_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ResetOnClick();
+                toolStripButtonTrimWindow.BackColor = System.Drawing.Color.Red;
+                _dataSelection = DataToolSelection.TRIMWINDOW;
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         #endregion //toolstrip items
@@ -3076,7 +3189,7 @@ namespace BarrelInspectionProcessorForm
                             ringData.CorrectedLandPoints = da.CorrectForError(ringData.CorrectedLandPoints);
 
                             dataOuputText.Add("***Correcting Angle****" + inspDataSet.FileName);
-                            dataOuputText.Add("Correction angle: " + GeometryLib.GeomUtilities.ToDegs(da.CorrectionAngle).ToString("f5") + " degs");
+                            dataOuputText.Add("Correction angle: " + GeomUtilities.ToDegs(da.CorrectionAngleRads).ToString("f5") + " degs");
                             dataOuputText.Add("Ave radius: " + da.AveRadius.ToString("f5"));
 
                         }
@@ -3096,19 +3209,7 @@ namespace BarrelInspectionProcessorForm
                 throw;
             }
         }
-        private void ButtonGetAveAngle_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                CorrectForAveAngle();
-            }
-            catch (Exception ex)
-            {
-
-                _logFile.SaveMessage(ex);
-                MessageBox.Show(ex.Message + ": Unable to auto correct for angle. Manually select sidewalls to correct for angle error.");
-            }
-        }
+       
         private void ButtonSetRadius_Click(object sender, EventArgs e)
         {
             try
@@ -3672,6 +3773,16 @@ namespace BarrelInspectionProcessorForm
                 MessageBox.Show(ex.Message + ":" + ex.StackTrace);
             }
            
+        }
+        bool _correctGrooveAngle;
+        private void checkBoxCorrectAngle_CheckedChanged(object sender, EventArgs e)
+        {
+            _correctGrooveAngle = checkBoxCorrectAngle.Checked;
+        }
+        bool _saveAsOneFile;
+        private void checkBoxSaveAsOneFile_CheckedChanged(object sender, EventArgs e)
+        {
+            _saveAsOneFile = checkBoxSaveAsOneFile.Checked;
         }
     }
 }

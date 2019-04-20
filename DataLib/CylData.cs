@@ -10,11 +10,14 @@ namespace DataLib
    
     public class CylData : List<PointCyl>
     {
+        public System.Drawing.Color Color { get; set; }
         public string FileName { get; private set; }
         public double MinRadius { get; set; }
+
         public DisplayData AsDisplayData( ViewPlane viewplane)
         {
             var pts = new DisplayData(FileName);
+            pts.Color = Color;
             foreach (PointCyl v in this)
             {
                 switch (viewplane)
@@ -165,11 +168,13 @@ namespace DataLib
 
         public CylData(string filename)
         {
+            Color = System.Drawing.Color.Blue;
             FileName = filename;
         }
         public CylData()
         {
-            
+            Color = System.Drawing.Color.Blue;
+            FileName = "";
         }
     }
 }

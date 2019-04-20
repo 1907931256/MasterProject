@@ -46,7 +46,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainInspectionForm));
-            this.labelInputFIlename = new System.Windows.Forms.Label();
             this.buttonProcessFile = new System.Windows.Forms.Button();
             this.textBoxStartPosX = new System.Windows.Forms.TextBox();
             this.labelStartPos = new System.Windows.Forms.Label();
@@ -136,8 +135,6 @@
             this.comboBoxProbeConifg = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxProbeSpacing = new System.Windows.Forms.TextBox();
-            this.textBoxGrooveList = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.checkBoxOverLayCad = new System.Windows.Forms.CheckBox();
             this.buttonMeasureDepths = new System.Windows.Forms.Button();
@@ -159,11 +156,19 @@
             this.tabPageData = new System.Windows.Forms.TabPage();
             this.textBoxDataOut = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.progressBarProcessing = new System.Windows.Forms.ProgressBar();
             this.timerHighSpeedReceive = new System.Windows.Forms.Timer(this.components);
+            this.toolStripButtonTrimWindow = new System.Windows.Forms.ToolStripButton();
+            this.labelInputFIlename = new System.Windows.Forms.Label();
+            this.checkBoxCorrectAngle = new System.Windows.Forms.CheckBox();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.userControl11 = new BarrelInspectionProcessorForm.UserControl1();
+            this.checkBoxSaveAsOneFile = new System.Windows.Forms.CheckBox();
+            this.textBoxSkipPointsMultiRing = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBoxRingSpacing = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -182,16 +187,6 @@
             this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
-            // labelInputFIlename
-            // 
-            this.labelInputFIlename.AutoSize = true;
-            this.labelInputFIlename.Location = new System.Drawing.Point(5, 3);
-            this.labelInputFIlename.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelInputFIlename.Name = "labelInputFIlename";
-            this.labelInputFIlename.Size = new System.Drawing.Size(49, 13);
-            this.labelInputFIlename.TabIndex = 0;
-            this.labelInputFIlename.Text = "Filename";
-            // 
             // buttonProcessFile
             // 
             this.buttonProcessFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -206,7 +201,7 @@
             // 
             // textBoxStartPosX
             // 
-            this.textBoxStartPosX.Location = new System.Drawing.Point(145, 60);
+            this.textBoxStartPosX.Location = new System.Drawing.Point(156, 59);
             this.textBoxStartPosX.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxStartPosX.Name = "textBoxStartPosX";
             this.textBoxStartPosX.Size = new System.Drawing.Size(35, 20);
@@ -216,7 +211,7 @@
             // labelStartPos
             // 
             this.labelStartPos.AutoSize = true;
-            this.labelStartPos.Location = new System.Drawing.Point(49, 63);
+            this.labelStartPos.Location = new System.Drawing.Point(60, 62);
             this.labelStartPos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelStartPos.Name = "labelStartPos";
             this.labelStartPos.Size = new System.Drawing.Size(92, 13);
@@ -238,7 +233,7 @@
             // radioButtonAngleInc
             // 
             this.radioButtonAngleInc.AutoSize = true;
-            this.radioButtonAngleInc.Location = new System.Drawing.Point(12, 130);
+            this.radioButtonAngleInc.Location = new System.Drawing.Point(23, 129);
             this.radioButtonAngleInc.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonAngleInc.Name = "radioButtonAngleInc";
             this.radioButtonAngleInc.Size = new System.Drawing.Size(129, 17);
@@ -251,7 +246,7 @@
             // radioButtonPtsperRev
             // 
             this.radioButtonPtsperRev.AutoSize = true;
-            this.radioButtonPtsperRev.Location = new System.Drawing.Point(15, 106);
+            this.radioButtonPtsperRev.Location = new System.Drawing.Point(23, 105);
             this.radioButtonPtsperRev.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonPtsperRev.Name = "radioButtonPtsperRev";
             this.radioButtonPtsperRev.Size = new System.Drawing.Size(126, 17);
@@ -273,7 +268,7 @@
             "CAL",
             "LINELINE",
             "LINEGRID"});
-            this.comboBoxMethod.Location = new System.Drawing.Point(101, 35);
+            this.comboBoxMethod.Location = new System.Drawing.Point(112, 34);
             this.comboBoxMethod.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMethod.Name = "comboBoxMethod";
             this.comboBoxMethod.Size = new System.Drawing.Size(139, 21);
@@ -293,7 +288,7 @@
             // labelEndPos
             // 
             this.labelEndPos.AutoSize = true;
-            this.labelEndPos.Location = new System.Drawing.Point(52, 85);
+            this.labelEndPos.Location = new System.Drawing.Point(63, 84);
             this.labelEndPos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEndPos.Name = "labelEndPos";
             this.labelEndPos.Size = new System.Drawing.Size(89, 13);
@@ -303,7 +298,7 @@
             // labelMethod
             // 
             this.labelMethod.AutoSize = true;
-            this.labelMethod.Location = new System.Drawing.Point(31, 38);
+            this.labelMethod.Location = new System.Drawing.Point(42, 37);
             this.labelMethod.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelMethod.Name = "labelMethod";
             this.labelMethod.Size = new System.Drawing.Size(67, 13);
@@ -313,7 +308,7 @@
             // 
             // textBoxAngleInc
             // 
-            this.textBoxAngleInc.Location = new System.Drawing.Point(145, 129);
+            this.textBoxAngleInc.Location = new System.Drawing.Point(156, 128);
             this.textBoxAngleInc.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxAngleInc.Name = "textBoxAngleInc";
             this.textBoxAngleInc.Size = new System.Drawing.Size(82, 20);
@@ -321,16 +316,16 @@
             // 
             // textBoxPtsPerRev
             // 
-            this.textBoxPtsPerRev.Location = new System.Drawing.Point(145, 106);
+            this.textBoxPtsPerRev.Location = new System.Drawing.Point(156, 105);
             this.textBoxPtsPerRev.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxPtsPerRev.Name = "textBoxPtsPerRev";
-            this.textBoxPtsPerRev.Size = new System.Drawing.Size(35, 20);
+            this.textBoxPtsPerRev.Size = new System.Drawing.Size(82, 20);
             this.textBoxPtsPerRev.TabIndex = 0;
             this.textBoxPtsPerRev.Text = "8333";
             // 
             // textBoxEndPosA
             // 
-            this.textBoxEndPosA.Location = new System.Drawing.Point(184, 84);
+            this.textBoxEndPosA.Location = new System.Drawing.Point(195, 83);
             this.textBoxEndPosA.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxEndPosA.Name = "textBoxEndPosA";
             this.textBoxEndPosA.Size = new System.Drawing.Size(53, 20);
@@ -339,7 +334,7 @@
             // 
             // textBoxStartPosA
             // 
-            this.textBoxStartPosA.Location = new System.Drawing.Point(184, 60);
+            this.textBoxStartPosA.Location = new System.Drawing.Point(195, 59);
             this.textBoxStartPosA.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxStartPosA.Name = "textBoxStartPosA";
             this.textBoxStartPosA.Size = new System.Drawing.Size(53, 20);
@@ -348,7 +343,7 @@
             // 
             // textBoxEndPosX
             // 
-            this.textBoxEndPosX.Location = new System.Drawing.Point(145, 84);
+            this.textBoxEndPosX.Location = new System.Drawing.Point(156, 83);
             this.textBoxEndPosX.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxEndPosX.Name = "textBoxEndPosX";
             this.textBoxEndPosX.Size = new System.Drawing.Size(35, 20);
@@ -806,7 +801,8 @@
             this.toolStripButtonMirror,
             this.toolStripButtonWinData,
             this.toolStripButtonFitToCircle,
-            this.toolStripButtonMeasureVert});
+            this.toolStripButtonMeasureVert,
+            this.toolStripButtonTrimWindow});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1120, 33);
@@ -1019,15 +1015,16 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.panelProbeInfo);
-            this.tabPage2.Controls.Add(this.textBoxGrooveList);
             this.tabPage2.Controls.Add(this.label6);
+            this.tabPage2.Controls.Add(this.textBoxRingSpacing);
+            this.tabPage2.Controls.Add(this.label5);
+            this.tabPage2.Controls.Add(this.textBoxSkipPointsMultiRing);
+            this.tabPage2.Controls.Add(this.panelProbeInfo);
             this.tabPage2.Controls.Add(this.textBoxEndPosA);
             this.tabPage2.Controls.Add(this.textBoxStartPosA);
             this.tabPage2.Controls.Add(this.comboBoxMethod);
             this.tabPage2.Controls.Add(this.labelMethod);
             this.tabPage2.Controls.Add(this.labelStartPos);
-            this.tabPage2.Controls.Add(this.labelInputFIlename);
             this.tabPage2.Controls.Add(this.textBoxStartPosX);
             this.tabPage2.Controls.Add(this.textBoxAngleInc);
             this.tabPage2.Controls.Add(this.labelEndPos);
@@ -1052,9 +1049,9 @@
             this.panelProbeInfo.Controls.Add(this.textBoxProbeSpacing);
             this.panelProbeInfo.Controls.Add(this.comboBoxProbeDirection);
             this.panelProbeInfo.Controls.Add(this.label7);
-            this.panelProbeInfo.Location = new System.Drawing.Point(0, 226);
+            this.panelProbeInfo.Location = new System.Drawing.Point(13, 218);
             this.panelProbeInfo.Name = "panelProbeInfo";
-            this.panelProbeInfo.Size = new System.Drawing.Size(309, 140);
+            this.panelProbeInfo.Size = new System.Drawing.Size(280, 140);
             this.panelProbeInfo.TabIndex = 41;
             // 
             // label11
@@ -1107,26 +1104,10 @@
             this.textBoxProbeSpacing.TabIndex = 0;
             this.textBoxProbeSpacing.Text = "0";
             // 
-            // textBoxGrooveList
-            // 
-            this.textBoxGrooveList.Location = new System.Drawing.Point(126, 201);
-            this.textBoxGrooveList.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxGrooveList.Name = "textBoxGrooveList";
-            this.textBoxGrooveList.Size = new System.Drawing.Size(82, 20);
-            this.textBoxGrooveList.TabIndex = 8;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(10, 204);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(111, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Grooves/Lands(1,5...)";
-            // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.checkBoxSaveAsOneFile);
+            this.tabPage3.Controls.Add(this.checkBoxCorrectAngle);
             this.tabPage3.Controls.Add(this.checkBoxOverLayCad);
             this.tabPage3.Controls.Add(this.buttonMeasureDepths);
             this.tabPage3.Controls.Add(this.buttonSetRadius);
@@ -1368,16 +1349,6 @@
             this.tabPage4.UseVisualStyleBackColor = true;
             this.tabPage4.Click += new System.EventHandler(this.tabPage4_Click);
             // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(606, 516);
-            this.elementHost1.TabIndex = 0;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.userControl11;
-            // 
             // progressBarProcessing
             // 
             this.progressBarProcessing.Location = new System.Drawing.Point(8, 435);
@@ -1390,11 +1361,104 @@
             this.timerHighSpeedReceive.Interval = 500;
             this.timerHighSpeedReceive.Tick += new System.EventHandler(this.timerHighSpeedReceive_Tick);
             // 
+            // toolStripButtonTrimWindow
+            // 
+            this.toolStripButtonTrimWindow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonTrimWindow.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonTrimWindow.Image")));
+            this.toolStripButtonTrimWindow.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonTrimWindow.Name = "toolStripButtonTrimWindow";
+            this.toolStripButtonTrimWindow.Size = new System.Drawing.Size(30, 30);
+            this.toolStripButtonTrimWindow.Text = "toolStripButton1";
+            this.toolStripButtonTrimWindow.Click += new System.EventHandler(this.toolStripButtonTrimWindow_Click);
+            // 
+            // labelInputFIlename
+            // 
+            this.labelInputFIlename.AutoSize = true;
+            this.labelInputFIlename.Location = new System.Drawing.Point(281, 59);
+            this.labelInputFIlename.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelInputFIlename.Name = "labelInputFIlename";
+            this.labelInputFIlename.Size = new System.Drawing.Size(49, 13);
+            this.labelInputFIlename.TabIndex = 27;
+            this.labelInputFIlename.Text = "Filename";
+            // 
+            // checkBoxCorrectAngle
+            // 
+            this.checkBoxCorrectAngle.AutoSize = true;
+            this.checkBoxCorrectAngle.Checked = true;
+            this.checkBoxCorrectAngle.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCorrectAngle.Location = new System.Drawing.Point(7, 217);
+            this.checkBoxCorrectAngle.Name = "checkBoxCorrectAngle";
+            this.checkBoxCorrectAngle.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxCorrectAngle.TabIndex = 48;
+            this.checkBoxCorrectAngle.Text = "Correct Angle";
+            this.checkBoxCorrectAngle.UseVisualStyleBackColor = true;
+            this.checkBoxCorrectAngle.CheckedChanged += new System.EventHandler(this.checkBoxCorrectAngle_CheckedChanged);
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(606, 516);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.userControl11;
+            // 
+            // checkBoxSaveAsOneFile
+            // 
+            this.checkBoxSaveAsOneFile.AutoSize = true;
+            this.checkBoxSaveAsOneFile.Location = new System.Drawing.Point(7, 263);
+            this.checkBoxSaveAsOneFile.Name = "checkBoxSaveAsOneFile";
+            this.checkBoxSaveAsOneFile.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxSaveAsOneFile.TabIndex = 49;
+            this.checkBoxSaveAsOneFile.Text = "Save As One File";
+            this.checkBoxSaveAsOneFile.UseVisualStyleBackColor = true;
+            this.checkBoxSaveAsOneFile.CheckedChanged += new System.EventHandler(this.checkBoxSaveAsOneFile_CheckedChanged);
+            // 
+            // textBoxSkipPointsMultiRing
+            // 
+            this.textBoxSkipPointsMultiRing.Location = new System.Drawing.Point(156, 152);
+            this.textBoxSkipPointsMultiRing.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxSkipPointsMultiRing.Name = "textBoxSkipPointsMultiRing";
+            this.textBoxSkipPointsMultiRing.Size = new System.Drawing.Size(82, 20);
+            this.textBoxSkipPointsMultiRing.TabIndex = 42;
+            this.textBoxSkipPointsMultiRing.Text = "1000";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(10, 155);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(137, 13);
+            this.label5.TabIndex = 43;
+            this.label5.Text = "Points To Skip in Multi-Ring";
+            // 
+            // textBoxRingSpacing
+            // 
+            this.textBoxRingSpacing.Location = new System.Drawing.Point(156, 177);
+            this.textBoxRingSpacing.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxRingSpacing.Name = "textBoxRingSpacing";
+            this.textBoxRingSpacing.Size = new System.Drawing.Size(82, 20);
+            this.textBoxRingSpacing.TabIndex = 44;
+            this.textBoxRingSpacing.Text = "1.0";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 180);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(135, 13);
+            this.label6.TabIndex = 45;
+            this.label6.Text = "Ring Spacing  in Multi-Ring";
+            // 
             // MainInspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1120, 635);
+            this.Controls.Add(this.labelInputFIlename);
             this.Controls.Add(this.labelNearestFilename);
             this.Controls.Add(this.progressBarProcessing);
             this.Controls.Add(this.tabControlOutput);
@@ -1444,8 +1508,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label labelInputFIlename;
         private System.Windows.Forms.Button buttonProcessFile;
         private System.Windows.Forms.TextBox textBoxStartPosX;
         private System.Windows.Forms.Label labelStartPos;
@@ -1521,8 +1583,6 @@
         private System.Windows.Forms.ToolStripMenuItem viewLogFileToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.CheckBox checkBoxUseFilename;
-        private System.Windows.Forms.TextBox textBoxGrooveList;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textBoxRingCal;
         private System.Windows.Forms.Label labelCalStatus;
@@ -1563,6 +1623,14 @@
         private System.Windows.Forms.Button buttonCancelDAQ;
         private System.Windows.Forms.Label labelDAQStatus;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolStripButton toolStripButtonTrimWindow;
+        private System.Windows.Forms.Label labelInputFIlename;
+        private System.Windows.Forms.CheckBox checkBoxCorrectAngle;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBoxSkipPointsMultiRing;
+        private System.Windows.Forms.CheckBox checkBoxSaveAsOneFile;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBoxRingSpacing;
     }
 }
 

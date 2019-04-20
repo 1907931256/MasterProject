@@ -36,15 +36,10 @@ namespace DataLib
         }
 
         // Get a pixel's value.
-        public GeometryLib.RGBColor GetPixel(int x, int y)
+        public System.Drawing.Color GetPixel(int x, int y)
         {
             int index = y * Stride + x * 4;
-            GeometryLib.RGBColor color = new GeometryLib.RGBColor();
-            color.Blue = Pixels[index++];
-            color.Green = Pixels[index++];
-            color.Red = Pixels[index++];
-            color.Alpha = Pixels[index];
-            return color;
+            return System.Drawing.Color.FromArgb(Pixels[index], Pixels[index++], Pixels[index++], Pixels[index++]);
         }
         public byte GetBlue(int x, int y)
         {
@@ -64,13 +59,13 @@ namespace DataLib
         }
 
         // Set a pixel's value.
-        public void SetPixel(int x, int y, GeometryLib.RGBColor color)
+        public void SetPixel(int x, int y, System.Drawing.Color color)
         {
             int index = y * Stride + x * 4;
-            Pixels[index++] = color.Blue;
-            Pixels[index++] = color.Green;
-            Pixels[index++] = color.Red;
-            Pixels[index++] = color.Alpha;
+            Pixels[index++] = color.B;
+            Pixels[index++] = color.G;
+            Pixels[index++] = color.R;
+            Pixels[index++] = color.A;
         }
         public void SetBlue(int x, int y, byte blue)
         {

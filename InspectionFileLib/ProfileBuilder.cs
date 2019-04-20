@@ -130,12 +130,12 @@ namespace InspectionLib
                         {
                             z = cylData.CylData[j].Z;
                             th = cylData.CylData[j].ThetaRad;
-                            if (cylData.DataFormat == ScanFormat.LAND)
+                           // if (cylData.DataFormat == ScanFormat.LAND)
                             {
                                 landRadius += cylData.CylData[j].R;
                                 landCount++;
                             }
-                            if (cylData.DataFormat == ScanFormat.GROOVE)
+                           // if (cylData.DataFormat == ScanFormat.GROOVE)
                             {
                                 grooveRadius += cylData.CylData[j].R;
                                 grooveCount++;
@@ -174,8 +174,8 @@ namespace InspectionLib
                             barrelProfile = BuildFromRings(inspDataSets,grooveCount);
                             break;
                         case ScanFormat.AXIAL:
-                        case ScanFormat.GROOVE:
-                        case ScanFormat.LAND:
+                        //case ScanFormat.GROOVE:
+                        //case ScanFormat.LAND:
                             barrelProfile = BuildFromAxial(inspDataSets);
                             break;
                     }

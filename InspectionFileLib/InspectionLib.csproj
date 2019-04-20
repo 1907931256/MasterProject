@@ -81,7 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AngleError.cs" />
-    <Compile Include="DataSets\AxialDataBuilder.cs" />
     <Compile Include="DataSets\CalDataSet.cs" />
     <Compile Include="Inspection Scripts\CylInspScript.cs" />
     <Compile Include="DataColorCode.cs" />
@@ -92,7 +91,7 @@
     <Compile Include="DataSets\DataBuilder.cs" />
     <Compile Include="BarrelInspProfile.cs" />
     <Compile Include="DataSets\InspDataSet.cs" />
-    <Compile Include="Inspection Scripts\InspectionScriptBuilder.cs" />
+    <Compile Include="Inspection Scripts\InspectionFileNameParser.cs" />
     <Compile Include="ProfileBuilder.cs" />
     <Compile Include="Inspection Scripts\InspectionScript.cs" />
     <Compile Include="Inspection Scripts\InspectionScriptFile.cs" />

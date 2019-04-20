@@ -79,7 +79,7 @@ namespace GeometryLib
             x = 0;
             y = 0;
             z = 0;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.FromArgb(255, 255, 255);
 
         }
         public void Normalize()
@@ -169,7 +169,7 @@ namespace GeometryLib
             pt.X = p1.X - p2.X;
             pt.Y = p1.Y - p2.Y;
             pt.Z = p1.Z - p2.Z;
-            pt.Col = new RGBColor((p1.Col.Red + p2.Col.Red) / 2, (p1.Col.Green + p2.Col.Green) / 2, (p1.Col.Blue + p2.Col.Blue) / 2);
+            pt.Col = p1.Col;
             return pt;
         }
         public static Vector3 operator +(Vector3 p1, Vector3 p2)
@@ -178,7 +178,7 @@ namespace GeometryLib
             pt.X = p1.X + p2.X;
             pt.Y = p1.Y + p2.Y;
             pt.Z = p1.Z + p2.Z;
-            pt.Col = new RGBColor((p1.Col.Red + p2.Col.Red) / 2, (p1.Col.Green + p2.Col.Green) / 2, (p1.Col.Blue + p2.Col.Blue) / 2);
+            pt.Col = p1.Col;
             return pt;
         }
         public static Vector3 operator *(double scalar,Vector3 p1)
@@ -263,7 +263,7 @@ namespace GeometryLib
             Col = ptIn.Col;
 
         }
-        public Vector3(double xIn, double yIn, double zIn, RGBColor c)
+        public Vector3(double xIn, double yIn, double zIn, System.Drawing.Color c)
         {
            
             
@@ -280,7 +280,7 @@ namespace GeometryLib
             y = yIn;
             z = zIn;
             Type = EntityType.Vector3;
-            Col = new RGBColor(255, 255, 255);
+            Col =  System.Drawing.Color.FromArgb(255, 255, 255);
 
         }
     }

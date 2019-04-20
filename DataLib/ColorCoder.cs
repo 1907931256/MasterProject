@@ -8,29 +8,27 @@ namespace DataLib
     {
         MONO,
         GREEN_RED,
-        RAINBOW,
-        MONO_RED,
-        CONTOURS
+        RAINBOW,        
     }
     public class ColorCoder
     {
-        public static RGBColor MapMonoColor()
+        public static System.Drawing.Color MapMonoColor()
         {
-            return new RGBColor(125, 125, 125, 255);
+            return  System.Drawing.Color.FromArgb(125, 125, 125);
         }
-        public static RGBColor MapGreenRedColor(double value, double maxValue)
+        public static System.Drawing.Color MapGreenRedColor(double value, double maxValue)
         {
             if (Math.Abs(value) > Math.Abs(maxValue) )
             {
-                return new RGBColor(255, 125, 125, 255);
+                return System.Drawing.Color.FromArgb(255, 125, 125);
             }
             else
             {
-                return new RGBColor(125, 255, 125, 255);
+                return System.Drawing.Color.FromArgb(125, 255, 125);
             }
 
         }
-        public static RGBColor MapRainbowColor(double value, double min_value, double max_value)
+        public static System.Drawing.Color MapRainbowColor(double value, double min_value, double max_value)
         {
             // Convert into a value between 0 and 1023.
             int int_value = (int)(1023 * (value - min_value) / (max_value - min_value));
@@ -69,32 +67,19 @@ namespace DataLib
                 green = (byte)(255 - int_value);
                 blue = 255;
             }
-            return new RGBColor(red, green, blue, 255);
+            return  System.Drawing.Color.FromArgb(red, green, blue);
         }
-        public static RGBColor MapMonoRedColor(double value, double maxToleranceValue)
+        public static System.Drawing.Color MapMonoRedColor(double value, double maxToleranceValue)
         {
             if (Math.Abs(value) > Math.Abs(maxToleranceValue))
             {
-                return new RGBColor(255, 125, 125, 255);
+                return System.Drawing.Color.FromArgb(255, 125, 125);
             }
             else
             {
-                return new RGBColor(125, 125, 125, 255);
+                return System.Drawing.Color.FromArgb(125, 125, 125);
             }
         }
-        public static RGBColor MapContours(double value, double min_value, double max_value, double[] contours)
-        {
-            RGBColor c = new RGBColor();
-            int int_value = (int)(1000 * (value - min_value) / (max_value - min_value));
-            if (int_value % 100 < 5)
-            {
-                c = new RGBColor(0, 0, 0, 255);
-            }
-            else
-            {
-                c = new RGBColor(125, 255, 125, 255);
-            }
-            return c;
-        }
+        
     }
 }

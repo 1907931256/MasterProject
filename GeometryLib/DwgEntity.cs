@@ -13,7 +13,7 @@ namespace GeometryLib
     {
 
         public EntityType Type { get; set; }
-        public RGBColor Col { get; set; }
+        public System.Drawing.Color Col { get; set; }
         public int ID { get; set; }
     
         

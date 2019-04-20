@@ -167,14 +167,14 @@ namespace GeometryLib
             Radius = radius;
             StartAngleRad = startAngle;
             EndAngleRad = endAngle;
-            Col = new RGBColor(255, 255, 255);
+            Col =  System.Drawing.Color.FromArgb(255, 255, 255);
         }
         public Arc()
         {
             
             Center = new Vector3();
             Type = EntityType.Arc;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.FromArgb(255, 255, 255);
         }
        
         public Arc(Vector3 point1,Vector3 point2,Vector3 point3)
@@ -193,7 +193,7 @@ namespace GeometryLib
             StartAngleRad = Math.Atan2(point1.Y-Center.Y,point1.X-Center.X);
             EndAngleRad = Math.Atan2(point3.Y - Center.Y, point3.X - Center.X);
 
-            Col = new RGBColor(255, 255, 255);
+            Col = point1.Col;
         }
         public Arc(string s)
         {

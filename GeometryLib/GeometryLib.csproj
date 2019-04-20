@@ -85,7 +85,6 @@
     <Compile Include="Arc.cs" />
     <Compile Include="Box.cs" />
     <Compile Include="Quad.cs" />
-    <Compile Include="RGBColor.cs" />
     <Compile Include="ColorConverter.cs">
       <SubType>Code</SubType>
     </Compile>

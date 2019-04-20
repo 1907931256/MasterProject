@@ -21,7 +21,7 @@ namespace InspectionLib
                     var resultStrip = new CylData(correctedRingList[0].FileName);
                     foreach (PointCyl pt in cylstrip)
                     {
-                        var c = new RGBColor(1f, 1f, 1f);
+                        var c = System.Drawing.Color.LightGray;
                         switch (colorOption)
                         {
                             case COLORCODE.GREEN_RED:
@@ -30,9 +30,7 @@ namespace InspectionLib
                             case COLORCODE.RAINBOW:
                                 c = MapRainbowColor(barrel, pt);
                                 break;
-                            case COLORCODE.MONO_RED:
-                                c = ColorCoder.MapMonoColor();
-                                break;
+                            
                         }
                         pt.Col = c;
                         resultStrip.Add(new PointCyl(pt.R, pt.ThetaRad, pt.Z, c, pt.ID));
@@ -47,12 +45,12 @@ namespace InspectionLib
                 throw;
             }
         }
-        static RGBColor MapGreenRedColor(Barrel barrel, PointCyl pt)
+        static System.Drawing.Color MapGreenRedColor(Barrel barrel, PointCyl pt)
         {
             return ColorCoder.MapGreenRedColor(pt.R,  barrel.MaxRadius(pt.Z, pt.ThetaRad));
         }
         
-        static RGBColor MapRainbowColor(Barrel barrel, PointCyl pt)
+        static System.Drawing.Color MapRainbowColor(Barrel barrel, PointCyl pt)
         {
             return ColorCoder.MapRainbowColor(pt.R, barrel.MinRadius(pt.Z, pt.ThetaRad), barrel.MaxRadius(pt.Z, pt.ThetaRad));            
         }

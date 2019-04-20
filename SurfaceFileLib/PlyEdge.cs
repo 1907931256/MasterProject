@@ -12,13 +12,13 @@ namespace SurfaceFileLib
     {
         public int Vertex1 { get; set; }
         public int Vertex2 { get; set; }
-        public  RGBColor Color { get; set; }
+        public  System.Drawing.Color Color { get; set; }
         public bool ContainsColor;
         public PlyEdge(bool containsColorIn)
         {
             ContainsColor = containsColorIn;
             if (ContainsColor)
-                Color = new RGBColor();
+                Color = System.Drawing.Color.White;
 
         }
     }

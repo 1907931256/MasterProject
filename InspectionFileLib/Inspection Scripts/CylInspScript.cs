@@ -79,6 +79,22 @@ namespace InspectionLib
             AngleIncrement = scanDir * Math.PI * 2 / PointsPerRevolution;
         }
     }
+    public class MultiRingScript : CylInspScript
+    {
+        public int PointsToSkip { get; set; }
+        public double RingSpacing { get; set; }
+        public MultiRingScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, CalDataSet calDataSet
+           , XAMachPostion start, XAMachPostion end, int pointsPerRev, int pointsToSkip,double ringSpacing)
+            : base(scanFormat, outputUnit, probeSetup, calDataSet,start,end,pointsPerRev)
+        {
+            var scanDir = Math.Sign(EndLocation.X - StartLocation.X) * Math.Sign(EndLocation.Adeg - StartLocation.Adeg);
+            if (scanDir == 0)
+                scanDir = 1;
+            PointsToSkip = pointsToSkip;
+            RingSpacing = ringSpacing;
+        }
+    }
+
     public class SpiralInspScript: CylInspScript
     {
         public double PitchInch { get; set; }
@@ -87,21 +103,19 @@ namespace InspectionLib
             , XAMachPostion start, XAMachPostion end, int pointsPerRev,double spiralPitchInch)
             : base(scanFormat, outputUnit, probeSetup, calDataSet,start,end,pointsPerRev)
         {
-            var scanDir = Math.Sign(EndLocation.X - StartLocation.X);
+            var scanDir = Math.Sign(EndLocation.X - StartLocation.X) * Math.Sign(EndLocation.Adeg-StartLocation.Adeg);
             if (scanDir == 0)
                 scanDir = 1;
             PitchInch = scanDir * spiralPitchInch;
         }
     }
-    public class AxialInspScript: InspectionScript
+    public class AxialInspScript: CylInspScript
     {
-        public double AxialIncrement { get;  set; }
-        public XAMachPostion StartLocation { get; set; }
-        public XAMachPostion EndLocation { get; set; }
+        public double AxialIncrement { get;  set; }       
 
         public AxialInspScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, CalDataSet calDataSet
             , XAMachPostion start, XAMachPostion end, double axialInc)
-            : base(scanFormat, outputUnit, probeSetup, calDataSet)
+            : base(scanFormat, outputUnit, probeSetup, calDataSet, start, end, 0)
         {
             StartLocation = start;
             EndLocation = end;
@@ -112,25 +126,16 @@ namespace InspectionLib
             
         }
     }
-    public class GrooveInspScript: InspectionScript
+    public class GrooveInspScript : AxialInspScript
     {
-        public double AxialIncrement { get; set; }
-        public XAMachPostion StartLocation { get; set; }
-        public XAMachPostion EndLocation { get; set; }
+
         public BarrelLib.TwistProfile TwistProfile { get; set; }
 
         public GrooveInspScript(ScanFormat scanFormat, MeasurementUnit outputUnit, ProbeSetup probeSetup, CalDataSet calDataSet
-            , XAMachPostion start, XAMachPostion end, double axialInc,BarrelLib.TwistProfile twistProfile)
-            : base(scanFormat, outputUnit, probeSetup, calDataSet)
+            , XAMachPostion start, XAMachPostion end, double axialInc, BarrelLib.TwistProfile twistProfile)
+            : base(scanFormat, outputUnit, probeSetup, calDataSet, start, end, axialInc)
         {
-           
             TwistProfile = twistProfile;
-            StartLocation = start;
-            EndLocation = end;
-            int scanDir = Math.Sign(EndLocation.X - StartLocation.X);
-            if (scanDir == 0)
-                scanDir = 1;
-            AxialIncrement = scanDir * axialInc;
         }
     }
 

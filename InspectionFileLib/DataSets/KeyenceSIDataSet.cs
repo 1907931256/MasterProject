@@ -153,13 +153,22 @@ namespace InspectionLib
         int probeIndexOffset;
         int GetMinDataCount()
         {
-            int minCount = int.MaxValue;
-            foreach(var dataset  in probeData)
+            try
             {
-                if (dataset.Count < minCount)
-                    minCount = dataset.Count;
+                int minCount = int.MaxValue;
+                foreach (var dataset in probeData)
+                {
+                    if (dataset.Count < minCount)
+                        minCount = dataset.Count;
+                }
+                return minCount;
             }
-            return minCount;
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
         public double[] GetData(ScanFormat format)
         {
@@ -175,9 +184,7 @@ namespace InspectionLib
                     int probe2Index = (i + probeIndexOffset) % count;
                     switch (format)
                     {
-                        case ScanFormat.AXIAL:
-                        case ScanFormat.LAND:
-                        case ScanFormat.GROOVE:
+                        case ScanFormat.AXIAL:                        
                             values.Add((data1[i] + data2[i])/2);
                             break;
                         case ScanFormat.CAL:
@@ -256,7 +263,18 @@ namespace InspectionLib
                 throw;
             }
         }
-        
+        bool IsValid(double pt)
+        {
+            return (pt >= _minValid && pt <= _maxValid);
+        }
+        void FilterBadData()
+        {
+            
+            foreach(var pt in data)
+            {
+
+            }
+        }
         List<double> ExtractProbeData(string[,] words,int column)
         {
             try
@@ -340,10 +358,15 @@ namespace InspectionLib
 
         }
         int _firstDataCol;
+        const double _maxValid = 1050;
+
+        const  double _minValid = 0;
+        
         public KeyenceSiDataSet(InspectionScript script, string CsvFileName)
         {
             try
             {
+
                 initialize(script, CsvFileName);
                             
                 ProcessFile(_firstDataCol);

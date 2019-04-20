@@ -67,7 +67,7 @@ namespace GeometryLib
             Point1 = new Vector2();
             Point2 = new Vector2();
             Type = EntityType.Line;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.White;
         }
         public Line2(Vector2 Point1, Vector2 Point2)
         {
@@ -76,7 +76,7 @@ namespace GeometryLib
 
 
             Type = EntityType.Line;
-            Col = new RGBColor();
+            Col = new System.Drawing.Color();
         }
         public Line2(double x1In, double y1In,  double x2In, double y2In)
         {
@@ -84,7 +84,7 @@ namespace GeometryLib
             Point2 = new Vector2(x2In, y2In);
 
             Type = EntityType.Line;
-            Col = new RGBColor();
+            Col = new System.Drawing.Color();
         }
     }
     public class Line : DwgEntity, IGeometryRoutines<Line>
@@ -186,7 +186,7 @@ namespace GeometryLib
             Point1 = new Vector3();
             Point2 = new Vector3();
             Type = EntityType.Line;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.White;
          }
          public Line(Vector3 Point1, Vector3 Point2)
          {
@@ -195,7 +195,7 @@ namespace GeometryLib
 
 
             Type = EntityType.Line;
-            Col = new RGBColor();
+            Col = new System.Drawing.Color();
          }
          public Line(double x1In, double y1In,double z1In, double x2In, double y2In,double z2In)
          {
@@ -203,7 +203,7 @@ namespace GeometryLib
             Point2 = new Vector3(x2In, y2In, z2In);
 
             Type = EntityType.Line;
-            Col = new RGBColor();
+            Col = new System.Drawing.Color();
          }
          public Line(string s)
          {
@@ -220,7 +220,7 @@ namespace GeometryLib
                  Point2.Y = double.Parse(elements[5]);
                  Point2.Z = double.Parse(elements[6]);
              }
-            Col = new RGBColor();
+            Col = new System.Drawing.Color();
          }
 
     }

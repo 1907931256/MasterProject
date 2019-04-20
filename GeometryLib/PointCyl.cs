@@ -172,7 +172,7 @@ namespace GeometryLib
          public PointCyl()
          {
             Type = EntityType.PointCyl;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.FromArgb(255, 255, 255);
          }
          public PointCyl(Vector3 pt)
          {
@@ -182,14 +182,14 @@ namespace GeometryLib
             Type = EntityType.PointCyl;
              Col = pt.Col;
          }
-        public PointCyl(double rIn, double thetaInRad, double zIn, RGBColor col, int id)
+        public PointCyl(double rIn, double thetaInRad, double zIn, System.Drawing.Color col, int id)
         {
             R = rIn;
             ThetaRad = thetaInRad;
             Z = zIn;
             ID = id;
             Type = EntityType.PointCyl;
-            Col =  new RGBColor( col.Red,col.Green,col.Blue);
+            Col = System.Drawing.Color.FromArgb( col.R,col.G,col.B);
         }
         public PointCyl(double rIn, double thetaInRad, double zIn,int id)
         {
@@ -198,7 +198,7 @@ namespace GeometryLib
             Z = zIn;
             ID = id;
             Type = EntityType.PointCyl;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.FromArgb(255, 255, 255);
         }
         public PointCyl(double rIn, double thetaInRad, double zIn)
          {
@@ -206,9 +206,9 @@ namespace GeometryLib
              ThetaRad = thetaInRad;
              Z = zIn;
             Type = EntityType.PointCyl;
-            Col = new RGBColor(255, 255, 255);
-         }
-         public PointCyl(double rIn, double thetaInRad, double zIn, RGBColor col)
+            Col = System.Drawing.Color.FromArgb(255, 255, 255);
+        }
+         public PointCyl(double rIn, double thetaInRad, double zIn, System.Drawing.Color col)
          {
              R = rIn;
              ThetaRad = thetaInRad;

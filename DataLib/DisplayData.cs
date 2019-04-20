@@ -10,7 +10,8 @@ namespace DataLib
     public class DisplayData : List<PointF>
     {
         public string FileName { get; set; }
-        public Color Color { get; set; }
+        public System.Drawing.Color Color { get; set; }
+
         public string ShortFileName
         {
             get
@@ -97,7 +98,7 @@ namespace DataLib
             {
                                 
                 var trimmedDisplay = new DisplayData(this.FileName);
-                trimmedDisplay.Color = this.Color;
+                
                 var xList = new List<double>();
                 var ptList = new List<PointF>();
 
@@ -191,7 +192,8 @@ namespace DataLib
         public DisplayData(string filename)
         {
             FileName = filename;
-            Color = Color.HotPink;
+            Color = System.Drawing.Color.Blue;
+            
         }
     }
    

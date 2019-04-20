@@ -47,20 +47,15 @@ namespace DataLib
                 {
                     for (int iz = 0; iz < zwidth; iz++)
                     {
-                        RGBColor color = new RGBColor(100, 100, 100, 255);
+                        System.Drawing.Color color = System.Drawing.Color.FromArgb(100, 100, 100);
                         switch (colorcode)
                         {
-                            case COLORCODE.CONTOURS:
-                                color = ColorCoder.MapContours(values[ix, iz], ymin, ymax, contours);
-                                break;
+                           
                             case COLORCODE.GREEN_RED:
                                 color = ColorCoder.MapGreenRedColor(values[ix, iz], maxToleranceValue);
                                 break;
                             case COLORCODE.MONO:
                                 color = ColorCoder.MapMonoColor();
-                                break;
-                            case COLORCODE.MONO_RED:
-                                color = ColorCoder.MapMonoRedColor(values[ix, iz], maxToleranceValue);
                                 break;
                             case COLORCODE.RAINBOW:
                             default:

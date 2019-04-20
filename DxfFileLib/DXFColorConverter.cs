@@ -4,23 +4,23 @@ namespace DwgConverterLib
 {
     public class DXFColorConverter:ColorConverter
     {
-        public static DxfColor ToDxfColor(RGBColor c)
+        public static DxfColor ToDxfColor(System.Drawing.Color c)
         {
             DxfColor dxfC = DxfColor.Cyan;
             
-            if (c.Red == 0 & c.Green == 0 & c.Blue == 0)
+            if (c.R == 0 & c.G == 0 & c.B == 0)
                 dxfC = DxfColor.Black;
-            else if (c.Red != 0 & c.Green == 0 & c.Blue == 0)
+            else if (c.R != 0 & c.G == 0 & c.B == 0)
                 dxfC = DxfColor.Red;
-             else if (c.Red == 0 & c.Green != 0 & c.Blue == 0)
+             else if (c.R == 0 & c.G != 0 & c.B == 0)
                 dxfC = DxfColor.Green;
-             else if (c.Red == 0 & c.Green == 0 & c.Blue != 0)
+             else if (c.R == 0 & c.G == 0 & c.B != 0)
                 dxfC = DxfColor.Blue;           
-             else if (c.Red != 0 & c.Green == 0 & c.Blue != 0)
+             else if (c.R != 0 & c.G == 0 & c.B != 0)
                 dxfC = DxfColor.Magenta;            
-             else if (c.Red != 0 & c.Green != 0 & c.Blue == 0)
+             else if (c.R != 0 & c.G != 0 & c.B == 0)
                 dxfC = DxfColor.Yellow;
-             else if (c.Red == 0 & c.Green != 0 & c.Blue != 0)
+             else if (c.R == 0 & c.G != 0 & c.B != 0)
                 dxfC = DxfColor.Cyan;
              else 
                 dxfC = DxfColor.Grey;

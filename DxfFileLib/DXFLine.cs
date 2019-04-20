@@ -56,7 +56,7 @@ namespace DwgConverterLib
         {
             Point1 = new Vector3();
             Point2 = new Vector3();
-            Col = new RGBColor();
+            Col = System.Drawing.Color.Red;
             DxfColor = new DxfColor();
             Point1.X = Convert.ToDouble(fileSection[4]);
             Point1.Y = Convert.ToDouble(fileSection[6]);
@@ -80,8 +80,8 @@ namespace DwgConverterLib
                 double x2 = pt2.R * Math.Cos(pt2.ThetaRad);
                 double y2 = pt2.R * Math.Sin(pt2.ThetaRad);
                 double z2 = pt2.Z;
-                RGBColor c;
-                c = new RGBColor(0, 255, 0);
+
+                Col = pt1.Col;
                 Point1 = new Vector3(x1, y1, z1);
                 Point2 = new Vector3(x2, y2, z2);
             }
@@ -98,7 +98,7 @@ namespace DwgConverterLib
                 Point2 = pt2;
 
                 Type = EntityType.Line;
-                Col = new RGBColor(255, 0, 0);
+                Col = pt1.Col;
                 DxfColor = new DxfColor();
             }
             catch (Exception)
@@ -112,10 +112,10 @@ namespace DwgConverterLib
             Point2 = new Vector3(x2In, y2In, z2In);
 
             Type = EntityType.Line;
-            Col = new RGBColor(255,0,0);
+            Col = System.Drawing.Color.Red;
             DxfColor = new DxfColor();
          }
-        public DXFLine(double x1In, double y1In, double z1In, double x2In, double y2In, double z2In,RGBColor color)
+        public DXFLine(double x1In, double y1In, double z1In, double x2In, double y2In, double z2In,System.Drawing.Color color)
         {
             Point1 = new Vector3(x1In, y1In, z1In);
             Point2 = new Vector3(x2In, y2In, z2In);
@@ -129,7 +129,7 @@ namespace DwgConverterLib
         {
             Point1 = new Vector3();
             Point2 = new Vector3();
-            Col = new RGBColor(255, 0, 0);
+            Col = System.Drawing.Color.Red;
             DxfColor = new DxfColor();
             Point1.X = 0;
             Point1.Y = 0;
@@ -150,7 +150,7 @@ namespace DwgConverterLib
         {
             Point1 = new Vector3(lineIn.Point1);
             Point2 = new Vector3(lineIn.Point2);
-            Col = new RGBColor();
+            Col = lineIn.Col;
             DxfColor = new DxfColor();
 
             DxfColor = DXFColorConverter.ToDxfColor(lineIn.Col); 

@@ -67,8 +67,8 @@ namespace GeometryLib
             Type = EntityType.Vector2;
             x = 0;
             y = 0;
-           
-            Col = new RGBColor(255, 255, 255);
+
+            Col = System.Drawing.Color.White;
 
         }
         public void Normalize()
@@ -134,8 +134,8 @@ namespace GeometryLib
             Vector2 pt = new Vector2();
             pt.X = p1.X - p2.X;
             pt.Y = p1.Y - p2.Y;
-            
-            pt.Col = new RGBColor((p1.Col.Red + p2.Col.Red) / 2, (p1.Col.Green + p2.Col.Green) / 2, (p1.Col.Blue + p2.Col.Blue) / 2);
+
+            pt.Col = p1.Col;
             return pt;
         }
         public static Vector2 operator +(Vector2 p1, Vector2 p2)
@@ -143,8 +143,8 @@ namespace GeometryLib
             Vector2 pt = new Vector2();
             pt.X = p1.X + p2.X;
             pt.Y = p1.Y + p2.Y;
-            
-            pt.Col = new RGBColor((p1.Col.Red + p2.Col.Red) / 2, (p1.Col.Green + p2.Col.Green) / 2, (p1.Col.Blue + p2.Col.Blue) / 2);
+
+            pt.Col = p1.Col;
             return pt;
         }
         public static Vector2 operator *(double scalar, Vector2 p1)
@@ -221,7 +221,7 @@ namespace GeometryLib
             Col = ptIn.Col;
 
         }
-        public Vector2(double xIn, double yIn,  RGBColor c)
+        public Vector2(double xIn, double yIn,  System.Drawing.Color c)
         {
             x = xIn;
             y = yIn;
@@ -236,7 +236,7 @@ namespace GeometryLib
             y = yIn;
            
             Type = EntityType.Vector2;
-            Col = new RGBColor(255, 255, 255);
+            Col = System.Drawing.Color.White;
 
         }
     

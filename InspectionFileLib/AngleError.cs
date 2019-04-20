@@ -12,7 +12,7 @@ namespace InspectionLib
     public class AngleError
     {
         public double AveRadius { get; private set; }
-        public double CorrectionAngle { get; private set; }
+        public double CorrectionAngleRads { get; private set; }
 
        
         Barrel _barrel;
@@ -48,7 +48,7 @@ namespace InspectionLib
         {
             try
             {
-                CorrectionAngle = 0;
+                CorrectionAngleRads = 0;
                 var errors = new List<double>();
                 int minLen = Math.Min(noms.Length, actuals.Length);                
                 for(int j=0; j<minLen;j++)
@@ -56,7 +56,7 @@ namespace InspectionLib
                     errors.Add(actuals[j] - noms[j]);
 
                 }
-                CorrectionAngle = errors.Average();
+                CorrectionAngleRads = errors.Average();
                
             }
             catch (Exception)
@@ -292,7 +292,7 @@ namespace InspectionLib
                 foreach (var pt in points)
                 {
                     var newPt = pt.Clone();
-                    var thetaRad = pt.ThetaRad - CorrectionAngle;
+                    var thetaRad = pt.ThetaRad - CorrectionAngleRads;
                     if (thetaRad < 0)
                     {
                         thetaRad += Math.PI * 2.0;
@@ -318,7 +318,7 @@ namespace InspectionLib
         {
             try
             {
-                CorrectionAngle = midPoint.ThetaRad;
+                CorrectionAngleRads = midPoint.ThetaRad;
                 return CorrectForError(points);
             }
             catch (Exception)
@@ -346,26 +346,6 @@ namespace InspectionLib
             }
 
         }
-        /// <summary>
-        /// correct data set for clocking error using average error from midpoint of each groove
-        /// </summary>
-        /// <param name="points"></param>
-        /// <returns></returns>
-        public CylData CorrectForAngleError(CylData points,List<PointCyl>intersections)
-        {
-            try
-            {
-                var resultPts = new CylData(points.FileName);
-                var indexList = GetIntersectionIndexList(points, intersections);
-                CalcAveAngleError(points, indexList);
-                return CorrectForError(points);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
+        
     }
 }

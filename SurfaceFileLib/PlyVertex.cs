@@ -79,7 +79,7 @@ namespace SurfaceFileLib
             Col = vert.Col;
             
         }
-        public PlyVertex(Vector3 vert, Vector3 normal,RGBColor color)
+        public PlyVertex(Vector3 vert, Vector3 normal,System.Drawing.Color color)
         {
             ContainsColor = true;
             _containsNormal = true;

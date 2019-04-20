@@ -14,63 +14,45 @@ namespace GeometryLib
     /// </summary>
     /// <param name="c">DXF Color 0-7</param>
     /// <returns></returns>
-        public static RGBColor ToColor(int c)
+        public static System.Drawing.Color ToColor(int c)
         {
-            RGBColor color = new RGBColor();
+            System.Drawing.Color color = new System.Drawing.Color();
             switch (c)
             {
                 case 0://Black = 0,
-                    color.Red = 0;
-                    color.Green  = 0;
-                    color.Blue = 0;
+                    color = System.Drawing.Color.Black;
                     break;
                 case 1://      Red = 1,
-                    color.Red = 250;
-                    color.Green = 0;
-                    color.Blue = 0;
+                    color = System.Drawing.Color.Red;
                     break;
                 case 2: //      Yellow = 2,
-                    color.Red = 250;
-                    color.Green = 250;
-                    color.Blue = 0;
+                    color = System.Drawing.Color.Yellow;
                     break;
                 case 3://      Green = 3,
-                    color.Red = 0;
-                    color.Green = 250;
-                    color.Blue = 0;
+                    color = System.Drawing.Color.Green;
                     break;
                 case 4://      Cyan = 4,
-                    color.Red = 0;
-                    color.Green = 250;
-                    color.Blue = 250;
+                    color = System.Drawing.Color.Cyan;
                     break;
                 case 5://      Blue = 5,
-                    color.Red = 0;
-                    color.Green = 0;
-                    color.Blue = 250;
+                    color = System.Drawing.Color.Blue;
                     break;
                 case 6://      Magenta = 6,
-                    color.Red = 240;
-                    color.Green = 0;
-                    color.Blue = 240;
+                    color = System.Drawing.Color.Magenta;
                     break;
                 case 7://      White = 7,
-                    color.Red = 250;
-                    color.Green = 250;
-                    color.Blue = 250;
+                    color = System.Drawing.Color.White;
                     break;
                 case 8://      Grey = 8,   
-                default: 
-                    color.Red = 127;
-                    color.Green = 127;
-                    color.Blue = 127;
+                default:
+                    color = System.Drawing.Color.Gray;
                     break;
             }
             return color;            
         }
-        public static RGBColor ToColor(uint red,uint green, uint blue)
+        public static System.Drawing.Color ToColor(byte red,byte green, byte blue)
         {
-            return new RGBColor(red, green, blue);
+            return System.Drawing.Color.FromArgb(red, green, blue);
         }       
        
     }

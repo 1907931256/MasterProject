@@ -19,6 +19,83 @@ namespace InspectionLib
     /// </summary>
     public class DataBuilder
     {
+
+        static PointCyl GetDiamPoint(int i, double rRaw, AxialInspScript script)
+        {
+            var z = i * script.AxialIncrement + script.StartLocation.X;
+            var theta = GeomUtilities.ToRadians(script.StartLocation.Adeg);
+            var r = rRaw + script.CalDataSet.ProbeSpacingInch;
+            var pt = new PointCyl(r, theta, z, i);
+            return pt;
+        }
+        static PointCyl GetRadiusPoint(int i, double rRaw,  double zLocation, CylInspScript script)
+        {
+            var z = zLocation;
+            var theta = i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
+            double r = script.ProbeSetup[0].DirectionSign * rRaw + script.CalDataSet.ProbeSpacingInch / 2.0;
+            var pt = new PointCyl(r, theta, z, i);
+            return pt;
+        }
+        /// <summary>
+        /// build axial data set from raw data
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="rawInputData"></param>
+        static InspDataSet BuildAxialPoints(AxialInspScript script, double[] data)
+        {
+            try
+            {
+                var points = new CylData(script.InputDataFileName);
+                var len = data.Length;
+                if (len == 0)
+                {
+                    throw new Exception("Data file length cannot equal zero");
+                }
+                //script.AxialIncrement = Math.Abs((script.EndLocation.X - script.StartLocation.X) / len);
+                if (script.AxialIncrement == 0)
+                {
+                    throw new Exception("Axial increment cannot equal zero.");
+                }
+                var dataSet = new CylDataSet(script.InputDataFileName);
+                for (int i = 0; i < len; i++)
+                {
+                    var pt = GetDiamPoint(i, data[i] , script );
+                    dataSet.CylData.Add(pt);
+                    dataSet.UncorrectedCylData.Add(pt);
+                }
+                dataSet.DataFormat = script.ScanFormat;
+                return dataSet;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+
+        /// <summary>
+        /// build axial data from raw set
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <param name="progress"></param>
+        /// <param name="script"></param>
+        /// <param name="rawDataSet"></param>
+        /// <param name="options"></param>
+        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, AxialInspScript script, double[] rawDataSet)
+        {
+            try
+            {
+                // Init(options);                
+                return BuildAxialPoints(script, rawDataSet);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
         static InspDataSet BuildCartDataFromLineData(SingleCylInspScript script, Vector2[] rawDataSet)
         {
             try
@@ -36,9 +113,62 @@ namespace InspectionLib
             }
 
         }
+        /// <summary>
+        /// separate point list into rings from spiral
+        /// </summary>
+        /// <returns></returns>
+        static CylGridData BuildRingList(MultiRingScript script, double[] rawInputData)
+        {
+            try
+            {
+                
+                int revCount = 0;
+                int i = 0;
 
-        
-        
+                double thetaStart = GeomUtilities.ToRadians(script.StartLocation.Adeg);
+                double thetaEnd = Math.Abs(thetaStart + (Math.Sign(script.AngleIncrement) * Math.PI * 2.0));
+                var pointList = new CylData(script.InputDataFileName);
+                var uncorrectedGridData = new CylGridData();
+
+                double z = script.StartLocation.X; ;
+               
+                
+                int ringStartIndex = 0;
+                int ringEndIndex = ringStartIndex + script.PointsPerRevolution ;
+                int nextRingStartIndex = ringEndIndex + script.PointsToSkip;
+                while (i < rawInputData.Length)
+                {
+                    var p = GetRadiusPoint( i, rawInputData[i],z, script);
+                    i++;
+                    
+                    if (i>= ringStartIndex && i < ringEndIndex)
+                    {
+                        pointList.Add(p);
+                    }
+                    if (i == ringEndIndex)
+                    {
+                        revCount++; 
+                        uncorrectedGridData.Add(pointList);                                          
+                    }
+                    if( i== nextRingStartIndex)
+                    {
+                        z += script.RingSpacing;
+                        pointList = new CylData(script.InputDataFileName);
+                        ringStartIndex = nextRingStartIndex;
+                        ringEndIndex = ringStartIndex + script.PointsPerRevolution;
+                        nextRingStartIndex = ringEndIndex + script.PointsToSkip;
+                    }
+                }
+                return uncorrectedGridData;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+
         /// <summary>
         /// separate point list into rings from spiral
         /// </summary>
@@ -49,7 +179,7 @@ namespace InspectionLib
             {
                 int pointCountPerRev = 0;
                 int revCount = 0;
-                int pointIndex = 0;
+                int i = 0;
 
                 double thetaStart = GeomUtilities.ToRadians(script.StartLocation.Adeg);
                 double thetaEnd = Math.Abs(thetaStart + (Math.Sign(script.AngleIncrement) * Math.PI * 2.0));
@@ -57,16 +187,17 @@ namespace InspectionLib
                 var uncorrectedGridData = new CylGridData();
                 double zStart = script.StartLocation.X;
                 double z = zStart;
-                while (pointIndex < rawInputData.Length)
+                while (i < rawInputData.Length)
                 {
-                    var p = GetPoint(rawInputData[pointIndex], pointIndex, z, script);
+                    var p = GetRadiusPoint(i, rawInputData[i],  z, script);
 
                     var thA = Math.Abs(p.ThetaRad);
+                    i++;
                     if (thA >= thetaStart && thA < thetaEnd)
                     {
                         pointList.Add(p);
                         pointCountPerRev++;
-                        pointIndex++;
+                        
                     }
                     if (thA >= thetaEnd)
                     {
@@ -88,7 +219,8 @@ namespace InspectionLib
             }
 
         }
-        static SpiralDataSet BuildSpiralFromRadialData(IProgress<int> progress, SpiralInspScript script, double[] rawInputData, int grooveCount)
+        
+        static SpiralDataSet BuildSpiralFromRadialData(IProgress<int> progress,  CylInspScript script, double[] rawInputData, int grooveCount)
         {
             try
             {
@@ -96,8 +228,14 @@ namespace InspectionLib
 
                 
                 var dataSet = new SpiralDataSet(script.InputDataFileName);                 
-                
-                dataSet.UncorrectedSpiralData = BuildGridList(script, rawInputData );
+                if(script is SpiralInspScript spiratlScript)
+                {
+                    dataSet.UncorrectedSpiralData = BuildGridList(spiratlScript, rawInputData);
+                }
+                if( script is MultiRingScript multiRingScript)
+                {
+                    dataSet.UncorrectedSpiralData = BuildRingList(multiRingScript, rawInputData);
+                }
                 int totalrings = dataSet.UncorrectedSpiralData.Count;
 
                 //find all land points
@@ -452,58 +590,51 @@ namespace InspectionLib
             }
         }    
         
-        static PointCyl GetPoint(double rRaw,int i,double zLocation, CylInspScript script )
-        {
-            var z = zLocation;
-            var theta = i * script.AngleIncrement + GeomUtilities.ToRadians(script.StartLocation.Adeg);
-            double r = script.ProbeSetup[0].DirectionSign * rRaw + script.CalDataSet.ProbeSpacingInch / 2.0;
-            var pt = new PointCyl(r, theta, z, i);
-            return pt;
-        }
-        static  CylData GetUncorrectedData(CylInspScript script,double zLocation, double[] data)
-        {
-            try
-            {
+       
+        //static  CylData GetUncorrectedData(CylInspScript script,double zLocation, double[] data)
+        //{
+        //    try
+        //    {
                 
-                var points = new CylData(script.InputDataFileName);
+        //        var points = new CylData(script.InputDataFileName);
                 
-                int pointCt = 0;
+        //        int pointCt = 0;
                 
                
-                if (script.ScanFormat == ScanFormat.RING)
-                {
-                    pointCt = Math.Min(script.PointsPerRevolution, data.Length);
-                }
-                else
-                {
-                    pointCt = data.Length;                    
-                }
+        //        if (script.ScanFormat == ScanFormat.RING)
+        //        {
+        //            pointCt = Math.Min(script.PointsPerRevolution, data.Length);
+        //        }
+        //        else
+        //        {
+        //            pointCt = data.Length;                    
+        //        }
                   
                 
-                double minR = double.MaxValue;
-                for (int i = 0; i < pointCt; i++)
-                {
+        //        double minR = double.MaxValue;
+        //        for (int i = 0; i < pointCt; i++)
+        //        {
                    
-                    if (data[i] < minR)
-                    {
-                        minR = data[i];
-                    }
+        //            if (data[i] < minR)
+        //            {
+        //                minR = data[i];
+        //            }
 
-                    var pt = GetPoint(data[i], i, zLocation, script);
-                    points.Add(pt);
+        //            var pt = GetPoint(i, data[i],  zLocation, script);
+        //            points.Add(pt);
 
-                }
-                points.MinRadius = script.ProbeSetup[0].DirectionSign * minR + script.CalDataSet.ProbeSpacingInch / 2.0;
+        //        }
+        //        points.MinRadius = script.ProbeSetup[0].DirectionSign * minR + script.CalDataSet.ProbeSpacingInch / 2.0;
                   
-                return points;
+        //        return points;
                
 
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
         static CylData GetUncorrectedData(CylInspScript script, double[] data)
         {
             try
@@ -533,7 +664,7 @@ namespace InspectionLib
                         minR = data[i];
                     }
 
-                    var pt = GetPoint(data[i], i, script.StartLocation.X, script);
+                    var pt = GetRadiusPoint(i,data[i], script.StartLocation.X, script);
                     points.Add(pt);
 
                 }
@@ -633,10 +764,19 @@ namespace InspectionLib
         {
             try
             {
-                
-                
-                var dataSet = BuildRingFromRadialData(script, rawDataSet, grooveCount);
-                return dataSet;
+                if (script is SpiralInspScript spiralScript)
+                {
+                    return BuildSpiralFromRadialData(progress, spiralScript, rawDataSet, grooveCount);
+                }
+                else if (script is MultiRingScript multiringScript)
+                {
+                    return BuildSpiralFromRadialData(progress, multiringScript, rawDataSet, grooveCount);
+                }
+                else
+                {
+                    return BuildRingFromRadialData(script, rawDataSet, grooveCount);
+                }                
+                 
             }
             catch (Exception)
             {
@@ -655,34 +795,8 @@ namespace InspectionLib
             {
                 throw;
             }
-        }
-        /// <summary>
-        /// build grid data from spiral raw set
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <param name="progress"></param>
-        /// <param name="script"></param>
-        /// <param name="rawDataSet"></param>
-        /// <param name="options"></param>
-        static public InspDataSet BuildDataAsync(CancellationToken ct, IProgress<int> progress, SpiralInspScript script, double[] rawDataSet, int grooveCount)
-        {
-            try
-            {
-
-                var sw = new Stopwatch();
-                progress.Report(sw.Elapsed.Seconds);
-
-                var dataSet = BuildSpiralFromRadialData(progress, script, rawDataSet, grooveCount);
-
-                return dataSet;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
+        }      
+      
         public static CalDataSet BuildCalData(MeasurementUnit outputUnit, double phaseDifferenceRads, int pointsPerRev, double ringGageDiamInch, string CsvFileName)
         {
             try

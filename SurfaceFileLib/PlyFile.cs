@@ -345,7 +345,9 @@ namespace SurfaceFileLib
                       string typeName = element.Properties[i].TypeName;
                       string name = element.Properties[i].Name;
                       PlyPropertyType propType = element.Properties[i].Type;
-                     
+                        byte r = 0;
+                        byte g = 0;
+                        byte b = 0;
                       if (propType == PlyPropertyType.x)
                           Vertex.X = float.Parse(tokens[i]);
                       if (propType == PlyPropertyType.y)
@@ -359,12 +361,12 @@ namespace SurfaceFileLib
                       if (propType == PlyPropertyType.nz)
                           Vertex.Normal.Z = double.Parse(tokens[i]);
                       if (propType == PlyPropertyType.red)
-                          Vertex.Col.Red = byte.Parse(tokens[i]);
+                          r = byte.Parse(tokens[i]);
                       if (propType == PlyPropertyType.green)
-                          Vertex.Col.Green = byte.Parse(tokens[i]);
+                          g = byte.Parse(tokens[i]);
                       if (propType == PlyPropertyType.blue)
-                          Vertex.Col.Blue = byte.Parse(tokens[i]);    
-
+                          b = byte.Parse(tokens[i]);
+                        Vertex.Col = System.Drawing.Color.FromArgb(r, g, b);
                   }
                   
                   Vertices.Add(Vertex);
@@ -389,17 +391,21 @@ namespace SurfaceFileLib
                       string typeName = element.Properties[i].TypeName;
                       string name = element.Properties[i].Name;
                       PlyPropertyType propType = element.Properties[i].Type;
-                      
+                        byte r = 0;
+                        byte b = 0;
+                        byte g = 0;
+
                       if (propType == PlyPropertyType.red)
-                          edge.Color.Red = byte.Parse(tokens[i]);    
+                          r = byte.Parse(tokens[i]);    
                       if (propType == PlyPropertyType.green)
-                          edge.Color.Green = byte.Parse(tokens[i]);    
+                          g = byte.Parse(tokens[i]);    
                       if (propType == PlyPropertyType.blue)
-                          edge.Color.Blue = byte.Parse(tokens[i]);    
+                          b = byte.Parse(tokens[i]);    
                       if (propType == PlyPropertyType.vertex1)
                           edge.Vertex1 = int.Parse(tokens[i]);    
                       if (propType == PlyPropertyType.vertex2)
-                          edge.Vertex2 = int.Parse(tokens[i]);     
+                          edge.Vertex2 = int.Parse(tokens[i]);
+                        edge.Color = System.Drawing.Color.FromArgb(r, g, b);
                   }
                   Edges.Add(edge);
               }
@@ -471,7 +477,7 @@ namespace SurfaceFileLib
                 //}
                 if (vertex.ContainsColor)
                 {
-                    stb += " " + vertex.Col.Red.ToString("d") + " " + vertex.Col.Green.ToString("d") + " " + vertex.Col.Blue.ToString("d");
+                    stb += " " + vertex.Col.R.ToString("d") + " " + vertex.Col.G.ToString("d") + " " + vertex.Col.B.ToString("d");
                 }
                 sw.WriteLine(stb);
                
@@ -495,7 +501,7 @@ namespace SurfaceFileLib
                 stb=edge.Vertex1.ToString() + " " + edge.Vertex2.ToString();
                 if (edge.ContainsColor)
                 {
-                    stb +=  " " + edge.Color.Red.ToString() + " " + edge.Color.Green.ToString() + " " + edge.Color.Blue.ToString();
+                    stb +=  " " + edge.Color.R.ToString() + " " + edge.Color.G.ToString() + " " + edge.Color.B.ToString();
                 }
                 sw.WriteLine(stb);
             }
